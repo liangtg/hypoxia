@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--y = 2x / (x-2)-->
+    <item>
+        <shape
+            android:innerRadiusRatio="2.13"
+            android:shape="ring"
+            android:thicknessRatio="2"
+            android:useLevel="false">
+            <solid android:color="@color/colorPrimary" />
+        </shape>
+    </item>
+    <item>
+        <shape
+            android:innerRadiusRatio="2.13"
+            android:shape="ring"
+            android:thicknessRatio="32"
+            android:useLevel="false">
+            <solid android:color="#FFDB8380" />
+        </shape>
+    </item>
+</layer-list>
