@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/anchor1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#e98b8b"
@@ -20,6 +21,7 @@
             android:paddingTop="@dimen/spacing_double">
 
             <TextView
+                android:id="@+id/selected_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="2016-05-10~2016-05-11"
@@ -32,6 +34,7 @@
                 android:layout_weight="1" />
 
             <TextView
+                android:id="@+id/total_times"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="累计4次"
@@ -51,6 +54,9 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:drawablePadding="@dimen/spacing_normal"
+                android:drawableRight="@drawable/heart"
+                android:paddingRight="@dimen/spacing_normal"
                 android:text="心率"
                 android:textColor="?android:textColorPrimaryInverse" />
 
@@ -64,13 +70,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/spacing_double"
+                android:drawableRight="@drawable/high_pressure"
                 android:text="高压"
                 android:textColor="?android:textColorPrimaryInverse" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="/低压"
+                android:layout_marginLeft="@dimen/spacing_normal"
+                android:layout_marginRight="@dimen/spacing_normal"
+                android:drawableRight="@drawable/low_pressure"
+                android:text="/ 低压"
                 android:textColor="?android:textColorPrimaryInverse" />
 
             <TextView
@@ -88,14 +98,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="1次血压异常"
-                android:textColor="?android:textColorPrimaryInverse" />
+                android:textColor="?android:textColorPrimaryInverse"
+                android:visibility="gone" />
         </LinearLayout>
 
         <android.support.percent.PercentFrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/spacing_normal">
 
-            <com.github.mikephil.charting.charts.CandleStickChart
+            <com.github.mikephil.charting.charts.CombinedChart
                 android:id="@+id/chart"
                 app:layout_aspectRatio="200%"
                 app:layout_widthPercent="100%" />
@@ -106,6 +118,7 @@
         android:id="@+id/date_group"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/anchor1"
         android:background="@android:color/white"
         android:checkedButton="@+id/day"
         android:orientation="horizontal"
@@ -183,5 +196,13 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/all_history"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-</LinearLayout>
+        android:layout_height="match_parent"
+        android:layout_below="@id/date_group" />
+
+    <ProgressBar
+        android:id="@+id/progress"
+        style="?android:progressBarStyleLargeInverse"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true" />
+</RelativeLayout>

@@ -10,7 +10,7 @@ import java.util.ArrayList;
  */
 public class BPChartResponse extends BaseResponse {
     public ArrayList<ChartItem> chart = new ArrayList<>();
-    public ArrayList<ChartItem> total = new ArrayList<>();
+    public ArrayList<ChartTotal> total = new ArrayList<>();
 
     public static class ChartItem {
         @SerializedName("Key")
@@ -27,6 +27,12 @@ public class BPChartResponse extends BaseResponse {
         public int heartRateMax;
         @SerializedName("HeartRateMin")
         public int heartRateMin;
+        @SerializedName("SystolicAvg")
+        public float systolicAvg;
+        @SerializedName("DiastolicAvg")
+        public float diastolicAvg;
+        @SerializedName("HeartRateAvg")
+        public float heartRateAvg;
     }
 
     public static class ChartTotal {

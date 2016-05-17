@@ -18,7 +18,7 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_toRightOf="@id/anchor1"
-        android:ems="4"
+        android:ems="5"
         android:text="高压"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
@@ -28,7 +28,7 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_toRightOf="@id/high"
-        android:minEms="4"
+        android:minEms="5"
         android:text="低压"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
@@ -48,8 +48,8 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_toRightOf="@id/rate"
-        android:background="#FFCF4C4C"
-        android:padding="@dimen/spacing_micro"
+        android:background="@drawable/abnormal"
+        android:gravity="center_vertical"
         android:text="血压异常"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:textColor="?android:textColorPrimaryInverse" />

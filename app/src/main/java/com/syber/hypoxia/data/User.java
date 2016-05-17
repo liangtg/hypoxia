@@ -32,4 +32,9 @@ public class User {
         return userInfoExt;
     }
 
+    public static void signOut() {
+        PreferenceData.getInstance().edit().remove(KEY_USER).commit();
+        userInfoExt = null;
+    }
+
 }

@@ -12,7 +12,7 @@ public class BaseResponse {
     }
 
     public boolean isSuccess() {
-        return code < 300;
+        return code < 300 && code > 99;
     }
 
     public Object getData() {
@@ -23,4 +23,5 @@ public class BaseResponse {
         this.code = code;
         return this;
     }
+
 }

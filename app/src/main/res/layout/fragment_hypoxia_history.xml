@@ -21,6 +21,7 @@
             android:paddingTop="@dimen/spacing_double">
 
             <TextView
+                android:id="@+id/selected_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="2016-05-10~2016-05-11"
@@ -33,6 +34,7 @@
                 android:layout_weight="1" />
 
             <TextView
+                android:id="@+id/total_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="累计125分钟"
@@ -58,13 +60,15 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/spacing_normal"
                 android:text="分钟"
                 android:textColor="?android:textColorPrimaryInverse" />
         </LinearLayout>
 
         <android.support.percent.PercentFrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/spacing_normal">
 
             <com.github.mikephil.charting.charts.BarChart
                 android:id="@+id/chart"

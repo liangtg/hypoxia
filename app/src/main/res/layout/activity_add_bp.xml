@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:id="@+id/content"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:divider="?dividerHorizontal"
+    android:orientation="vertical"
+    android:showDividers="middle"
+    tools:context="com.syber.hypoxia.AddTraingActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="添加血压记录"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+    </android.support.v7.widget.Toolbar>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?selectableItemBackground"
+        android:clickable="true"
+        android:onClick="onStartTimeClicked"
+        android:orientation="horizontal"
+        android:padding="@dimen/spacing_double">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="测量时间"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+
+        <TextView
+            android:id="@+id/start_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawablePadding="@dimen/spacing_double"
+            android:drawableRight="@drawable/arrow_r"
+            android:gravity="right"
+            android:text="13:24"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+            android:textColor="?android:textColorSecondary" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?selectableItemBackground"
+        android:clickable="true"
+        android:onClick="onSysClicked"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/spacing_double"
+            android:text="收缩压(mmHg)"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+
+        <EditText
+            android:id="@+id/sys"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:drawablePadding="@dimen/spacing_double"
+            android:drawableRight="@drawable/arrow_r"
+            android:gravity="right"
+            android:inputType="number"
+            android:maxLength="3"
+            android:padding="@dimen/spacing_double"
+            android:text="120"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+            android:textColor="?android:textColorSecondary" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?selectableItemBackground"
+        android:clickable="true"
+        android:onClick="onDiaClicked"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/spacing_double"
+            android:text="舒张压(mmHg)"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+
+        <EditText
+            android:id="@+id/dia"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:drawablePadding="@dimen/spacing_double"
+            android:drawableRight="@drawable/arrow_r"
+            android:gravity="right"
+            android:inputType="number"
+            android:maxLength="3"
+            android:padding="@dimen/spacing_double"
+            android:text="80"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+            android:textColor="?android:textColorSecondary" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?selectableItemBackground"
+        android:clickable="true"
+        android:onClick="onPulClicked"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/spacing_double"
+            android:text="心率(分钟/次)"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+
+        <EditText
+            android:id="@+id/pul"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:drawablePadding="@dimen/spacing_double"
+            android:drawableRight="@drawable/arrow_r"
+            android:gravity="right"
+            android:inputType="number"
+            android:maxLength="3"
+            android:padding="@dimen/spacing_double"
+            android:text="90"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+            android:textColor="?android:textColorSecondary" />
+    </LinearLayout>
+</LinearLayout>

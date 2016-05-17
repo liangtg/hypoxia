@@ -4,6 +4,7 @@ import android.util.Log;
 import android.util.Property;
 
 import com.google.gson.Gson;
+import com.orhanobut.logger.Logger;
 import com.squareup.otto.Bus;
 
 import java.io.IOException;
@@ -47,7 +48,8 @@ public class GsonCallback<T extends BaseResponse> extends AbstractDataRequest {
             setResult(result);
         } catch (Exception e) {
             BaseResponse target = new Gson().fromJson(EMPTY_JSON, this.responseType);
-            setResult(target.error(response.code()));
+            Logger.e(e, "");
+            setResult(target.error(-1));
         }
     }
 

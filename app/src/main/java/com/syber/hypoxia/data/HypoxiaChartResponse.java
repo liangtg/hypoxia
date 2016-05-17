@@ -10,7 +10,7 @@ import java.util.ArrayList;
  */
 public class HypoxiaChartResponse extends BaseResponse {
     public ArrayList<ChartItem> chart = new ArrayList<>();
-    public ArrayList<ChartItem> total = new ArrayList<>();
+    public ArrayList<ChartTotal> total = new ArrayList<>();
 
     public static class ChartItem {
         @SerializedName("Key")

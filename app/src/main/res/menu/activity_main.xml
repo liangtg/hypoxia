@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/setting"
         android:icon="@drawable/ic_setting"
         android:title=""
-        app:showAsAction="always" />
+        android:visible="false" />
+    <item
+        android:id="@+id/add_training"
+        android:title="添加训练数据" />
+    <item
+        android:id="@+id/add_bp"
+        android:title="添加血压数据" />
+    <item
+        android:id="@+id/sign_out"
+        android:title="退出账号" />
 </menu>

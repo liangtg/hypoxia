@@ -1,7 +1,10 @@
 package com.syber.hypoxia;
 
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,12 +15,16 @@ import android.widget.ProgressBar;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import com.github.mikephil.charting.buffer.BarBuffer;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
+import com.github.mikephil.charting.renderer.BarChartRenderer;
+import com.github.mikephil.charting.utils.Transformer;
 import com.orhanobut.logger.Logger;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -32,11 +39,13 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Random;
 
 /**
  * Created by liangtg on 16-5-10.
  */
 public class HypoxiaHistoryFragment extends BaseFragment implements RadioGroup.OnCheckedChangeListener {
+    private TextView selectedDate, totalTime;
     private BarChart barChart;
     private RecyclerView allHistory;
     private ProgressBar progressBar;
@@ -78,6 +87,8 @@ public class HypoxiaHistoryFragment extends BaseFragment implements RadioGroup.O
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        selectedDate = get(R.id.selected_date);
+        totalTime = get(R.id.total_time);
         progressBar = get(R.id.progress);
         barChart = get(R.id.chart);
         allHistory = get(R.id.all_history);
@@ -94,7 +105,9 @@ public class HypoxiaHistoryFragment extends BaseFragment implements RadioGroup.O
 
     private void initChart() {
         barChart.setNoDataText("");
+        barChart.getLegend().setEnabled(false);
         barChart.getAxisRight().setEnabled(false);
+        barChart.setRenderer(new HypoxiaRender());
         barChart.setScaleEnabled(false);
         barChart.setDescription("");
         YAxis yAxis = barChart.getAxisLeft();
@@ -107,6 +120,7 @@ public class HypoxiaHistoryFragment extends BaseFragment implements RadioGroup.O
         yAxis.setDrawZeroLine(false);
         XAxis xAxis = barChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setAvoidFirstLastClipping(true);
         xAxis.enableGridDashedLine(5, 5, 5);
         xAxis.setDrawGridLines(false);
         xAxis.setTextColor(color);
@@ -115,13 +129,20 @@ public class HypoxiaHistoryFragment extends BaseFragment implements RadioGroup.O
 
     @Subscribe
     public void withData(HypoxiaHistoryResponse event) {
-        if (getActivity().isFinishing()) return;
-        progressBar.setVisibility(View.GONE);
+        if (null == getView() || getActivity().isFinishing()) return;
         if (event.isSuccess()) {
             int old = data.size();
             data.addAll(event.list);
             historyAdapter.notifyItemRangeInserted(old, event.list.size());
             page++;
+        } else {
+            barChart.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (null == getView() || getActivity().isFinishing()) return;
+                    IRequester.getInstance().hypoxiaData(bus, page);
+                }
+            }, 500);
         }
     }
 
@@ -163,7 +184,7 @@ public class HypoxiaHistoryFragment extends BaseFragment implements RadioGroup.O
             holder.time.setText(String.format("%s~%s", timeFormat.format(new Date(item.time_start)), timeFormat.format(new Date(item.time_end))));
             long minute = (item.time_end - item.time_start) / 1000 / 60;
             holder.minute.setText(String.format("%d分钟", minute));
-            holder.mode.setText("模式" + item.training.trainingMode);
+            holder.mode.setText("模式" + (item.training.trainingMode + 1));
             holder.progressBar.setProgress((int) minute);
         }
 
@@ -207,7 +228,27 @@ public class HypoxiaHistoryFragment extends BaseFragment implements RadioGroup.O
             if (event.isSuccess()) {
                 dataResponse = event;
                 if (curProvider == this) createData();
+            } else if (curProvider == this) {
+                showToast("数据获取失败");
+                progressBar.setVisibility(View.GONE);
+                fillData();
             }
+        }
+
+        private void fillData() {
+            HypoxiaChartResponse data = new HypoxiaChartResponse();
+            Random random = new Random();
+            for (int i = 0, j = random.nextInt(10) + 5; i < j; i++) {
+                HypoxiaChartResponse.ChartItem item = new HypoxiaChartResponse.ChartItem();
+                item.key = "12:0" + i;
+                item.totallength = random.nextInt(50) + 50 + "";
+                data.chart.add(item);
+            }
+            HypoxiaChartResponse.ChartTotal total = new HypoxiaChartResponse.ChartTotal();
+            total.totallength = random.nextInt(100) + 50 + "";
+            data.total.add(total);
+            dataResponse = data;
+            createData();
         }
 
         public void refresh() {
@@ -222,14 +263,28 @@ public class HypoxiaHistoryFragment extends BaseFragment implements RadioGroup.O
                 yVals.add(new BarEntry(Float.valueOf(item.totallength), i));
             }
             BarDataSet dataSet = new BarDataSet(yVals, "时长/分钟");
-            dataSet.setDrawValues(false);
             dataSet.setColor(0xFFFEA846);
+            dataSet.setHighLightColor(0xFFFEA846);
             barData = new BarData(xVals, dataSet);
+            barData.setDrawValues(false);
+            resetData();
+        }
+
+        private void resetData() {
+            progressBar.setVisibility(View.GONE);
+            barChart.clear();
+            barChart.resetTracking();
             barChart.setData(barData);
+            barChart.animateY(500);
             barChart.invalidate();
+            selectedDate.setText(String.format("%s~%s", startDate, endDate));
+            totalTime.setText(String.format("累计%s分钟", dataResponse.total.get(0).totallength));
         }
 
         public void updateChart() {
+            progressBar.setVisibility(View.VISIBLE);
+            selectedDate.setText(String.format("%s~%s", startDate, endDate));
+            totalTime.setText("");
             if (working) {
                 barChart.clear();
                 return;
@@ -241,11 +296,88 @@ public class HypoxiaHistoryFragment extends BaseFragment implements RadioGroup.O
             } else if (null == barData) {
                 createData();
             } else {
-                barChart.clear();
-                barChart.setData(barData);
+                resetData();
             }
         }
 
+    }
+
+    private class HypoxiaRender extends BarChartRenderer {
+        int width;
+        private Drawable drawable;
+
+        public HypoxiaRender() {
+            super(barChart, barChart.getAnimator(), barChart.getViewPortHandler());
+            drawable = ResourcesCompat.getDrawable(getResources(), R.drawable.hypoxia_bar, getActivity().getTheme());
+            width = drawable.getIntrinsicWidth();
+        }
+
+        @Override
+        protected void drawDataSet(Canvas c, IBarDataSet dataSet, int index) {
+            Transformer trans = mChart.getTransformer(dataSet.getAxisDependency());
+            mShadowPaint.setColor(dataSet.getBarShadowColor());
+            float phaseX = mAnimator.getPhaseX();
+            float phaseY = mAnimator.getPhaseY();
+            // initialize the buffer
+            BarBuffer buffer = mBarBuffers[index];
+            buffer.setPhases(phaseX, phaseY);
+            buffer.setBarSpace(dataSet.getBarSpace());
+            buffer.setDataSet(index);
+            buffer.setInverted(mChart.isInverted(dataSet.getAxisDependency()));
+            buffer.feed(dataSet);
+            trans.pointValuesToPixel(buffer.buffer);
+
+            // draw the bar shadow before the values
+            if (mChart.isDrawBarShadowEnabled()) {
+
+                for (int j = 0; j < buffer.size(); j += 4) {
+
+                    if (!mViewPortHandler.isInBoundsLeft(buffer.buffer[j + 2])) continue;
+
+                    if (!mViewPortHandler.isInBoundsRight(buffer.buffer[j])) break;
+
+                    c.drawRect(buffer.buffer[j], mViewPortHandler.contentTop(), buffer.buffer[j + 2], mViewPortHandler.contentBottom(), mShadowPaint);
+                }
+            }
+
+            // if multiple colors
+            if (dataSet.getColors().size() > 1) {
+
+                for (int j = 0; j < buffer.size(); j += 4) {
+
+                    if (!mViewPortHandler.isInBoundsLeft(buffer.buffer[j + 2])) continue;
+
+                    if (!mViewPortHandler.isInBoundsRight(buffer.buffer[j])) break;
+
+                    // Set the color for the currently drawn value. If the index
+                    // is
+                    // out of bounds, reuse colors.
+                    mRenderPaint.setColor(dataSet.getColor(j / 4));
+//                    c.drawRect(buffer.buffer[j], buffer.buffer[j + 1], buffer.buffer[j + 2], buffer.buffer[j + 3], mRenderPaint);
+                    drawable.setBounds((int) buffer.buffer[j], (int) buffer.buffer[j + 1], (int) buffer.buffer[j + 2], (int) buffer.buffer[j + 3]);
+                    drawable.draw(c);
+                }
+            } else {
+
+                mRenderPaint.setColor(dataSet.getColor());
+
+                for (int j = 0; j < buffer.size(); j += 4) {
+
+                    if (!mViewPortHandler.isInBoundsLeft(buffer.buffer[j + 2])) continue;
+
+                    if (!mViewPortHandler.isInBoundsRight(buffer.buffer[j])) break;
+
+//                    c.drawRect(buffer.buffer[j], buffer.buffer[j + 1], buffer.buffer[j + 2], buffer.buffer[j + 3], mRenderPaint);
+                    float v = buffer.buffer[j + 2] - buffer.buffer[j];
+                    if (v > width) {
+                        buffer.buffer[j] += (v - width) / 2;
+                        buffer.buffer[j + 2] -= (v - width) / 2;
+                    }
+                    drawable.setBounds((int) buffer.buffer[j], (int) buffer.buffer[j + 1], (int) buffer.buffer[j + 2], (int) buffer.buffer[j + 3]);
+                    drawable.draw(c);
+                }
+            }
+        }
     }
 
 }

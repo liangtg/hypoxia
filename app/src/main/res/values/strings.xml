@@ -4,4 +4,7 @@
     <string name="prompt_input_correct_phone">请输入正确的手机号</string>
     <string name="prompt_input_pass">请输入密码</string>
     <string name="prompt_input_correct_pass">6位及以上字母数字组合</string>
+    <string name="sys_format">收缩压:%s</string>
+    <string name="dia_format">舒张压:%s</string>
+    <string name="pul_format">心率:%s</string>
 </resources>

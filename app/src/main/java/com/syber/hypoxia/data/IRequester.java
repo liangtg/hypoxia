@@ -5,10 +5,14 @@ import android.os.Build;
 import android.telephony.TelephonyManager;
 
 import com.squareup.otto.Bus;
+import com.syber.base.data.BaseResponse;
 import com.syber.base.data.DataRequester;
 import com.syber.base.data.GsonCallback;
 import com.syber.hypoxia.BuildConfig;
 import com.syber.hypoxia.IApplication;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import okhttp3.FormBody;
 
@@ -76,6 +80,45 @@ public class IRequester extends DataRequester {
         builder.add("starttime", start);
         builder.add("endtime", end);
         enque(postBuilder("user/pressurechart?1", builder.build()).build(), callback);
+        return callback;
+    }
+
+    public DataRequest addTraing(Bus bus, String start, String end, String mode) {
+        GsonCallback callback = new GsonCallback(bus, BaseResponse.class);
+        FormBody.Builder builder = new FormBody.Builder();
+        builder.add("user_id", User.getUserInfoExt().user_id);
+        builder.add("time_start", start);
+        builder.add("time_end", end);
+        JSONObject obj = new JSONObject();
+//        {"Time_Start":"2016-04-16 11:09:28","Time_End":"2016-04-16 11:39:28","TrainingMode":2}
+        try {
+            obj.putOpt("Time_Start", start);
+            obj.putOpt("Time_End", end);
+            obj.putOpt("TrainingMode", mode);
+        } catch (JSONException e) {
+        }
+        builder.add("content", obj.toString());
+        enque(postBuilder("user/uploadtraining?1", builder.build()).build(), callback);
+        return callback;
+    }
+
+    public DataRequest addBP(Bus bus, String start, int sys, int dia, int pul) {
+        GsonCallback callback = new GsonCallback(bus, BaseResponse.class);
+        FormBody.Builder builder = new FormBody.Builder();
+        builder.add("user_id", User.getUserInfoExt().user_id);
+        builder.add("time_start", start);
+        builder.add("time_end", start);
+//        {"Time_Test":"2016-04-06 15:38:47","Diastolic":90,"Systolic":160,"HeartRate":176}
+        JSONObject obj = new JSONObject();
+        try {
+            obj.putOpt("Time_Test", start);
+            obj.putOpt("Diastolic", dia);
+            obj.putOpt("Systolic", sys);
+            obj.putOpt("HeartRate", pul);
+        } catch (JSONException e) {
+        }
+        builder.add("content", obj.toString());
+        enque(postBuilder("user/uploadpressure?1", builder.build()).build(), callback);
         return callback;
     }
 
