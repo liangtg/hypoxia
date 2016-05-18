@@ -4,10 +4,7 @@
     <corners
         android:topLeftRadius="@dimen/spacing_micro"
         android:topRightRadius="@dimen/spacing_micro" />
-    <gradient
-        android:angle="-90"
-        android:endColor="#FFFFAF7B"
-        android:startColor="#FFFEA846" />
+    <solid android:color="@android:color/white" />
     <size
         android:width="@dimen/spacing_normal"
         android:height="@dimen/spacing_normal" />

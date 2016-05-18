@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="72dp">
+
+    <ImageView
+        android:id="@+id/anchor1"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="@dimen/spacing_double"
+        android:layout_marginRight="@dimen/spacing_double"
+        android:scaleType="fitXY"
+        android:src="@drawable/oxygen_indicator" />
+
+    <TextView
+        android:id="@+id/date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@id/anchor1"
+        android:text="2016-05-11 13:43"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        android:textColor="?android:textColorSecondary" />
+
+    <TextView
+        android:id="@+id/rate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="@dimen/spacing_normal"
+        android:layout_toRightOf="@id/date"
+        android:minEms="4"
+        android:text="心率"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+    <TextView
+        android:id="@+id/high"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@id/rate"
+        android:ems="5"
+        android:text="血氧"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+</RelativeLayout>

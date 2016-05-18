@@ -18,6 +18,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.animation.ChartAnimator;
+import com.github.mikephil.charting.buffer.BarBuffer;
 import com.github.mikephil.charting.buffer.ScatterBuffer;
 import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.charts.CombinedChart;
@@ -25,15 +26,15 @@ import com.github.mikephil.charting.charts.ScatterChart;
 import com.github.mikephil.charting.components.MarkerView;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.CandleData;
-import com.github.mikephil.charting.data.CandleDataSet;
-import com.github.mikephil.charting.data.CandleEntry;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.CombinedData;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.ScatterData;
 import com.github.mikephil.charting.data.ScatterDataSet;
 import com.github.mikephil.charting.highlight.Highlight;
-import com.github.mikephil.charting.interfaces.datasets.ICandleDataSet;
+import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.interfaces.datasets.IScatterDataSet;
 import com.github.mikephil.charting.renderer.BarChartRenderer;
 import com.github.mikephil.charting.renderer.BubbleChartRenderer;
@@ -42,16 +43,15 @@ import com.github.mikephil.charting.renderer.CombinedChartRenderer;
 import com.github.mikephil.charting.renderer.DataRenderer;
 import com.github.mikephil.charting.renderer.LineChartRenderer;
 import com.github.mikephil.charting.renderer.ScatterChartRenderer;
-import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.Transformer;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 import com.syber.base.BaseFragment;
 import com.syber.base.BaseViewHolder;
-import com.syber.hypoxia.data.BPChartResponse;
-import com.syber.hypoxia.data.BloodHistoryResponse;
 import com.syber.hypoxia.data.IRequester;
+import com.syber.hypoxia.data.OxygenSaturationChartResponse;
+import com.syber.hypoxia.data.OxygenSaturationHistoryResponse;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -60,9 +60,9 @@ import java.util.Locale;
 import java.util.Random;
 
 /**
- * Created by liangtg on 16-5-10.
+ * Created by liangtg on 16-5-18.
  */
-public class BloodPressureHistoryFragment extends BaseFragment implements RadioGroup.OnCheckedChangeListener {
+public class OxygenSaturationFragment extends BaseFragment implements RadioGroup.OnCheckedChangeListener {
     private CombinedChart barChart;
     private TextView selectedDate, totalTimes;
     private RecyclerView allHistory;
@@ -70,7 +70,7 @@ public class BloodPressureHistoryFragment extends BaseFragment implements RadioG
     private Bus bus = new Bus();
     private int page = 0;
 
-    private ArrayList<BloodHistoryResponse.HistoryItem> data = new ArrayList<>();
+    private ArrayList<OxygenSaturationHistoryResponse.HistoryItem> data = new ArrayList<>();
     private HistoryAdapter historyAdapter;
     private String day, weekStart, weekEnd, monthStart, monthEnd;
     private ChartDataProvider dayProvider, weekProvider, monthProvider;
@@ -100,7 +100,7 @@ public class BloodPressureHistoryFragment extends BaseFragment implements RadioG
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_bloodpressure_history, container, false);
+        return inflater.inflate(R.layout.fragment_oxygen_saturation, container, false);
     }
 
     @Override
@@ -117,7 +117,7 @@ public class BloodPressureHistoryFragment extends BaseFragment implements RadioG
         RadioGroup group = get(R.id.date_group);
         group.setOnCheckedChangeListener(this);
         initChart();
-        IRequester.getInstance().bloodData(bus, page);
+        IRequester.getInstance().spoData(bus, page);
         curProvider.updateChart();
     }
 
@@ -126,7 +126,6 @@ public class BloodPressureHistoryFragment extends BaseFragment implements RadioG
         barChart.getPaint(Chart.PAINT_INFO).setTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
                 16,
                 getResources().getDisplayMetrics()));
-        barChart.setMarkerView(new IMarkerView(getActivity()));
         barChart.getLegend().setEnabled(false);
         barChart.getAxisRight().setEnabled(false);
         barChart.setScaleEnabled(false);
@@ -148,19 +147,19 @@ public class BloodPressureHistoryFragment extends BaseFragment implements RadioG
     }
 
     @Subscribe
-    public void withData(BloodHistoryResponse event) {
+    public void withData(OxygenSaturationHistoryResponse event) {
         if (null == getView() || getActivity().isFinishing()) return;
         if (event.isSuccess()) {
             data.addAll(event.list);
             historyAdapter.notifyDataSetChanged();
             page++;
-            if (!event.list.isEmpty()) nextDelayRequest();
+            if (!event.list.isEmpty()) nextRequest();
         } else {
-            nextDelayRequest();
+            nextRequest();
         }
     }
 
-    private void nextDelayRequest() {
+    private void nextRequest() {
         totalTimes.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -194,17 +193,15 @@ public class BloodPressureHistoryFragment extends BaseFragment implements RadioG
 
         @Override
         public AdapterHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new AdapterHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_bloodpressure_history, parent, false));
+            return new AdapterHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_oxygen_history, parent, false));
         }
 
         @Override
         public void onBindViewHolder(AdapterHolder holder, int position) {
-            BloodHistoryResponse.HistoryItem item = data.get(position);
-            holder.date.setText(item.pressure.Time_Test);
-            holder.high.setText("收缩压" + item.pressure.Systolic);
-            holder.low.setText("舒张压" + item.pressure.Diastolic);
-            holder.rate.setText("心率" + item.pressure.HeartRate);
-            holder.abnormal.setVisibility((item.pressure.Systolic < 130 && item.pressure.Diastolic < 85) ? View.GONE : View.VISIBLE);
+            OxygenSaturationHistoryResponse.HistoryItem item = data.get(position);
+            holder.date.setText(item.spo2.Time_Test);
+            holder.spo.setText(String.format("血氧%d%%", item.spo2.O2p));
+            holder.rate.setText("心率" + item.spo2.HeartRate);
         }
 
         @Override
@@ -214,21 +211,18 @@ public class BloodPressureHistoryFragment extends BaseFragment implements RadioG
     }
 
     private class AdapterHolder extends RecyclerView.ViewHolder {
-        TextView date, high, low, rate;
-        View abnormal;
+        TextView date, spo, rate;
 
         public AdapterHolder(View itemView) {
             super(itemView);
             date = BaseViewHolder.get(itemView, R.id.date);
-            high = BaseViewHolder.get(itemView, R.id.high);
-            low = BaseViewHolder.get(itemView, R.id.low);
+            spo = BaseViewHolder.get(itemView, R.id.high);
             rate = BaseViewHolder.get(itemView, R.id.rate);
-            abnormal = BaseViewHolder.get(itemView, R.id.state);
         }
     }
 
     class ChartDataProvider {
-        BPChartResponse dataResponse;
+        OxygenSaturationChartResponse dataResponse;
         boolean working = false;
         private String startDate, endDate;
         private CombinedData barData;
@@ -243,7 +237,7 @@ public class BloodPressureHistoryFragment extends BaseFragment implements RadioG
         }
 
         @Subscribe
-        public void withData(BPChartResponse event) {
+        public void withData(OxygenSaturationChartResponse event) {
             if (getView() == null || getActivity().isFinishing()) return;
             working = false;
             if (event.isSuccess()) {
@@ -258,24 +252,20 @@ public class BloodPressureHistoryFragment extends BaseFragment implements RadioG
         }
 
         private void fillData() {
-            BPChartResponse data = new BPChartResponse();
+            OxygenSaturationChartResponse data = new OxygenSaturationChartResponse();
             Random random = new Random();
             for (int i = 0; i < 10; i++) {
-                BPChartResponse.ChartItem item = new BPChartResponse.ChartItem();
-                item.systolicMax = random.nextInt(10) + 130;
-                item.systolicAvg = random.nextInt(10) + 120;
-                item.systolicMin = random.nextInt(10) + 110;
-                item.diastolicMax = random.nextInt(10) + 80;
-                item.diastolicAvg = random.nextInt(10) + 70;
-                item.diastolicMin = random.nextInt(10) + 60;
+                OxygenSaturationChartResponse.ChartItem item = new OxygenSaturationChartResponse.ChartItem();
+                item.spO2Max = random.nextInt(10) + 130;
+                item.spO2Avg = random.nextInt(10) + 120;
+                item.spO2Min = random.nextInt(10) + 110;
                 item.heartRateMax = random.nextInt(10) + 100;
                 item.heartRateAvg = random.nextInt(10) + 90;
                 item.heartRateMin = random.nextInt(10) + 80;
                 item.key = "12:11";
                 data.chart.add(item);
             }
-            BPChartResponse.ChartTotal total = new BPChartResponse.ChartTotal();
-            total.totalltimes = random.nextInt(20) + 40;
+            OxygenSaturationChartResponse.ChartTotal total = new OxygenSaturationChartResponse.ChartTotal();
             data.total.add(total);
             dataResponse = data;
         }
@@ -286,36 +276,26 @@ public class BloodPressureHistoryFragment extends BaseFragment implements RadioG
         void createData() {
             ArrayList<String> xVals = new ArrayList<>();
             ArrayList<Entry> rateYVals = new ArrayList<>();
-            ArrayList<CandleEntry> yVals = new ArrayList<>();
-            ArrayList<CandleEntry> yValsLow = new ArrayList<>();
+            ArrayList<BarEntry> yVals = new ArrayList<>();
             for (int i = 0; i < dataResponse.chart.size(); i++) {
-                BPChartResponse.ChartItem item = dataResponse.chart.get(i);
+                OxygenSaturationChartResponse.ChartItem item = dataResponse.chart.get(i);
                 xVals.add(item.key);
                 int sys, dia;
                 if (max) {
                     rateYVals.add(new Entry(item.heartRateMax, i));
-                    sys = item.systolicMax;
-                    dia = item.diastolicMax;
-                    yVals.add(new CandleEntry(i, sys, dia, sys, dia));
+                    yVals.add(new BarEntry(item.spO2Max, i));
                 } else {
+                    yVals.add(new BarEntry(item.spO2Avg, i));
                     rateYVals.add(new Entry(item.heartRateAvg, i));
-                    yVals.add(new CandleEntry(i, item.systolicMax, item.systolicMin, item.systolicMax, item.systolicMin));
-                    yValsLow.add(new CandleEntry(i, item.diastolicMax, item.diastolicMin, item.diastolicMax, item.diastolicMin));
                 }
             }
-            CandleDataSet dataSet = new CandleDataSet(yVals, "收缩压");
+            BarDataSet dataSet = new BarDataSet(yVals, "");
             dataSet.setColor(0x80FFFFFF);
-            dataSet.setDrawHighlightIndicators(false);
+            dataSet.setHighLightAlpha(0);
             barData = new CombinedData(xVals);
-            CandleData candleData = new CandleData(xVals, dataSet);
-            if (!max) {
-                dataSet = new CandleDataSet(yValsLow, "舒张压");
-                dataSet.setColor(0x80FFFFFF);
-                dataSet.setDrawHighlightIndicators(false);
-                candleData.addDataSet(dataSet);
-            }
+            BarData candleData = new BarData(xVals, dataSet);
             barData.setData(candleData);
-            ScatterDataSet scatterDataSet = new ScatterDataSet(rateYVals, "心率");
+            ScatterDataSet scatterDataSet = new ScatterDataSet(rateYVals, "");
             scatterDataSet.setScatterShape(ScatterChart.ScatterShape.CIRCLE);
             scatterDataSet.setScatterShapeSize(10);
             scatterDataSet.setColor(0xFFFF0000);
@@ -332,16 +312,16 @@ public class BloodPressureHistoryFragment extends BaseFragment implements RadioG
             if (barData.getYValCount() > 0) {
                 barChart.setData(barData);
             } else {
-                barChart.setNoDataText("您还没有测量过血压");
+                barChart.setNoDataText("您还没有测量过血氧");
             }
-            BPCombineRender renderer = new BPCombineRender();
+            SPOCombineRender renderer = new SPOCombineRender();
             barChart.setRenderer(renderer);
             renderer.initBuffers();
             barChart.invalidate();
             barChart.animateY(500);
             progressBar.setVisibility(View.GONE);
-            ArrayList<BPChartResponse.ChartTotal> total = dataResponse.total;
-            totalTimes.setText(String.format("累计%d次", total.isEmpty() ? 0 : total.get(0).totalltimes));
+            ArrayList<OxygenSaturationChartResponse.ChartTotal> total = dataResponse.total;
+            totalTimes.setText(String.format("累计%d次", total.isEmpty() ? 0 : total.get(0).totallTimes));
             selectedDate.setText(String.format("%s~%s", startDate, endDate));
         }
 
@@ -356,7 +336,7 @@ public class BloodPressureHistoryFragment extends BaseFragment implements RadioG
             if (null == dataResponse) {
                 working = true;
                 barChart.clear();
-                IRequester.getInstance().bloodChartData(bus, startDate, endDate);
+                IRequester.getInstance().spoChartData(bus, startDate, endDate);
             } else if (null == barData) {
                 createData();
             } else {
@@ -383,16 +363,7 @@ public class BloodPressureHistoryFragment extends BaseFragment implements RadioG
 
         @Override
         public void refreshContent(Entry e, Highlight highlight) {
-            BPChartResponse.ChartItem item = curProvider.dataResponse.chart.get(e.getXIndex());
-            if (curProvider.max) {
-                sys.setText(getString(R.string.sys_format, (int) item.systolicMax));
-                dia.setText(getString(R.string.dia_format, (int) item.diastolicMax));
-                pul.setText(getString(R.string.pul_format, (int) item.heartRateMax));
-            } else {
-                sys.setText(String.format("收缩压:%s~%s", item.systolicMin, item.systolicMax));
-                dia.setText(String.format("舒张压:%s~%s", item.diastolicMin, item.diastolicMax));
-                pul.setText(getString(R.string.pul_format, (int) item.heartRateAvg));
-            }
+            OxygenSaturationChartResponse.ChartItem item = curProvider.dataResponse.chart.get(e.getXIndex());
         }
 
         @Override
@@ -412,9 +383,9 @@ public class BloodPressureHistoryFragment extends BaseFragment implements RadioG
         }
     }
 
-    private class BPCombineRender extends CombinedChartRenderer {
+    private class SPOCombineRender extends CombinedChartRenderer {
 
-        public BPCombineRender() {
+        public SPOCombineRender() {
             super(barChart, barChart.getAnimator(), barChart.getViewPortHandler());
         }
 
@@ -429,7 +400,7 @@ public class BloodPressureHistoryFragment extends BaseFragment implements RadioG
 
                 switch (order) {
                     case BAR:
-                        if (chart.getBarData() != null) mRenderers.add(new BarChartRenderer(chart, animator, viewPortHandler));
+                        if (chart.getBarData() != null) mRenderers.add(new OxygenRender());
                         break;
                     case BUBBLE:
                         if (chart.getBubbleData() != null) mRenderers.add(new BubbleChartRenderer(chart, animator, viewPortHandler));
@@ -438,7 +409,7 @@ public class BloodPressureHistoryFragment extends BaseFragment implements RadioG
                         if (chart.getLineData() != null) mRenderers.add(new LineChartRenderer(chart, animator, viewPortHandler));
                         break;
                     case CANDLE:
-                        if (chart.getCandleData() != null) mRenderers.add(new BPRender());
+                        if (chart.getCandleData() != null) mRenderers.add(new CandleStickChartRenderer(chart, animator, viewPortHandler));
                         break;
                     case SCATTER:
                         if (chart.getScatterData() != null) mRenderers.add(new BPScatterRender());
@@ -448,102 +419,6 @@ public class BloodPressureHistoryFragment extends BaseFragment implements RadioG
         }
     }
 
-    private class BPRender extends CandleStickChartRenderer {
-        int[] setDrawables = {R.drawable.high_pressure, R.drawable.low_pressure};
-        private float[] mBodyBuffers = new float[4];
-        private Drawable[] drawables = new Drawable[setDrawables.length];
-
-
-        public BPRender() {
-            super(barChart, barChart.getAnimator(), barChart.getViewPortHandler());
-            for (int i = 0; i < setDrawables.length; i++) {
-                drawables[i] = ResourcesCompat.getDrawable(getResources(), setDrawables[i], getActivity().getTheme());
-            }
-        }
-
-        @Override
-        protected void drawDataSet(Canvas c, ICandleDataSet dataSet) {
-
-            Transformer trans = mChart.getTransformer(dataSet.getAxisDependency());
-
-            float phaseX = mAnimator.getPhaseX();
-            float phaseY = mAnimator.getPhaseY();
-            float barSpace = dataSet.getBarSpace();
-            boolean showCandleBar = dataSet.getShowCandleBar();
-
-            int minx = Math.max(mMinX, 0);
-            int maxx = Math.min(mMaxX + 1, dataSet.getEntryCount());
-
-            mRenderPaint.setStrokeWidth(dataSet.getShadowWidth());
-
-            // draw the body
-            for (int j = minx,
-                 count = (int) Math.ceil((maxx - minx) * phaseX + (float) minx); j < count; j++) {
-
-                // get the entry
-                CandleEntry e = dataSet.getEntryForIndex(j);
-
-                final int xIndex = e.getXIndex();
-
-                if (xIndex < minx || xIndex >= maxx) continue;
-
-                final float open = e.getOpen();
-                final float close = e.getClose();
-                final float high = e.getHigh();
-                final float low = e.getLow();
-
-                if (showCandleBar) {
-                    // calculate the body
-                    mBodyBuffers[0] = xIndex - 0.5f + barSpace;
-                    mBodyBuffers[1] = close * phaseY;
-                    mBodyBuffers[2] = (xIndex + 0.5f - barSpace);
-                    mBodyBuffers[3] = open * phaseY;
-                    trans.pointValuesToPixel(mBodyBuffers);
-                    int index = mChart.getData().getIndexOfDataSet(dataSet);
-                    int intrinsicWidth = drawables[index].getIntrinsicWidth();
-                    float width = mBodyBuffers[2] - mBodyBuffers[0];
-                    if (width > intrinsicWidth) {
-                        mBodyBuffers[0] += (width - intrinsicWidth) / 2;
-                        mBodyBuffers[2] -= (width - intrinsicWidth) / 2;
-                    }
-                    // draw body differently for increasing and decreasing entry
-                    if (open > close) { // decreasing
-
-                        if (dataSet.getDecreasingColor() == ColorTemplate.COLOR_NONE) {
-                            mRenderPaint.setColor(dataSet.getColor(j));
-                        } else {
-                            mRenderPaint.setColor(dataSet.getDecreasingColor());
-                        }
-                        mRenderPaint.setStyle(dataSet.getDecreasingPaintStyle());
-                        c.drawRect(mBodyBuffers[0], mBodyBuffers[3], mBodyBuffers[2], mBodyBuffers[1], mRenderPaint);
-                        int left = (int) (mBodyBuffers[0] + (mBodyBuffers[2] - mBodyBuffers[0]) / 2 - intrinsicWidth / 2);
-                        int top = (int) (mBodyBuffers[3] - drawables[index].getIntrinsicHeight() / 2);
-                        drawables[index].setBounds(left, top, left + intrinsicWidth, top + drawables[index].getIntrinsicHeight());
-                        drawables[index].draw(c);
-                        top = (int) (mBodyBuffers[1] - drawables[index].getIntrinsicHeight() / 2);
-                        if (2 == mChart.getData().getDataSetCount()) index = 1;
-                        drawables[index].setBounds(left, top, left + intrinsicWidth, top + drawables[index].getIntrinsicHeight());
-                        drawables[index].draw(c);
-                    } else if (open < close) {
-                        if (dataSet.getIncreasingColor() == ColorTemplate.COLOR_NONE) {
-                            mRenderPaint.setColor(dataSet.getColor(j));
-                        } else {
-                            mRenderPaint.setColor(dataSet.getIncreasingColor());
-                        }
-                        mRenderPaint.setStyle(dataSet.getIncreasingPaintStyle());
-                        c.drawRect(mBodyBuffers[0], mBodyBuffers[1], mBodyBuffers[2], mBodyBuffers[3], mRenderPaint);
-                    } else { // equal values
-                        if (dataSet.getNeutralColor() == ColorTemplate.COLOR_NONE) {
-                            mRenderPaint.setColor(dataSet.getColor(j));
-                        } else {
-                            mRenderPaint.setColor(dataSet.getNeutralColor());
-                        }
-                        c.drawLine(mBodyBuffers[0], mBodyBuffers[1], mBodyBuffers[2], mBodyBuffers[3], mRenderPaint);
-                    }
-                }
-            }
-        }
-    }
 
     private class BPScatterRender extends ScatterChartRenderer {
         int width, height;
@@ -577,5 +452,82 @@ public class BloodPressureHistoryFragment extends BaseFragment implements RadioG
         }
     }
 
+    private class OxygenRender extends BarChartRenderer {
+        int width;
+        private Drawable drawable;
+
+        public OxygenRender() {
+            super(barChart, barChart.getAnimator(), barChart.getViewPortHandler());
+            drawable = ResourcesCompat.getDrawable(getResources(), R.drawable.oxygen_bar, getActivity().getTheme());
+            width = drawable.getIntrinsicWidth();
+        }
+
+        @Override
+        protected void drawDataSet(Canvas c, IBarDataSet dataSet, int index) {
+            Transformer trans = mChart.getTransformer(dataSet.getAxisDependency());
+            mShadowPaint.setColor(dataSet.getBarShadowColor());
+            float phaseX = mAnimator.getPhaseX();
+            float phaseY = mAnimator.getPhaseY();
+            // initialize the buffer
+            BarBuffer buffer = mBarBuffers[index];
+            buffer.setPhases(phaseX, phaseY);
+            buffer.setBarSpace(dataSet.getBarSpace());
+            buffer.setDataSet(index);
+            buffer.setInverted(mChart.isInverted(dataSet.getAxisDependency()));
+            buffer.feed(dataSet);
+            trans.pointValuesToPixel(buffer.buffer);
+
+            // draw the bar shadow before the values
+            if (mChart.isDrawBarShadowEnabled()) {
+
+                for (int j = 0; j < buffer.size(); j += 4) {
+
+                    if (!mViewPortHandler.isInBoundsLeft(buffer.buffer[j + 2])) continue;
+
+                    if (!mViewPortHandler.isInBoundsRight(buffer.buffer[j])) break;
+
+                    c.drawRect(buffer.buffer[j], mViewPortHandler.contentTop(), buffer.buffer[j + 2], mViewPortHandler.contentBottom(), mShadowPaint);
+                }
+            }
+
+            // if multiple colors
+            if (dataSet.getColors().size() > 1) {
+
+                for (int j = 0; j < buffer.size(); j += 4) {
+
+                    if (!mViewPortHandler.isInBoundsLeft(buffer.buffer[j + 2])) continue;
+
+                    if (!mViewPortHandler.isInBoundsRight(buffer.buffer[j])) break;
+
+                    // Set the color for the currently drawn value. If the index
+                    // is
+                    // out of bounds, reuse colors.
+                    mRenderPaint.setColor(dataSet.getColor(j / 4));
+//                    c.drawRect(buffer.buffer[j], buffer.buffer[j + 1], buffer.buffer[j + 2], buffer.buffer[j + 3], mRenderPaint);
+                    drawable.setBounds((int) buffer.buffer[j], (int) buffer.buffer[j + 1], (int) buffer.buffer[j + 2], (int) buffer.buffer[j + 3]);
+                    drawable.draw(c);
+                }
+            } else {
+
+                mRenderPaint.setColor(dataSet.getColor());
+
+                for (int j = 0; j < buffer.size(); j += 4) {
+
+                    if (!mViewPortHandler.isInBoundsLeft(buffer.buffer[j + 2])) continue;
+
+                    if (!mViewPortHandler.isInBoundsRight(buffer.buffer[j])) break;
+
+//                    c.drawRect(buffer.buffer[j], buffer.buffer[j + 1], buffer.buffer[j + 2], buffer.buffer[j + 3], mRenderPaint);
+                    float v = buffer.buffer[j + 2] - buffer.buffer[j];
+                    if (v > width) {
+                        buffer.buffer[j] += (v - width) / 2;
+                        buffer.buffer[j + 2] -= (v - width) / 2;
+                    }
+                    drawable.setBounds((int) buffer.buffer[j], (int) buffer.buffer[j + 1], (int) buffer.buffer[j + 2], (int) buffer.buffer[j + 3]);
+                    drawable.draw(c);
+                }
+            }
+        }
+    }
 
 }

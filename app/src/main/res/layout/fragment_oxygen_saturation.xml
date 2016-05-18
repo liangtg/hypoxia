@@ -9,7 +9,7 @@
         android:id="@+id/anchor1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorSecond"
+        android:background="#9DCB83"
         android:orientation="vertical">
 
         <LinearLayout
@@ -34,10 +34,10 @@
                 android:layout_weight="1" />
 
             <TextView
-                android:id="@+id/total_time"
+                android:id="@+id/total_times"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="累计125分钟"
+                android:text="累计4次"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                 android:textColor="?android:textColorPrimaryInverse" />
         </LinearLayout>
@@ -54,16 +54,33 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="时长"
+                android:drawablePadding="@dimen/spacing_normal"
+                android:drawableRight="@drawable/oxygen_bar"
+                android:paddingRight="@dimen/spacing_normal"
+                android:text="血氧饱和度"
                 android:textColor="?android:textColorPrimaryInverse" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:drawableLeft="@drawable/hypoxia_bar"
                 android:drawablePadding="@dimen/spacing_normal"
-                android:paddingLeft="@dimen/spacing_normal"
-                android:text="分钟"
+                android:paddingRight="@dimen/spacing_normal"
+                android:text="(%)"
+                android:textColor="?android:textColorPrimaryInverse" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawablePadding="@dimen/spacing_normal"
+                android:drawableRight="@drawable/heart"
+                android:paddingRight="@dimen/spacing_normal"
+                android:text="心率"
+                android:textColor="?android:textColorPrimaryInverse" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="分钟/次"
                 android:textColor="?android:textColorPrimaryInverse" />
         </LinearLayout>
 
@@ -72,7 +89,7 @@
             android:layout_height="wrap_content"
             android:paddingBottom="@dimen/spacing_normal">
 
-            <com.github.mikephil.charting.charts.BarChart
+            <com.github.mikephil.charting.charts.CombinedChart
                 android:id="@+id/chart"
                 app:layout_aspectRatio="200%"
                 app:layout_widthPercent="100%" />
@@ -98,7 +115,7 @@
             android:id="@+id/day"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/tab_bg"
+            android:background="@drawable/tab_bg3"
             android:button="@null"
             android:gravity="center"
             android:minWidth="72dp"
@@ -119,7 +136,7 @@
             android:id="@+id/week"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/tab_bg"
+            android:background="@drawable/tab_bg3"
             android:button="@null"
             android:gravity="center"
             android:minWidth="72dp"
@@ -140,7 +157,7 @@
             android:id="@+id/month"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/tab_bg"
+            android:background="@drawable/tab_bg3"
             android:button="@null"
             android:gravity="center"
             android:minWidth="72dp"
@@ -166,7 +183,7 @@
 
     <ProgressBar
         android:id="@+id/progress"
-        style="?android:progressBarStyleLargeInverse"
+        style="?android:progressBarStyleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true" />

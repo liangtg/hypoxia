@@ -122,4 +122,41 @@ public class IRequester extends DataRequester {
         return callback;
     }
 
+    public DataRequest spoChartData(Bus bus, String start, String end) {
+        GsonCallback callback = new GsonCallback(bus, OxygenSaturationChartResponse.class);
+        FormBody.Builder builder = new FormBody.Builder();
+        builder.add("user_id", User.getUserInfoExt().user_id);
+        builder.add("starttime", start);
+        builder.add("endtime", end);
+        enque(postBuilder("user/SpO2Chart?1", builder.build()).build(), callback);
+        return callback;
+    }
+
+    public DataRequest spoData(Bus bus, int page) {
+        GsonCallback callback = new GsonCallback(bus, OxygenSaturationHistoryResponse.class);
+        FormBody.Builder builder = new FormBody.Builder();
+        builder.add("pageno", String.valueOf(page));
+        builder.add("user_id", User.getUserInfoExt().user_id);
+        enque(postBuilder("user/SpO2Data?1", builder.build()).build(), callback);
+        return callback;
+    }
+
+    public DataRequest addSPO(Bus bus, String start, int spo, int pul) {
+        GsonCallback callback = new GsonCallback(bus, BaseResponse.class);
+        FormBody.Builder builder = new FormBody.Builder();
+        builder.add("user_id", User.getUserInfoExt().user_id);
+        builder.add("time_start", start);
+        builder.add("time_end", start);
+//        {"Time_Test":"2016-04-06 15:38:47","O2p":97,HeartRate":64}
+        JSONObject obj = new JSONObject();
+        try {
+            obj.putOpt("Time_Test", start);
+            obj.putOpt("O2p", spo);
+            obj.putOpt("HeartRate", pul);
+        } catch (JSONException e) {
+        }
+        builder.add("content", obj.toString());
+        enque(postBuilder("user/uploadspo2?1", builder.build()).build(), callback);
+        return callback;
+    }
 }

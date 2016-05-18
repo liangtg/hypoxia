@@ -12,6 +12,9 @@
         android:id="@+id/add_bp"
         android:title="添加血压数据" />
     <item
+        android:id="@+id/add_spo"
+        android:title="添加血氧数据" />
+    <item
         android:id="@+id/sign_out"
         android:title="退出账号" />
 </menu>

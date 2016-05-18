@@ -60,6 +60,9 @@ public class MainActivity extends BaseActivity {
         } else if (R.id.add_bp == id) {
             gotoActivity(AddBPActivity.class);
             return true;
+        } else if (R.id.add_spo == id) {
+            gotoActivity(AddSPOActivity.class);
+            return true;
         } else if (R.id.sign_out == id) {
             User.signOut();
             recreate();
@@ -76,6 +79,7 @@ public class MainActivity extends BaseActivity {
             get(R.id.hypoxia).setOnClickListener(this);
             get(R.id.ecg).setOnClickListener(this);
             get(R.id.blood).setOnClickListener(this);
+            get(R.id.spo2).setOnClickListener(this);
             userInfo = get(R.id.user_info);
             userName = get(R.id.user_name);
         }
@@ -95,6 +99,8 @@ public class MainActivity extends BaseActivity {
                 gotoActivity(HypoxiaActivity.class);
             } else if (R.id.blood == id) {
                 gotoActivity(BloodPressureActivity.class);
+            } else if (R.id.spo2 == id) {
+                gotoActivity(OxygenSaturationActivity.class);
             } else if (R.id.ecg == id) {
                 try {
                     PackageInfo info = getPackageManager().getPackageInfo("com.hes.hpmobile", PackageManager.GET_ACTIVITIES);

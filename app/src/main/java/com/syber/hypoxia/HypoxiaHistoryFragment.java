@@ -8,6 +8,8 @@ import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +19,7 @@ import android.widget.TextView;
 
 import com.github.mikephil.charting.buffer.BarBuffer;
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
@@ -105,6 +108,9 @@ public class HypoxiaHistoryFragment extends BaseFragment implements RadioGroup.O
 
     private void initChart() {
         barChart.setNoDataText("");
+        barChart.getPaint(Chart.PAINT_INFO).setTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
+                16,
+                getResources().getDisplayMetrics()));
         barChart.getLegend().setEnabled(false);
         barChart.getAxisRight().setEnabled(false);
         barChart.setRenderer(new HypoxiaRender());
@@ -135,15 +141,20 @@ public class HypoxiaHistoryFragment extends BaseFragment implements RadioGroup.O
             data.addAll(event.list);
             historyAdapter.notifyItemRangeInserted(old, event.list.size());
             page++;
+            if (!event.list.isEmpty()) nextDelayRequest();
         } else {
-            barChart.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if (null == getView() || getActivity().isFinishing()) return;
-                    IRequester.getInstance().hypoxiaData(bus, page);
-                }
-            }, 500);
+            nextDelayRequest();
         }
+    }
+
+    private void nextDelayRequest() {
+        barChart.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (null == getView() || getActivity().isFinishing()) return;
+                IRequester.getInstance().hypoxiaData(bus, page);
+            }
+        }, 500);
     }
 
     @Override
@@ -260,11 +271,12 @@ public class HypoxiaHistoryFragment extends BaseFragment implements RadioGroup.O
             for (int i = 0; i < dataResponse.chart.size(); i++) {
                 HypoxiaChartResponse.ChartItem item = dataResponse.chart.get(i);
                 xVals.add(item.key);
+                if (TextUtils.isEmpty(item.totallength)) item.totallength = "0";
                 yVals.add(new BarEntry(Float.valueOf(item.totallength), i));
             }
             BarDataSet dataSet = new BarDataSet(yVals, "时长/分钟");
             dataSet.setColor(0xFFFEA846);
-            dataSet.setHighLightColor(0xFFFEA846);
+            dataSet.setHighLightAlpha(0);
             barData = new BarData(xVals, dataSet);
             barData.setDrawValues(false);
             resetData();
@@ -274,11 +286,16 @@ public class HypoxiaHistoryFragment extends BaseFragment implements RadioGroup.O
             progressBar.setVisibility(View.GONE);
             barChart.clear();
             barChart.resetTracking();
-            barChart.setData(barData);
+            if (barData.getYValCount() <= 0) {
+                barChart.setNoDataText("您还没有进行过训练");
+            } else {
+                barChart.setData(barData);
+            }
             barChart.animateY(500);
             barChart.invalidate();
             selectedDate.setText(String.format("%s~%s", startDate, endDate));
-            totalTime.setText(String.format("累计%s分钟", dataResponse.total.get(0).totallength));
+            ArrayList<HypoxiaChartResponse.ChartTotal> total = dataResponse.total;
+            totalTime.setText(String.format("累计%s分钟", total.isEmpty() ? "0" : total.get(0).totallength));
         }
 
         public void updateChart() {

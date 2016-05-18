@@ -15,10 +15,12 @@ public class HypoxiaChartResponse extends BaseResponse {
     public static class ChartItem {
         @SerializedName("Key")
         public String key;
+        @SerializedName("TotalLength")
         public String totallength;
     }
 
     public static class ChartTotal {
+        @SerializedName("TotalLength")
         public String totallength;
         public String totalltimes;
     }
