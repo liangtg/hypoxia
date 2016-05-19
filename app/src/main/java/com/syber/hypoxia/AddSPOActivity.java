@@ -1,8 +1,10 @@
 package com.syber.hypoxia;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,15 +26,25 @@ import java.util.Locale;
 import java.util.Random;
 
 public class AddSPOActivity extends BaseActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
+    private static final String KEY_SPO = "SPO";
+    private static final String KEY_RATE = "RATE";
+    private static final String KEY_EDITABLE = "EDITABLE";
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     ProgressDialog progressDialog;
-
     Calendar calendar = Calendar.getInstance(Locale.CHINA);
     Calendar selectedDate = Calendar.getInstance(Locale.CHINA);
     ViewHolder viewHolder;
     private int spo, pul;
     private Bus bus = new Bus();
 
+    public static void fromMeasure(Activity activity, int spo, int rate) {
+        Intent intent = new Intent(activity, AddSPOActivity.class);
+        intent.putExtra(KEY_EDITABLE, false);
+        intent.putExtra(KEY_SPO, spo);
+        intent.putExtra(KEY_RATE, rate);
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        activity.startActivity(intent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,10 +87,13 @@ public class AddSPOActivity extends BaseActivity implements DatePickerDialog.OnD
         if (isFinishing()) return;
         progressDialog.dismiss();
         showToast("添加" + (event.isSuccess() ? "成功" : "失败"));
+        if (!viewHolder.edit && event.isSuccess()) finish();
     }
 
     public void onStartTimeClicked(View view) {
-        new DatePickerDialog(this, this, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
+        if (viewHolder.edit) {
+            new DatePickerDialog(this, this, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
+        }
     }
 
     @Override
@@ -92,13 +107,13 @@ public class AddSPOActivity extends BaseActivity implements DatePickerDialog.OnD
         selectedDate.set(Calendar.HOUR_OF_DAY, hourOfDay);
         selectedDate.set(Calendar.MINUTE, minute);
         calendar.setTimeInMillis(selectedDate.getTimeInMillis());
-        viewHolder.startTime.setText(viewHolder.sdf.format(calendar.getTime()));
+        viewHolder.startTime.setText(sdf.format(calendar.getTime()));
     }
 
 
     class ViewHolder extends BaseViewHolder {
         TextView startTime, spoText, pulText;
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        boolean edit = getIntent().getBooleanExtra(KEY_EDITABLE, true);
 
         public ViewHolder(View view) {
             super(view);
@@ -107,8 +122,15 @@ public class AddSPOActivity extends BaseActivity implements DatePickerDialog.OnD
             pulText = get(R.id.pul);
             startTime.setText(sdf.format(calendar.getTime()));
             Random random = new Random();
-            spo = random.nextInt(10) + 80;
-            pul = random.nextInt(20) + 70;
+            if (edit) {
+                spo = random.nextInt(10) + 80;
+                pul = random.nextInt(20) + 70;
+            } else {
+                spo = getIntent().getIntExtra(KEY_SPO, 0);
+                pul = getIntent().getIntExtra(KEY_RATE, 0);
+                spoText.setEnabled(false);
+                pulText.setEnabled(false);
+            }
             spoText.setText("" + spo);
             pulText.setText("" + pul);
         }

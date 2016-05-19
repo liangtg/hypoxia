@@ -1,11 +1,13 @@
 package com.syber.hypoxia;
 
+import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.DatePicker;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
@@ -21,11 +23,12 @@ import java.util.Calendar;
 import java.util.Locale;
 import java.util.Random;
 
-public class AddBPActivity extends BaseActivity implements TimePickerDialog.OnTimeSetListener {
+public class AddBPActivity extends BaseActivity implements TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener {
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     ProgressDialog progressDialog;
 
     Calendar calendar = Calendar.getInstance(Locale.CHINA);
+    Calendar selectedDate = Calendar.getInstance(Locale.CHINA);
     ViewHolder viewHolder;
     private int sys, dia, pul;
     private Bus bus = new Bus();
@@ -75,14 +78,15 @@ public class AddBPActivity extends BaseActivity implements TimePickerDialog.OnTi
     }
 
     public void onStartTimeClicked(View view) {
-        new TimePickerDialog(this, this, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show();
+        new DatePickerDialog(this, this, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
     }
 
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-        viewHolder.startTime.setText(String.format("%02d:%02d", hourOfDay, minute));
-        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-        calendar.set(Calendar.MINUTE, minute);
+        selectedDate.set(Calendar.HOUR_OF_DAY, hourOfDay);
+        selectedDate.set(Calendar.MINUTE, minute);
+        calendar.setTimeInMillis(selectedDate.getTimeInMillis());
+        viewHolder.startTime.setText(sdf.format(calendar.getTime()));
     }
 
     public void onDiaClicked(View view) {
@@ -94,6 +98,12 @@ public class AddBPActivity extends BaseActivity implements TimePickerDialog.OnTi
     public void onPulClicked(View view) {
     }
 
+    @Override
+    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+        selectedDate.set(year, monthOfYear, dayOfMonth);
+        new TimePickerDialog(this, this, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show();
+    }
+
     class ViewHolder extends BaseViewHolder {
         TextView startTime, sysText, diaText, pulText;
 
@@ -103,7 +113,6 @@ public class AddBPActivity extends BaseActivity implements TimePickerDialog.OnTi
             sysText = get(R.id.sys);
             diaText = get(R.id.dia);
             pulText = get(R.id.pul);
-            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
             startTime.setText(sdf.format(calendar.getTime()));
             Random random = new Random();
             sys = random.nextInt(10) + 120;

@@ -1,5 +1,6 @@
 package com.syber.hypoxia;
 
+import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
@@ -8,6 +9,7 @@ import android.support.v7.app.AlertDialog;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.DatePicker;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
@@ -22,12 +24,13 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
-public class AddTraingActivity extends BaseActivity implements TimePickerDialog.OnTimeSetListener {
+public class AddTraingActivity extends BaseActivity implements TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener {
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     ProgressDialog progressDialog;
 
     Calendar calendar = Calendar.getInstance(Locale.CHINA);
     Calendar start = Calendar.getInstance(), end = Calendar.getInstance();
+
     ViewHolder viewHolder;
     int traingMode = 0;
     private boolean startTime = true;
@@ -72,12 +75,12 @@ public class AddTraingActivity extends BaseActivity implements TimePickerDialog.
 
     public void onStartTimeClicked(View view) {
         startTime = true;
-        new TimePickerDialog(this, this, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show();
+        new DatePickerDialog(this, this, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
     }
 
     public void onEndTimeClicked(View view) {
         startTime = false;
-        new TimePickerDialog(this, this, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show();
+        new DatePickerDialog(this, this, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
     }
 
     public void onModeClicked(final View view) {
@@ -95,18 +98,24 @@ public class AddTraingActivity extends BaseActivity implements TimePickerDialog.
 
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+        calendar.set(Calendar.MINUTE, minute);
         if (startTime) {
-            viewHolder.startTime.setText(String.format("%02d:%02d", hourOfDay, minute));
-            start.set(Calendar.HOUR_OF_DAY, hourOfDay);
-            start.set(Calendar.MINUTE, minute);
+            start.setTimeInMillis(calendar.getTimeInMillis());
+            viewHolder.startTime.setText(sdf.format(start.getTime()));
         } else {
-            viewHolder.endTime.setText(String.format("%02d:%02d", hourOfDay, minute));
-            end.set(Calendar.HOUR_OF_DAY, hourOfDay);
-            end.set(Calendar.MINUTE, minute);
+            end.setTimeInMillis(calendar.getTimeInMillis());
+            viewHolder.endTime.setText(sdf.format(end.getTime()));
         }
         if (end.after(start)) {
             viewHolder.allTime.setText((end.getTimeInMillis() - start.getTimeInMillis()) / 1000 / 60 + "分钟");
         }
+    }
+
+    @Override
+    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+        calendar.set(year, monthOfYear, dayOfMonth);
+        new TimePickerDialog(this, this, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show();
     }
 
     class ViewHolder extends BaseViewHolder {
@@ -118,7 +127,6 @@ public class AddTraingActivity extends BaseActivity implements TimePickerDialog.
             endTime = get(R.id.end_time);
             allTime = get(R.id.all_time);
             mode = get(R.id.mode);
-            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
             startTime.setText(sdf.format(calendar.getTime()));
             end.add(Calendar.MINUTE, 20);
             endTime.setText(sdf.format(end.getTime()));
