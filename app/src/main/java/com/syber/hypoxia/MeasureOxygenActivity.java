@@ -204,6 +204,7 @@ public class MeasureOxygenActivity extends BaseActivity implements BluetoothAdap
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
             Logger.d("onCharacteristicChanged" + ByteUtil.toHex(characteristic.getValue()));
+            if (isFinishing()) return;
             byte[] value = characteristic.getValue();
             if (value.length == 6 && value[2] == 3 && value[4] != 0) {
                 AddSPOActivity.fromMeasure(MeasureOxygenActivity.this, value[3] & 0xFF, value[4] & 0xFF);

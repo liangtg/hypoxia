@@ -242,7 +242,7 @@ public class HypoxiaHistoryFragment extends BaseFragment implements RadioGroup.O
             } else if (curProvider == this) {
                 showToast("数据获取失败");
                 progressBar.setVisibility(View.GONE);
-                fillData();
+//                fillData();
             }
         }
 
@@ -270,7 +270,11 @@ public class HypoxiaHistoryFragment extends BaseFragment implements RadioGroup.O
             ArrayList<BarEntry> yVals = new ArrayList<>();
             for (int i = 0; i < dataResponse.chart.size(); i++) {
                 HypoxiaChartResponse.ChartItem item = dataResponse.chart.get(i);
-                xVals.add(item.key);
+                if (this == dayProvider) {
+                    xVals.add(item.key.substring(11));
+                } else {
+                    xVals.add(item.key);
+                }
                 if (TextUtils.isEmpty(item.totallength)) item.totallength = "0";
                 yVals.add(new BarEntry(Float.valueOf(item.totallength), i));
             }

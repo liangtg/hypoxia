@@ -252,8 +252,8 @@ public class BloodPressureHistoryFragment extends BaseFragment implements RadioG
             } else if (curProvider == this) {
                 progressBar.setVisibility(View.GONE);
                 showToast("数据获取失败");
-                fillData();
-                createData();
+//                fillData();
+//                createData();
             }
         }
 
@@ -290,8 +290,8 @@ public class BloodPressureHistoryFragment extends BaseFragment implements RadioG
             ArrayList<CandleEntry> yValsLow = new ArrayList<>();
             for (int i = 0; i < dataResponse.chart.size(); i++) {
                 BPChartResponse.ChartItem item = dataResponse.chart.get(i);
-                xVals.add(item.key);
                 int sys, dia;
+                xVals.add(item.key);
                 if (max) {
                     rateYVals.add(new Entry(item.heartRateMax, i));
                     sys = item.systolicMax;

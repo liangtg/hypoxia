@@ -59,6 +59,7 @@ public class IRequester extends DataRequester {
         builder.add("user_id", User.getUserInfoExt().user_id);
         builder.add("starttime", start);
         builder.add("endtime", end);
+//        builder.add("orderby", "time_report asc");
         enque(postBuilder("user/trainingchart?1", builder.build()).build(), callback);
         return callback;
     }
@@ -79,6 +80,7 @@ public class IRequester extends DataRequester {
         builder.add("user_id", User.getUserInfoExt().user_id);
         builder.add("starttime", start);
         builder.add("endtime", end);
+//        builder.add("orderby", "time_report asc");
         enque(postBuilder("user/pressurechart?1", builder.build()).build(), callback);
         return callback;
     }
@@ -128,6 +130,7 @@ public class IRequester extends DataRequester {
         builder.add("user_id", User.getUserInfoExt().user_id);
         builder.add("starttime", start);
         builder.add("endtime", end);
+//        builder.add("orderby", "time_report asc");
         enque(postBuilder("user/SpO2Chart?1", builder.build()).build(), callback);
         return callback;
     }

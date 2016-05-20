@@ -6,13 +6,17 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.res.ResourcesCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.ProgressBar;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -62,7 +66,8 @@ import java.util.Random;
 /**
  * Created by liangtg on 16-5-18.
  */
-public class OxygenSaturationFragment extends BaseFragment implements RadioGroup.OnCheckedChangeListener {
+public class OxygenSaturationFragment extends BaseFragment implements RadioGroup.OnCheckedChangeListener, View.OnClickListener {
+    View actionView;
     private CombinedChart barChart;
     private TextView selectedDate, totalTimes;
     private RecyclerView allHistory;
@@ -79,6 +84,7 @@ public class OxygenSaturationFragment extends BaseFragment implements RadioGroup
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
         Calendar cal = Calendar.getInstance(Locale.CHINA);
         day = sdf.format(cal.getTime());
@@ -95,6 +101,22 @@ public class OxygenSaturationFragment extends BaseFragment implements RadioGroup
         monthProvider = new ChartDataProvider(monthStart, monthEnd, false);
         curProvider = dayProvider;
         bus.register(this);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.refresh, menu);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        actionView = MenuItemCompat.getActionView(menu.findItem(R.id.refresh));
+        if (curProvider.working) {
+            actionView.startAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.menu_progress));
+        } else {
+            actionView.clearAnimation();
+        }
+        actionView.setOnClickListener(this);
     }
 
     @Nullable
@@ -119,6 +141,12 @@ public class OxygenSaturationFragment extends BaseFragment implements RadioGroup
         initChart();
         IRequester.getInstance().spoData(bus, page);
         curProvider.updateChart();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        curProvider.refresh();
     }
 
     private void initChart() {
@@ -187,6 +215,15 @@ public class OxygenSaturationFragment extends BaseFragment implements RadioGroup
         curProvider.updateChart();
     }
 
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        if (R.id.refresh == id) {
+            curProvider.refresh();
+            v.startAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.menu_progress));
+        }
+    }
+
     private class HistoryAdapter extends RecyclerView.Adapter<AdapterHolder> {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
         SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.CHINA);
@@ -244,10 +281,11 @@ public class OxygenSaturationFragment extends BaseFragment implements RadioGroup
                 dataResponse = event;
                 if (curProvider == this) createData();
             } else if (curProvider == this) {
+                actionView.clearAnimation();
                 progressBar.setVisibility(View.GONE);
                 showToast("数据获取失败");
-                fillData();
-                createData();
+//                fillData();
+//                createData();
             }
         }
 
@@ -271,6 +309,12 @@ public class OxygenSaturationFragment extends BaseFragment implements RadioGroup
         }
 
         public void refresh() {
+            progressBar.setVisibility(View.VISIBLE);
+            if (working) {
+                return;
+            }
+            working = true;
+            IRequester.getInstance().spoChartData(bus, startDate, endDate);
         }
 
         void createData() {
@@ -279,12 +323,12 @@ public class OxygenSaturationFragment extends BaseFragment implements RadioGroup
             ArrayList<BarEntry> yVals = new ArrayList<>();
             for (int i = 0; i < dataResponse.chart.size(); i++) {
                 OxygenSaturationChartResponse.ChartItem item = dataResponse.chart.get(i);
-                xVals.add(item.key);
-                int sys, dia;
                 if (max) {
+                    xVals.add(item.key.substring(11));
                     rateYVals.add(new Entry(item.heartRateMax, i));
                     yVals.add(new BarEntry(item.spO2Max, i));
                 } else {
+                    xVals.add(item.key);
                     yVals.add(new BarEntry(item.spO2Avg, i));
                     rateYVals.add(new Entry(item.heartRateAvg, i));
                 }
@@ -307,6 +351,7 @@ public class OxygenSaturationFragment extends BaseFragment implements RadioGroup
         }
 
         private void resetData() {
+            actionView.clearAnimation();
             barChart.clear();
             barChart.resetTracking();
             if (barData.getYValCount() > 0) {
