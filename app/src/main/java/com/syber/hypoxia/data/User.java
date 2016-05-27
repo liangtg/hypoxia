@@ -20,8 +20,12 @@ public class User {
     }
 
     public static void saveUser(SignInResponse response) {
-        PreferenceData.getInstance().edit().putString(KEY_USER, new Gson().toJson(response.userinfoExt)).commit();
         userInfoExt = response.userinfoExt;
+        if (null == userInfoExt) {
+            userInfoExt = new SignInResponse.UserInfoExt();
+            userInfoExt.user_id = response.userinfo.id;
+        }
+        PreferenceData.getInstance().edit().putString(KEY_USER, new Gson().toJson(userInfoExt)).commit();
     }
 
     public static boolean isSignIn() {

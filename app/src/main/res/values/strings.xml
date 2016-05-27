@@ -7,4 +7,8 @@
     <string name="sys_format">收缩压:%s</string>
     <string name="dia_format">舒张压:%s</string>
     <string name="pul_format">心率:%s</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="prompt_input_pass_again">请输入确认密码</string>
+    <string name="prompt_again_pwd_mismatch">两次密码不一致</string>
 </resources>

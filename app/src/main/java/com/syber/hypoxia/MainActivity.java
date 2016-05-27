@@ -31,6 +31,7 @@ public class MainActivity extends BaseActivity {
             gotoActivity(SignInActivity.class);
         }
         viewHolder = new ViewHolder();
+        gotoActivity(UpdateUserInfoActivity.class);
     }
 
     @Override

@@ -1,1 +1,1 @@
-include ':app', ':base', ':pgyer', ':mpchart'
+include ':app', ':base', ':pgyer', ':mpchart', ':tt','CropLibrary'

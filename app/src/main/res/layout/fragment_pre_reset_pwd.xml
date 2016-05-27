@@ -1,0 +1,142 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/spacing_double"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/spacing_double"
+        android:text="请填写一下信息,以便确认您的身份"
+        android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:divider="?dividerHorizontal"
+        android:orientation="vertical"
+        android:showDividers="middle">
+
+        <LinearLayout
+            android:id="@+id/user_name_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?selectableItemBackground"
+            android:clickable="true"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:minEms="4"
+                android:padding="@dimen/spacing_double"
+                android:text="姓\u2000\u2000名"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+
+            <EditText
+                android:id="@+id/user_name_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/spacing_double"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                android:textColor="?android:textColorSecondary" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/user_sex_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?selectableItemBackground"
+            android:clickable="true"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:minEms="4"
+                android:padding="@dimen/spacing_double"
+                android:text="性\u2000\u2000别"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+
+            <TextView
+                android:id="@+id/user_sex_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableRight="@drawable/arrow_r"
+                android:padding="@dimen/spacing_double"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                android:textColor="?android:textColorSecondary" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/user_height_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?selectableItemBackground"
+            android:clickable="true"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:minEms="4"
+                android:padding="@dimen/spacing_double"
+                android:text="身\u2000\u2000高"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+
+            <EditText
+                android:id="@+id/user_height_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/spacing_double"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                android:textColor="?android:textColorSecondary" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/user_weight_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?selectableItemBackground"
+            android:clickable="true"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:minEms="4"
+                android:padding="@dimen/spacing_double"
+                android:text="体\u2000\u2000重"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+
+            <EditText
+                android:id="@+id/user_weight_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/spacing_double"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                android:textColor="?android:textColorSecondary" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/spacing_double"
+        app:cardBackgroundColor="@color/colorPrimary">
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?selectableItemBackground"
+            android:text="下一步"
+            android:textColor="?android:textColorPrimaryInverse" />
+    </android.support.v7.widget.CardView>
+</LinearLayout>

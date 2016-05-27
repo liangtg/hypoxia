@@ -1,0 +1,178 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/spacing_double"
+    android:background="@android:color/white"
+    android:divider="?dividerHorizontal"
+    android:orientation="vertical"
+    android:showDividers="middle">
+
+    <LinearLayout
+        android:id="@+id/user_image_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?selectableItemBackground"
+        android:clickable="true"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:minEms="5"
+            android:padding="@dimen/spacing_double"
+            android:text="照片"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+
+        <ImageView
+            android:id="@+id/user_image"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:src="@android:drawable/sym_def_app_icon" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableRight="@drawable/arrow_r"
+            android:padding="@dimen/spacing_double"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+            android:textColor="?android:textColorSecondary" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/user_name_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?selectableItemBackground"
+        android:clickable="true"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:minEms="5"
+            android:padding="@dimen/spacing_double"
+            android:text="姓名"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+
+        <EditText
+            android:id="@+id/user_name_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableRight="@drawable/arrow_r"
+            android:inputType="text"
+            android:padding="@dimen/spacing_double"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+            android:textColor="?android:textColorSecondary" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/user_sex_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?selectableItemBackground"
+        android:clickable="true"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:minEms="5"
+            android:padding="@dimen/spacing_double"
+            android:text="性别"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+
+        <TextView
+            android:id="@+id/user_sex_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableRight="@drawable/arrow_r"
+            android:padding="@dimen/spacing_double"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+            android:textColor="?android:textColorSecondary" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/user_birthday_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?selectableItemBackground"
+        android:clickable="true"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:minEms="5"
+            android:padding="@dimen/spacing_double"
+            android:text="出生日期"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+
+        <TextView
+            android:id="@+id/user_birthday_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableRight="@drawable/arrow_r"
+            android:padding="@dimen/spacing_double"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+            android:textColor="?android:textColorSecondary" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/user_height_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?selectableItemBackground"
+        android:clickable="true"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:minEms="5"
+            android:padding="@dimen/spacing_double"
+            android:text="身高"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+
+        <TextView
+            android:id="@+id/user_height_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableRight="@drawable/arrow_r"
+            android:padding="@dimen/spacing_double"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+            android:textColor="?android:textColorSecondary" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/user_weight_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?selectableItemBackground"
+        android:clickable="true"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:minEms="5"
+            android:padding="@dimen/spacing_double"
+            android:text="体重"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+
+        <TextView
+            android:id="@+id/user_weight_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableRight="@drawable/arrow_r"
+            android:padding="@dimen/spacing_double"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+            android:textColor="?android:textColorSecondary" />
+    </LinearLayout>
+</LinearLayout>

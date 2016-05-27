@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -9,8 +8,113 @@
         android:id="@+id/anchor1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:divider="?dividerVertical"
+        android:dividerPadding="@dimen/spacing_normal"
+        android:orientation="horizontal"
+        android:showDividers="middle">
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="?selectableItemBackground"
+            android:text="添加记录"
+            android:textColor="@color/colorPrimary" />
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="?selectableItemBackground"
+            android:text="刷 新"
+            android:textColor="@color/colorPrimary" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/anchor1"
         android:background="#e98b8b"
         android:orientation="vertical">
+
+        <RadioGroup
+            android:id="@+id/date_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            android:checkedButton="@+id/day"
+            android:orientation="horizontal"
+            android:paddingTop="@dimen/spacing_normal">
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="2" />
+
+            <RadioButton
+                android:id="@+id/day"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/tab_bg2"
+                android:button="@null"
+                android:gravity="center"
+                android:minWidth="72dp"
+                android:paddingBottom="@dimen/spacing_normal"
+                android:paddingLeft="@dimen/spacing_double"
+                android:paddingRight="@dimen/spacing_double"
+                android:paddingTop="@dimen/spacing_normal"
+                android:text="日"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="@color/tab_text_inverse" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <RadioButton
+                android:id="@+id/week"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/tab_bg2"
+                android:button="@null"
+                android:gravity="center"
+                android:minWidth="72dp"
+                android:paddingBottom="@dimen/spacing_normal"
+                android:paddingLeft="@dimen/spacing_double"
+                android:paddingRight="@dimen/spacing_double"
+                android:paddingTop="@dimen/spacing_normal"
+                android:text="周"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="@color/tab_text_inverse" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <RadioButton
+                android:id="@+id/month"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/tab_bg2"
+                android:button="@null"
+                android:gravity="center"
+                android:minWidth="72dp"
+                android:paddingBottom="@dimen/spacing_normal"
+                android:paddingLeft="@dimen/spacing_double"
+                android:paddingRight="@dimen/spacing_double"
+                android:paddingTop="@dimen/spacing_normal"
+                android:text="月"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="@color/tab_text_inverse" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="2" />
+        </RadioGroup>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -104,104 +208,19 @@
 
         <android.support.percent.PercentFrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:paddingBottom="@dimen/spacing_normal">
 
             <com.github.mikephil.charting.charts.CombinedChart
                 android:id="@+id/chart"
-                app:layout_aspectRatio="200%"
-                app:layout_widthPercent="100%" />
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
         </android.support.percent.PercentFrameLayout>
     </LinearLayout>
 
-    <RadioGroup
-        android:id="@+id/date_group"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/anchor1"
-        android:background="@android:color/white"
-        android:checkedButton="@+id/day"
-        android:orientation="horizontal"
-        android:paddingBottom="@dimen/spacing_normal">
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="2" />
-
-        <RadioButton
-            android:id="@+id/day"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/tab_bg2"
-            android:button="@null"
-            android:gravity="center"
-            android:minWidth="72dp"
-            android:paddingBottom="@dimen/spacing_normal"
-            android:paddingLeft="@dimen/spacing_double"
-            android:paddingRight="@dimen/spacing_double"
-            android:paddingTop="@dimen/spacing_normal"
-            android:text="日"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:textColor="@color/tab_text_inverse" />
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
-
-        <RadioButton
-            android:id="@+id/week"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/tab_bg2"
-            android:button="@null"
-            android:gravity="center"
-            android:minWidth="72dp"
-            android:paddingBottom="@dimen/spacing_normal"
-            android:paddingLeft="@dimen/spacing_double"
-            android:paddingRight="@dimen/spacing_double"
-            android:paddingTop="@dimen/spacing_normal"
-            android:text="周"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:textColor="@color/tab_text_inverse" />
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
-
-        <RadioButton
-            android:id="@+id/month"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/tab_bg2"
-            android:button="@null"
-            android:gravity="center"
-            android:minWidth="72dp"
-            android:paddingBottom="@dimen/spacing_normal"
-            android:paddingLeft="@dimen/spacing_double"
-            android:paddingRight="@dimen/spacing_double"
-            android:paddingTop="@dimen/spacing_normal"
-            android:text="月"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:textColor="@color/tab_text_inverse" />
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="2" />
-    </RadioGroup>
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/all_history"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/date_group" />
-
     <ProgressBar
         android:id="@+id/progress"
-        style="?android:progressBarStyleLargeInverse"
+        style="?android:progressBarStyleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true" />

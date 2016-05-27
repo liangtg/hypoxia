@@ -20,7 +20,8 @@
             android:id="@+id/app_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -28,7 +29,7 @@
                 android:layout_gravity="center"
                 android:text="健康检测"
                 android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                android:textColor="?android:textColorPrimaryInverse" />
+                android:textColor="?android:textColorPrimary" />
         </android.support.v7.widget.Toolbar>
 
         <FrameLayout

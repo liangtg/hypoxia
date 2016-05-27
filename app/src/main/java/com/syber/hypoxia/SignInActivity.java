@@ -46,7 +46,7 @@ public class SignInActivity extends BaseActivity {
     @Subscribe
     public void withSignIn(SignInResponse event) {
         if (isFinishing()) return;
-        if (event.isSuccess() && null != event.userinfoExt) {
+        if (event.isSuccess()) {
             User.saveUser(event);
             finish();
         } else {
@@ -84,13 +84,22 @@ public class SignInActivity extends BaseActivity {
             inputPass = get(R.id.input_pass);
             inputPass.getEditText().setOnEditorActionListener(this);
             get(R.id.signin).setOnClickListener(this);
+            get(R.id.signup).setOnClickListener(this);
+            get(R.id.forget_pwd).setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
-            int id = v.getId();
-            if (R.id.signin == id) {
-                attemptSignIn();
+            switch (v.getId()) {
+                case R.id.signin:
+                    attemptSignIn();
+                    break;
+                case R.id.signup:
+                    gotoActivity(SignUpActivity.class);
+                    break;
+                case R.id.forget_pwd:
+                    gotoActivity(ResetPwdActivity.class);
+                    break;
             }
         }
 

@@ -1,11 +1,14 @@
 package com.syber.base.data;
 
+import android.text.TextUtils;
+
 import com.orhanobut.logger.Logger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import okhttp3.Callback;
+import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -85,6 +88,11 @@ public class DataRequester {
 
     protected void enque(Request request, Callback callback) {
         httpClient.newCall(request).enqueue(callback);
+    }
+
+    protected FormBody.Builder formAdd(FormBody.Builder builder, String name, String value) {
+        if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(value)) builder.add(name, value);
+        return builder;
     }
 
 

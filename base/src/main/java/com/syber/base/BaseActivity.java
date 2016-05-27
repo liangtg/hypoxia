@@ -42,7 +42,7 @@ public class BaseActivity extends AppCompatActivity {
             appBar.setNavigationOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    finish();
+                    onBackPressed();
                 }
             });
             if (!TextUtils.isEmpty(getTitle())) appBar.setTitle(getTitle());

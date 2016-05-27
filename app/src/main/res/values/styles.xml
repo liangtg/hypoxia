@@ -1,8 +1,6 @@
 <resources>
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="android:windowBackground">@color/windowBackground</item>
         <item name="colorPrimary">@color/colorPrimary</item>
@@ -10,5 +8,9 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="colorControlHighlight">?android:textColorSecondary</item>
         <item name="colorControlActivated">?android:textColorSecondary</item>
+    </style>
+
+    <style name="AppTheme.White">
+        <item name="colorPrimaryDark">@android:color/white</item>
     </style>
 </resources>

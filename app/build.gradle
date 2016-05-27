@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.3"
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
         applicationId "com.syber.hypoxia"
-        minSdkVersion 18
-        targetSdkVersion 22
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 8
         versionName "0.8"
     }
@@ -28,4 +28,5 @@ dependencies {
     compile project(':base')
     compile project(':pgyer')
     compile project(':mpchart')
+    compile project(':CropLibrary')
 }

@@ -14,7 +14,11 @@ import com.syber.hypoxia.IApplication;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+
 import okhttp3.FormBody;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 
 /**
  * Created by liangtg on 16-5-11.
@@ -41,6 +45,63 @@ public class IRequester extends DataRequester {
         builder.add("user_name", phone);
         builder.add("pswd", pass);
         enque(postBuilder("user/login?1", builder.build()).build(), callback);
+        return callback;
+    }
+
+    public DataRequest signUp(Bus bus, String phone, String pass) {
+        GsonCallback callback = new GsonCallback(bus, SignInResponse.class);
+        FormBody.Builder builder = new FormBody.Builder();
+        builder.add("user_name", phone);
+        builder.add("pswd", pass);
+        enque(postBuilder("user/register?1", builder.build()).build(), callback);
+        return callback;
+    }
+
+//    user_id		(必须)	int		用户编号
+//    fullname	(必须)	string		名字
+//    sex		(必须)	int		性别
+//    birthday	(必须)	Datetime	生日
+//    height		(必须)	double		身高
+//    weight		(必须)	double		体重
+//    blood
+
+    public DataRequest updateUserInfo(Bus bus, SignInResponse.UserInfoExt ext) {
+        GsonCallback callback = new GsonCallback(bus, SignInResponse.class);
+        FormBody.Builder builder = new FormBody.Builder();
+        formAdd(builder, "user_id", ext.user_id);
+        formAdd(builder, "fullname", ext.fullname);
+        formAdd(builder, "sex", ext.sex);
+        formAdd(builder, "birthday", ext.birthday);
+        formAdd(builder, "height", ext.height);
+        formAdd(builder, "weight", ext.weight);
+        formAdd(builder, "blood", ext.blood);
+        enque(postBuilder("user/modifyuserinfo?1", builder.build()).build(), callback);
+        return callback;
+    }
+
+    public DataRequest preResetPwd(Bus bus, String phone) {
+        GsonCallback callback = new GsonCallback(bus, SignInResponse.class);
+        FormBody.Builder builder = new FormBody.Builder();
+        builder.add("phone", phone);
+        enque(postBuilder("user/needresetpassword?1", builder.build()).build(), callback);
+        return callback;
+    }
+
+    public DataRequest resetPwd(Bus bus, SignInResponse.UserInfoExt ext) {
+        GsonCallback callback = new GsonCallback(bus, SignInResponse.class);
+        FormBody.Builder builder = new FormBody.Builder();
+        formAdd(builder, "user_id", ext.user_id);
+        formAdd(builder, "sex", ext.sex);
+        formAdd(builder, "height", ext.height);
+        formAdd(builder, "weight", ext.weight);
+        formAdd(builder, "blood", ext.blood);
+        enque(postBuilder("user/resetpassword?1", builder.build()).build(), callback);
+        return callback;
+    }
+
+    public DataRequest uploadImage(Bus bus, File image) {
+        GsonCallback callback = new GsonCallback(bus, BaseResponse.class);
+        enque(postBuilder("user/resetpassword?1", RequestBody.create(MediaType.parse("image/*"), image)).build(), callback);
         return callback;
     }
 
