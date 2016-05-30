@@ -136,14 +136,15 @@
             android:gravity="center"
             android:minEms="5"
             android:padding="@dimen/spacing_double"
-            android:text="身高"
+            android:text="身高(CM)"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
 
-        <TextView
+        <EditText
             android:id="@+id/user_height_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:drawableRight="@drawable/arrow_r"
+            android:inputType="number"
+            android:maxLength="3"
             android:padding="@dimen/spacing_double"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
             android:textColor="?android:textColorSecondary" />
@@ -163,14 +164,15 @@
             android:gravity="center"
             android:minEms="5"
             android:padding="@dimen/spacing_double"
-            android:text="体重"
+            android:text="体重(KG)"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
 
-        <TextView
+        <EditText
             android:id="@+id/user_weight_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:drawableRight="@drawable/arrow_r"
+            android:inputType="number"
+            android:maxLength="3"
             android:padding="@dimen/spacing_double"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
             android:textColor="?android:textColorSecondary" />

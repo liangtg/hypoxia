@@ -5,6 +5,7 @@ import android.os.Bundle;
 import com.syber.base.BaseActivity;
 
 public class UpdateUserInfoActivity extends BaseActivity {
+    public static final String KEY_EDIT = "EDIT";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

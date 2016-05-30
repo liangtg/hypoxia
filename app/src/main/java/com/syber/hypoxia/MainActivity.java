@@ -8,11 +8,14 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.pgyersdk.update.PgyUpdateManager;
+import com.squareup.picasso.Picasso;
 import com.syber.base.BaseActivity;
 import com.syber.base.BaseViewHolder;
+import com.syber.base.data.DataRequester;
 import com.syber.hypoxia.data.SignInResponse;
 import com.syber.hypoxia.data.User;
 
@@ -31,7 +34,6 @@ public class MainActivity extends BaseActivity {
             gotoActivity(SignInActivity.class);
         }
         viewHolder = new ViewHolder();
-        gotoActivity(UpdateUserInfoActivity.class);
     }
 
     @Override
@@ -55,7 +57,9 @@ public class MainActivity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (R.id.add_training == id) {
+        if (R.id.setting == id) {
+            gotoActivity(UpdateUserInfoActivity.class);
+        } else if (R.id.add_training == id) {
             gotoActivity(AddTraingActivity.class);
             return true;
         } else if (R.id.add_bp == id) {
@@ -74,6 +78,7 @@ public class MainActivity extends BaseActivity {
 
     private class ViewHolder extends BaseViewHolder {
         TextView userInfo, userName;
+        private ImageView userImage;
 
         public ViewHolder() {
             super(findViewById(R.id.view_holder));
@@ -83,6 +88,7 @@ public class MainActivity extends BaseActivity {
             get(R.id.spo2).setOnClickListener(this);
             userInfo = get(R.id.user_info);
             userName = get(R.id.user_name);
+            userImage = get(R.id.user_image);
         }
 
         void updateUserInfo() {
@@ -90,6 +96,8 @@ public class MainActivity extends BaseActivity {
                 SignInResponse.UserInfoExt ext = User.getUserInfoExt();
                 userInfo.setText(String.format("%s 身高%scm 体重%skg", ext.sexstring, ext.height, ext.weight));
                 userName.setText(ext.fullname);
+                Picasso.with(MainActivity.this).load(DataRequester.SERVER + "user/getavatar?id=" + User.getUserInfoExt().user_id).placeholder(R.drawable.user).into(
+                        userImage);
             }
         }
 

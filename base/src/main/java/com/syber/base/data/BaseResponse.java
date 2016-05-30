@@ -3,7 +3,7 @@ package com.syber.base.data;
 /**
  * Created by liangtg on 16-5-11.
  */
-public class BaseResponse {
+public abstract class BaseResponse {
     public int code = -1;
     public String error;
 

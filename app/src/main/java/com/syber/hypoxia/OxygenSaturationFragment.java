@@ -92,6 +92,7 @@ public class OxygenSaturationFragment extends BaseFragment implements RadioGroup
         weekStart = sdf.format(cal.getTime());
         cal.add(Calendar.DAY_OF_WEEK, 6);
         weekEnd = sdf.format(cal.getTime());
+        cal.setTimeInMillis(System.currentTimeMillis());
         cal.set(Calendar.DAY_OF_MONTH, 1);
         monthStart = sdf.format(cal.getTime());
         cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH));

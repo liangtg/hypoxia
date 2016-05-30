@@ -8,6 +8,7 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="colorControlHighlight">?android:textColorSecondary</item>
         <item name="colorControlActivated">?android:textColorSecondary</item>
+        <item name="android:datePickerStyle">@android:style/Widget.Holo.DatePicker</item>
     </style>
 
     <style name="AppTheme.White">

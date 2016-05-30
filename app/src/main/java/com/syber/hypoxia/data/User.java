@@ -9,23 +9,23 @@ import com.syber.hypoxia.BuildConfig;
  * Created by liangtg on 16-5-10.
  */
 public class User {
-    private static final String KEY_USER = BuildConfig.APPLICATION_ID + ".USER";
-    private static SignInResponse.UserInfoExt userInfoExt;
+    private static final String KEY_USER = BuildConfig.APPLICATION_ID + ".USER1";
+    private static SignInResponse userInfoExt;
 
     public static void init() {
         String data = PreferenceData.getInstance().getString(KEY_USER, "");
         if (!TextUtils.isEmpty(data)) {
-            userInfoExt = new Gson().fromJson(data, SignInResponse.UserInfoExt.class);
+            userInfoExt = new Gson().fromJson(data, SignInResponse.class);
         }
     }
 
     public static void saveUser(SignInResponse response) {
-        userInfoExt = response.userinfoExt;
-        if (null == userInfoExt) {
-            userInfoExt = new SignInResponse.UserInfoExt();
-            userInfoExt.user_id = response.userinfo.id;
+        if (null == response.userinfoExt) {
+            response.userinfoExt = new SignInResponse.UserInfoExt();
+            response.userinfoExt.user_id = response.userinfo.id;
         }
-        PreferenceData.getInstance().edit().putString(KEY_USER, new Gson().toJson(userInfoExt)).commit();
+        userInfoExt = response;
+        PreferenceData.getInstance().edit().putString(KEY_USER, new Gson().toJson(response)).commit();
     }
 
     public static boolean isSignIn() {
@@ -33,7 +33,11 @@ public class User {
     }
 
     public static SignInResponse.UserInfoExt getUserInfoExt() {
-        return userInfoExt;
+        return userInfoExt.userinfoExt;
+    }
+
+    public static String getPhone() {
+        return userInfoExt.userinfo.user_name;
     }
 
     public static void signOut() {

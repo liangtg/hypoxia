@@ -5,8 +5,8 @@ import android.os.Build;
 import android.telephony.TelephonyManager;
 
 import com.squareup.otto.Bus;
-import com.syber.base.data.BaseResponse;
 import com.syber.base.data.DataRequester;
+import com.syber.base.data.EmptyResponse;
 import com.syber.base.data.GsonCallback;
 import com.syber.hypoxia.BuildConfig;
 import com.syber.hypoxia.IApplication;
@@ -18,6 +18,7 @@ import java.io.File;
 
 import okhttp3.FormBody;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 
 /**
@@ -66,7 +67,7 @@ public class IRequester extends DataRequester {
 //    blood
 
     public DataRequest updateUserInfo(Bus bus, SignInResponse.UserInfoExt ext) {
-        GsonCallback callback = new GsonCallback(bus, SignInResponse.class);
+        GsonCallback<SignInResponse> callback = new GsonCallback<>(bus, SignInResponse.class);
         FormBody.Builder builder = new FormBody.Builder();
         formAdd(builder, "user_id", ext.user_id);
         formAdd(builder, "fullname", ext.fullname);
@@ -87,21 +88,23 @@ public class IRequester extends DataRequester {
         return callback;
     }
 
-    public DataRequest resetPwd(Bus bus, SignInResponse.UserInfoExt ext) {
+    public DataRequest resetPwd(Bus bus, SignInResponse.UserInfoExt ext, String pswd) {
         GsonCallback callback = new GsonCallback(bus, SignInResponse.class);
         FormBody.Builder builder = new FormBody.Builder();
+        formAdd(builder, "pswd", pswd);
         formAdd(builder, "user_id", ext.user_id);
         formAdd(builder, "sex", ext.sex);
         formAdd(builder, "height", ext.height);
         formAdd(builder, "weight", ext.weight);
-        formAdd(builder, "blood", ext.blood);
         enque(postBuilder("user/resetpassword?1", builder.build()).build(), callback);
         return callback;
     }
 
     public DataRequest uploadImage(Bus bus, File image) {
-        GsonCallback callback = new GsonCallback(bus, BaseResponse.class);
-        enque(postBuilder("user/resetpassword?1", RequestBody.create(MediaType.parse("image/*"), image)).build(), callback);
+        GsonCallback callback = new GsonCallback(bus, EmptyResponse.class);
+        MultipartBody.Builder builder = new MultipartBody.Builder();
+        builder.addFormDataPart("fieldNameHere", image.getName(), RequestBody.create(MediaType.parse("image/jpeg"), image));
+        enque(postBuilder("user/uploadavatar?id=" + User.getUserInfoExt().user_id, builder.build()).build(), callback);
         return callback;
     }
 
@@ -147,7 +150,7 @@ public class IRequester extends DataRequester {
     }
 
     public DataRequest addTraing(Bus bus, String start, String end, String mode) {
-        GsonCallback callback = new GsonCallback(bus, BaseResponse.class);
+        GsonCallback callback = new GsonCallback(bus, EmptyResponse.class);
         FormBody.Builder builder = new FormBody.Builder();
         builder.add("user_id", User.getUserInfoExt().user_id);
         builder.add("time_start", start);
@@ -166,7 +169,7 @@ public class IRequester extends DataRequester {
     }
 
     public DataRequest addBP(Bus bus, String start, int sys, int dia, int pul) {
-        GsonCallback callback = new GsonCallback(bus, BaseResponse.class);
+        GsonCallback callback = new GsonCallback(bus, EmptyResponse.class);
         FormBody.Builder builder = new FormBody.Builder();
         builder.add("user_id", User.getUserInfoExt().user_id);
         builder.add("time_start", start);
@@ -206,7 +209,7 @@ public class IRequester extends DataRequester {
     }
 
     public DataRequest addSPO(Bus bus, String start, int spo, int pul) {
-        GsonCallback callback = new GsonCallback(bus, BaseResponse.class);
+        GsonCallback callback = new GsonCallback(bus, EmptyResponse.class);
         FormBody.Builder builder = new FormBody.Builder();
         builder.add("user_id", User.getUserInfoExt().user_id);
         builder.add("time_start", start);

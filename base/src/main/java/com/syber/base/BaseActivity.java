@@ -73,12 +73,12 @@ public class BaseActivity extends AppCompatActivity {
         showToast(getString(resId));
     }
 
-    protected void startManageBus(Bus bus, Object register) {
+    public void startManageBus(Bus bus, Object register) {
         bus.register(register);
         manageBus.add(Pair.create(bus, register));
     }
 
-    protected void stopManageBus(Bus bus, Object register) {
+    public void stopManageBus(Bus bus, Object register) {
         bus.unregister(register);
         manageBus.remove(Pair.create(bus, register));
     }

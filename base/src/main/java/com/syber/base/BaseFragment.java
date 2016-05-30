@@ -17,8 +17,8 @@ import android.widget.Toast;
  */
 public class BaseFragment extends Fragment {
 
-    protected final String TAG = getClass().getSimpleName() + "\t";
     private static final String LIFE = "life";
+    protected final String TAG = getClass().getSimpleName() + "\t";
     protected Toast toast;
 
 
@@ -107,6 +107,10 @@ public class BaseFragment extends Fragment {
             toast.setText(msg);
             toast.show();
         }
+    }
+
+    protected BaseActivity getBaseActivity() {
+        return (BaseActivity) getActivity();
     }
 
     public void showToast(int resId) {

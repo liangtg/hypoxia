@@ -1,5 +1,6 @@
 package com.syber.hypoxia;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.text.Editable;
@@ -34,6 +35,10 @@ public class SignUpActivity extends BaseActivity {
         if (isFinishing()) return;
         if (event.isSuccess()) {
             User.saveUser(event);
+            Intent intent = new Intent(this, UpdateUserInfoActivity.class);
+            intent.putExtra(UpdateUserInfoActivity.KEY_EDIT, true);
+            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
             finish();
         } else {
             showToast("注册失败:" + event.error);

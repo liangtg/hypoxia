@@ -58,6 +58,29 @@ public class SignInResponse extends BaseResponse {
         public String bloodstring;
 
         @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            UserInfoExt that = (UserInfoExt) o;
+
+            if (fullname != null ? !fullname.equals(that.fullname) : that.fullname != null) return false;
+            if (sex != null ? !sex.equals(that.sex) : that.sex != null) return false;
+            if (height != null ? !height.equals(that.height) : that.height != null) return false;
+            return weight != null ? weight.equals(that.weight) : that.weight == null;
+
+        }
+
+        @Override
+        public int hashCode() {
+            int result = fullname != null ? fullname.hashCode() : 0;
+            result = 31 * result + (sex != null ? sex.hashCode() : 0);
+            result = 31 * result + (height != null ? height.hashCode() : 0);
+            result = 31 * result + (weight != null ? weight.hashCode() : 0);
+            return result;
+        }
+
+        @Override
         public String toString() {
             return "UserInfoExt{" +
                     "user_id='" + user_id + '\'' +
