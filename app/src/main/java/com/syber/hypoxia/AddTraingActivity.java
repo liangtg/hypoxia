@@ -17,7 +17,7 @@ import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 import com.syber.base.BaseActivity;
 import com.syber.base.BaseViewHolder;
-import com.syber.base.data.BaseResponse;
+import com.syber.base.data.EmptyResponse;
 import com.syber.hypoxia.data.IRequester;
 
 import java.text.SimpleDateFormat;
@@ -67,7 +67,7 @@ public class AddTraingActivity extends BaseActivity implements TimePickerDialog.
     }
 
     @Subscribe
-    public void withResponse(BaseResponse event) {
+    public void withResponse(EmptyResponse event) {
         if (isFinishing()) return;
         progressDialog.dismiss();
         showToast("添加" + (event.isSuccess() ? "成功" : "失败"));

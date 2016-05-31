@@ -8,6 +8,7 @@ public abstract class BaseResponse {
     public String error;
 
     public BaseResponse defaultError(Exception e) {
+        error = "请检查网络";
         return this;
     }
 

@@ -16,6 +16,7 @@ import com.squareup.picasso.Picasso;
 import com.syber.base.BaseActivity;
 import com.syber.base.BaseViewHolder;
 import com.syber.base.data.DataRequester;
+import com.syber.hypoxia.data.IRequester;
 import com.syber.hypoxia.data.SignInResponse;
 import com.syber.hypoxia.data.User;
 
@@ -96,7 +97,7 @@ public class MainActivity extends BaseActivity {
                 SignInResponse.UserInfoExt ext = User.getUserInfoExt();
                 userInfo.setText(String.format("%s 身高%scm 体重%skg", ext.sexstring, ext.height, ext.weight));
                 userName.setText(ext.fullname);
-                Picasso.with(MainActivity.this).load(DataRequester.SERVER + "user/getavatar?id=" + User.getUserInfoExt().user_id).placeholder(R.drawable.user).into(
+                Picasso.with(MainActivity.this).load(IRequester.SERVER + "user/getavatar?id=" + User.getUserInfoExt().user_id).placeholder(R.drawable.user).into(
                         userImage);
             }
         }
