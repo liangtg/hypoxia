@@ -15,6 +15,7 @@
         android:showDividers="middle">
 
         <Button
+            android:id="@+id/add_bp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -23,6 +24,7 @@
             android:textColor="@color/colorPrimary" />
 
         <Button
+            android:id="@+id/refresh"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"

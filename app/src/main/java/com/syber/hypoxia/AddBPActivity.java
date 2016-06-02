@@ -38,7 +38,6 @@ public class AddBPActivity extends BaseActivity implements TimePickerDialog.OnTi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_bp);
         startManageBus(bus, this);
-        setTitle("");
         initAppBar();
         viewHolder = new ViewHolder(findViewById(R.id.content));
     }
@@ -78,7 +77,7 @@ public class AddBPActivity extends BaseActivity implements TimePickerDialog.OnTi
     }
 
     public void onStartTimeClicked(View view) {
-        new DatePickerDialog(this, this, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
+        new TimePickerDialog(this, this, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show();
     }
 
     @Override
@@ -86,7 +85,7 @@ public class AddBPActivity extends BaseActivity implements TimePickerDialog.OnTi
         selectedDate.set(Calendar.HOUR_OF_DAY, hourOfDay);
         selectedDate.set(Calendar.MINUTE, minute);
         calendar.setTimeInMillis(selectedDate.getTimeInMillis());
-        viewHolder.startTime.setText(sdf.format(calendar.getTime()));
+        viewHolder.startTime.setText(sdf.format(calendar.getTime()).substring(11, 16));
     }
 
     public void onDiaClicked(View view) {
@@ -101,19 +100,26 @@ public class AddBPActivity extends BaseActivity implements TimePickerDialog.OnTi
     @Override
     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
         selectedDate.set(year, monthOfYear, dayOfMonth);
-        new TimePickerDialog(this, this, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show();
+        calendar.set(year, monthOfYear, dayOfMonth);
+        viewHolder.startDate.setText(sdf.format(calendar.getTime()).substring(0, 10));
+    }
+
+    public void onStartDateClicked(View view) {
+        new DatePickerDialog(this, this, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
     }
 
     class ViewHolder extends BaseViewHolder {
-        TextView startTime, sysText, diaText, pulText;
+        TextView startTime, sysText, diaText, pulText, startDate;
 
         public ViewHolder(View view) {
             super(view);
             startTime = get(R.id.start_time);
+            startDate = get(R.id.start_date);
             sysText = get(R.id.sys);
             diaText = get(R.id.dia);
             pulText = get(R.id.pul);
-            startTime.setText(sdf.format(calendar.getTime()));
+            startDate.setText(sdf.format(calendar.getTime()).substring(0, 10));
+            startTime.setText(sdf.format(calendar.getTime()).substring(11, 16));
             Random random = new Random();
             sys = random.nextInt(10) + 120;
             dia = random.nextInt(10) + 80;

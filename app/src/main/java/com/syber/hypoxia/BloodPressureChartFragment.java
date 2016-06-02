@@ -60,7 +60,7 @@ import java.util.Random;
 /**
  * Created by liangtg on 16-5-10.
  */
-public class BloodPressureChartFragment extends BaseFragment implements RadioGroup.OnCheckedChangeListener {
+public class BloodPressureChartFragment extends BaseFragment implements RadioGroup.OnCheckedChangeListener, View.OnClickListener {
     private CombinedChart barChart;
     private TextView selectedDate, totalTimes;
     private ProgressBar progressBar;
@@ -103,6 +103,8 @@ public class BloodPressureChartFragment extends BaseFragment implements RadioGro
         totalTimes = get(R.id.total_times);
         progressBar = get(R.id.progress);
         barChart = get(R.id.chart);
+        get(R.id.add_bp).setOnClickListener(this);
+        get(R.id.refresh).setOnClickListener(this);
 
         RadioGroup group = get(R.id.date_group);
         group.setOnCheckedChangeListener(this);
@@ -147,6 +149,16 @@ public class BloodPressureChartFragment extends BaseFragment implements RadioGro
             curProvider = monthProvider;
         }
         curProvider.updateChart();
+    }
+
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        if (R.id.add_bp == id) {
+            gotoActivity(AddBPActivity.class);
+        } else if (R.id.refresh == id) {
+            curProvider.refresh();
+        }
     }
 
 
@@ -204,6 +216,12 @@ public class BloodPressureChartFragment extends BaseFragment implements RadioGro
         }
 
         public void refresh() {
+            if (working) {
+                return;
+            }
+            progressBar.setVisibility(View.VISIBLE);
+            working = true;
+            IRequester.getInstance().bloodChartData(bus, startDate, endDate);
         }
 
         void createData() {
@@ -233,7 +251,7 @@ public class BloodPressureChartFragment extends BaseFragment implements RadioGro
             rateSet.setColor(0x80CF4C4C);
             rateSet.setCircleColor(0xFFCF4C4C);
             rateSet.setDrawCircleHole(false);
-            rateSet.setDrawFilled(true);
+            rateSet.setDrawFilled(false);
             lineData.addDataSet(rateSet);
             rateSet = new LineDataSet(sysYVals, "");
             rateSet.setColor(0x80FFF8AB);
