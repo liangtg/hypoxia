@@ -10,20 +10,18 @@
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:elevation="4dp">
+        android:elevation="4dp"></android.support.v7.widget.Toolbar>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="血氧记录"
-            android:textAppearance="@style/TextAppearance.AppCompat.Title" />
-    </android.support.v7.widget.Toolbar>
-
-    <fragment
-        android:id="@+id/fragment_oxygen"
-        class="com.syber.hypoxia.OxygenSaturationFragment"
+    <FrameLayout
+        android:id="@+id/fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:layout="@layout/fragment_oxygen_saturation" />
+        android:layout_height="match_parent">
+
+        <fragment
+            android:id="@+id/fragment_oxygen"
+            class="com.syber.hypoxia.OxygenSaturationChartFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:layout="@layout/fragment_oxygen_saturation" />
+    </FrameLayout>
 </LinearLayout>

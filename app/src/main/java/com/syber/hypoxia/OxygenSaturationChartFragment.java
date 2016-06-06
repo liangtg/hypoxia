@@ -1,22 +1,15 @@
 package com.syber.hypoxia;
 
-import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.res.ResourcesCompat;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
 import android.widget.ProgressBar;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -27,7 +20,6 @@ import com.github.mikephil.charting.buffer.ScatterBuffer;
 import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.charts.CombinedChart;
 import com.github.mikephil.charting.charts.ScatterChart;
-import com.github.mikephil.charting.components.MarkerView;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
@@ -37,7 +29,6 @@ import com.github.mikephil.charting.data.CombinedData;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.ScatterData;
 import com.github.mikephil.charting.data.ScatterDataSet;
-import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.interfaces.datasets.IScatterDataSet;
 import com.github.mikephil.charting.renderer.BarChartRenderer;
@@ -52,31 +43,23 @@ import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 import com.syber.base.BaseFragment;
-import com.syber.base.BaseViewHolder;
 import com.syber.hypoxia.data.IRequester;
 import com.syber.hypoxia.data.OxygenSaturationChartResponse;
-import com.syber.hypoxia.data.OxygenSaturationHistoryResponse;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
-import java.util.Random;
 
 /**
  * Created by liangtg on 16-5-18.
  */
-public class OxygenSaturationFragment extends BaseFragment implements RadioGroup.OnCheckedChangeListener, View.OnClickListener {
-    View actionView;
+public class OxygenSaturationChartFragment extends BaseFragment implements RadioGroup.OnCheckedChangeListener, View.OnClickListener, FragmentManager.OnBackStackChangedListener {
     private CombinedChart barChart;
     private TextView selectedDate, totalTimes;
-    private RecyclerView allHistory;
     private ProgressBar progressBar;
     private Bus bus = new Bus();
-    private int page = 0;
 
-    private ArrayList<OxygenSaturationHistoryResponse.HistoryItem> data = new ArrayList<>();
-    private HistoryAdapter historyAdapter;
     private String day, weekStart, weekEnd, monthStart, monthEnd;
     private ChartDataProvider dayProvider, weekProvider, monthProvider;
     private ChartDataProvider curProvider;
@@ -102,22 +85,7 @@ public class OxygenSaturationFragment extends BaseFragment implements RadioGroup
         monthProvider = new ChartDataProvider(monthStart, monthEnd, false);
         curProvider = dayProvider;
         bus.register(this);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.refresh, menu);
-    }
-
-    @Override
-    public void onPrepareOptionsMenu(Menu menu) {
-        actionView = MenuItemCompat.getActionView(menu.findItem(R.id.refresh));
-        if (curProvider.working) {
-            actionView.startAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.menu_progress));
-        } else {
-            actionView.clearAnimation();
-        }
-        actionView.setOnClickListener(this);
+        getFragmentManager().addOnBackStackChangedListener(this);
     }
 
     @Nullable
@@ -132,15 +100,13 @@ public class OxygenSaturationFragment extends BaseFragment implements RadioGroup
         totalTimes = get(R.id.total_times);
         progressBar = get(R.id.progress);
         barChart = get(R.id.chart);
-        allHistory = get(R.id.all_history);
-        allHistory.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
-        allHistory.setItemAnimator(new DefaultItemAnimator());
-        historyAdapter = new HistoryAdapter();
-        allHistory.setAdapter(historyAdapter);
+        get(R.id.oxygen_detail).setOnClickListener(this);
+        get(R.id.add_oxygen).setOnClickListener(this);
+        get(R.id.refresh).setOnClickListener(this);
+
         RadioGroup group = get(R.id.date_group);
         group.setOnCheckedChangeListener(this);
         initChart();
-        IRequester.getInstance().spoData(bus, page);
         curProvider.updateChart();
     }
 
@@ -175,29 +141,6 @@ public class OxygenSaturationFragment extends BaseFragment implements RadioGroup
         xAxis.setAxisLineColor(color);
     }
 
-    @Subscribe
-    public void withData(OxygenSaturationHistoryResponse event) {
-        if (null == getView() || getActivity().isFinishing()) return;
-        if (event.isSuccess()) {
-            data.addAll(event.list);
-            historyAdapter.notifyDataSetChanged();
-            page++;
-            if (!event.list.isEmpty()) nextRequest();
-        } else {
-            nextRequest();
-        }
-    }
-
-    private void nextRequest() {
-        totalTimes.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (null == getView() || getActivity().isFinishing()) return;
-                IRequester.getInstance().bloodData(bus, page);
-            }
-        }, 500);
-    }
-
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -221,41 +164,19 @@ public class OxygenSaturationFragment extends BaseFragment implements RadioGroup
         int id = v.getId();
         if (R.id.refresh == id) {
             curProvider.refresh();
-            v.startAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.menu_progress));
+        } else if (R.id.oxygen_detail == id) {
+            getFragmentManager().beginTransaction().hide(this).add(R.id.fragment_container,
+                    new OxygenSaturationHistoryFragment(),
+                    "oxygen_history").addToBackStack("oxygen_history").commit();
+        } else if (R.id.add_oxygen == id) {
+            gotoActivity(AddSPOActivity.class);
         }
     }
 
-    private class HistoryAdapter extends RecyclerView.Adapter<AdapterHolder> {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
-        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.CHINA);
-
-        @Override
-        public AdapterHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new AdapterHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_oxygen_history, parent, false));
-        }
-
-        @Override
-        public void onBindViewHolder(AdapterHolder holder, int position) {
-            OxygenSaturationHistoryResponse.HistoryItem item = data.get(position);
-            holder.date.setText(item.spo2.Time_Test);
-            holder.spo.setText(String.format("血氧%d%%", item.spo2.O2p));
-            holder.rate.setText("心率" + item.spo2.HeartRate);
-        }
-
-        @Override
-        public int getItemCount() {
-            return data.size();
-        }
-    }
-
-    private class AdapterHolder extends RecyclerView.ViewHolder {
-        TextView date, spo, rate;
-
-        public AdapterHolder(View itemView) {
-            super(itemView);
-            date = BaseViewHolder.get(itemView, R.id.date);
-            spo = BaseViewHolder.get(itemView, R.id.high);
-            rate = BaseViewHolder.get(itemView, R.id.rate);
+    @Override
+    public void onBackStackChanged() {
+        if (getFragmentManager().getBackStackEntryCount() == 0) {
+            getFragmentManager().beginTransaction().show(this).commit();
         }
     }
 
@@ -282,31 +203,11 @@ public class OxygenSaturationFragment extends BaseFragment implements RadioGroup
                 dataResponse = event;
                 if (curProvider == this) createData();
             } else if (curProvider == this) {
-                actionView.clearAnimation();
                 progressBar.setVisibility(View.GONE);
                 showToast("数据获取失败");
 //                fillData();
 //                createData();
             }
-        }
-
-        private void fillData() {
-            OxygenSaturationChartResponse data = new OxygenSaturationChartResponse();
-            Random random = new Random();
-            for (int i = 0; i < 10; i++) {
-                OxygenSaturationChartResponse.ChartItem item = new OxygenSaturationChartResponse.ChartItem();
-                item.spO2Max = random.nextInt(10) + 130;
-                item.spO2Avg = random.nextInt(10) + 120;
-                item.spO2Min = random.nextInt(10) + 110;
-                item.heartRateMax = random.nextInt(10) + 100;
-                item.heartRateAvg = random.nextInt(10) + 90;
-                item.heartRateMin = random.nextInt(10) + 80;
-                item.key = "12:11";
-                data.chart.add(item);
-            }
-            OxygenSaturationChartResponse.ChartTotal total = new OxygenSaturationChartResponse.ChartTotal();
-            data.total.add(total);
-            dataResponse = data;
         }
 
         public void refresh() {
@@ -352,7 +253,6 @@ public class OxygenSaturationFragment extends BaseFragment implements RadioGroup
         }
 
         private void resetData() {
-            actionView.clearAnimation();
             barChart.clear();
             barChart.resetTracking();
             if (barData.getYValCount() > 0) {
@@ -390,43 +290,6 @@ public class OxygenSaturationFragment extends BaseFragment implements RadioGroup
             }
         }
 
-    }
-
-    private class IMarkerView extends MarkerView {
-        private TextView sys, dia, pul;
-
-        /**
-         * Constructor. Sets up the MarkerView with a custom layout resource.
-         *
-         * @param context
-         */
-        public IMarkerView(Context context) {
-            super(context, R.layout.marker_blood);
-            sys = BaseViewHolder.get(this, R.id.sys);
-            dia = BaseViewHolder.get(this, R.id.dia);
-            pul = BaseViewHolder.get(this, R.id.pul);
-        }
-
-        @Override
-        public void refreshContent(Entry e, Highlight highlight) {
-            OxygenSaturationChartResponse.ChartItem item = curProvider.dataResponse.chart.get(e.getXIndex());
-        }
-
-        @Override
-        public int getXOffset(float xpos) {
-            if (xpos < getMeasuredWidth() / 2) {
-                return (int) -xpos;
-            } else if (xpos + getMeasuredWidth() / 2 > barChart.getMeasuredWidth()) {
-                return (int) (xpos - barChart.getWidth() + getMeasuredWidth()) * -1;
-            } else {
-                return -getMeasuredWidth() / 2;
-            }
-        }
-
-        @Override
-        public int getYOffset(float ypos) {
-            return (int) -ypos;
-        }
     }
 
     private class SPOCombineRender extends CombinedChartRenderer {

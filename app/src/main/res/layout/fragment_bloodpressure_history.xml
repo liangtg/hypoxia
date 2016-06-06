@@ -15,6 +15,15 @@
         android:showDividers="middle">
 
         <Button
+            android:id="@+id/bp_detail"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="?selectableItemBackground"
+            android:text="详细记录"
+            android:textColor="@color/colorPrimary" />
+
+        <Button
             android:id="@+id/add_bp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -199,13 +208,6 @@
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_weight="1" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="1次血压异常"
-                android:textColor="?android:textColorPrimaryInverse"
-                android:visibility="gone" />
         </LinearLayout>
 
         <android.support.percent.PercentFrameLayout

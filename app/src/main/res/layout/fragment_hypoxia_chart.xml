@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.percent.PercentRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -15,7 +15,7 @@
         android:showDividers="middle">
 
         <Button
-            android:id="@+id/oxygen_detail"
+            android:id="@+id/hypoxia_detail"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -24,7 +24,7 @@
             android:textColor="?android:textColorSecondary" />
 
         <Button
-            android:id="@+id/add_oxygen"
+            android:id="@+id/add_hypoxia"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -60,7 +60,7 @@
             android:id="@+id/day"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/tab_bg3"
+            android:background="@drawable/tab_bg"
             android:button="@null"
             android:gravity="center"
             android:minWidth="72dp"
@@ -81,7 +81,7 @@
             android:id="@+id/week"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/tab_bg3"
+            android:background="@drawable/tab_bg"
             android:button="@null"
             android:gravity="center"
             android:minWidth="72dp"
@@ -102,7 +102,7 @@
             android:id="@+id/month"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/tab_bg3"
+            android:background="@drawable/tab_bg"
             android:button="@null"
             android:gravity="center"
             android:minWidth="72dp"
@@ -125,97 +125,166 @@
         android:layout_height="match_parent"
         android:layout_above="@id/anchor1"
         android:layout_below="@id/date_group"
-        android:background="#9DCB83"
+        android:background="@color/colorSecond"
         android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:orientation="horizontal"
             android:paddingLeft="@dimen/spacing_double"
-            android:paddingRight="@dimen/spacing_double"
-            android:paddingTop="@dimen/spacing_double">
+            android:paddingRight="@dimen/spacing_double">
+
+            <Button
+                android:id="@+id/last_period"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?selectableItemBackgroundBorderless"
+                android:text="上一月"
+                android:textColor="?android:textColorPrimaryInverse" />
 
             <TextView
                 android:id="@+id/selected_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="2016-05-10~2016-05-11"
+                android:text="2016-05-10"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                 android:textColor="?android:textColorPrimaryInverse" />
 
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
-
-            <TextView
-                android:id="@+id/total_times"
+            <Button
+                android:id="@+id/next_period"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="累计4次"
-                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                android:background="?selectableItemBackgroundBorderless"
+                android:text="下一月"
                 android:textColor="?android:textColorPrimaryInverse" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
             android:orientation="horizontal"
             android:paddingBottom="@dimen/spacing_normal"
             android:paddingLeft="@dimen/spacing_double"
-            android:paddingRight="@dimen/spacing_double"
-            android:paddingTop="@dimen/spacing_normal">
+            android:paddingRight="@dimen/spacing_double">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:drawablePadding="@dimen/spacing_normal"
-                android:drawableRight="@drawable/oxygen_bar"
-                android:paddingRight="@dimen/spacing_normal"
-                android:text="血氧饱和度"
+                android:text="训练时长"
                 android:textColor="?android:textColorPrimaryInverse" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/hypoxia_bar"
                 android:drawablePadding="@dimen/spacing_normal"
-                android:paddingRight="@dimen/spacing_normal"
-                android:text="(%)"
-                android:textColor="?android:textColorPrimaryInverse" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:drawablePadding="@dimen/spacing_normal"
-                android:drawableRight="@drawable/heart"
-                android:paddingRight="@dimen/spacing_normal"
-                android:text="心率"
-                android:textColor="?android:textColorPrimaryInverse" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="分钟/次"
+                android:paddingLeft="@dimen/spacing_normal"
+                android:text="分钟"
                 android:textColor="?android:textColorPrimaryInverse" />
         </LinearLayout>
 
-        <android.support.percent.PercentFrameLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingBottom="@dimen/spacing_normal">
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/spacing_double"
+            android:layout_marginRight="@dimen/spacing_double"
+            android:background="#C04A2A"
+            android:orientation="horizontal"
+            android:padding="@dimen/spacing_double">
 
-            <com.github.mikephil.charting.charts.CombinedChart
-                android:id="@+id/chart"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-        </android.support.percent.PercentFrameLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/spacing_normal"
+                android:text="记录时间"
+                android:textColor="?android:textColorPrimaryInverse" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/spacing_normal"
+                android:text="2016-05-21"
+                android:textColor="?android:textColorPrimaryInverse" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:text="血氧异常"
+                android:textColor="@color/colorPrimaryDark" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/spacing_double"
+            android:layout_marginRight="@dimen/spacing_double"
+            android:background="#C04A2A"
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/spacing_double"
+            android:paddingLeft="@dimen/spacing_double"
+            android:paddingRight="@dimen/spacing_double">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="时长 "
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                android:textColor="?android:textColorPrimaryInverse" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minEms="2"
+                android:text="125"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                android:textColor="?android:textColorPrimaryInverse" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/spacing_double"
+                android:text="分钟"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                android:textColor="?android:textColorPrimaryInverse" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="血氧"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                android:textColor="?android:textColorPrimaryInverse" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="2"
+                android:gravity="right"
+                android:text="80"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                android:textColor="?android:textColorPrimaryInverse" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="%"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                android:textColor="?android:textColorPrimaryInverse" />
+        </LinearLayout>
+
+        <com.github.mikephil.charting.charts.BarChart
+            android:id="@+id/chart"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
     </LinearLayout>
 
     <ProgressBar
         android:id="@+id/progress"
-        style="?android:progressBarStyleLarge"
+        style="?android:progressBarStyleLargeInverse"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true" />
-</RelativeLayout>
+</android.support.percent.PercentRelativeLayout>

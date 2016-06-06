@@ -103,6 +103,7 @@ public class BloodPressureChartFragment extends BaseFragment implements RadioGro
         totalTimes = get(R.id.total_times);
         progressBar = get(R.id.progress);
         barChart = get(R.id.chart);
+        get(R.id.bp_detail).setOnClickListener(this);
         get(R.id.add_bp).setOnClickListener(this);
         get(R.id.refresh).setOnClickListener(this);
 
@@ -158,6 +159,9 @@ public class BloodPressureChartFragment extends BaseFragment implements RadioGro
             gotoActivity(AddBPActivity.class);
         } else if (R.id.refresh == id) {
             curProvider.refresh();
+        } else if (R.id.bp_detail == id) {
+            getFragmentManager().beginTransaction().add(R.id.fragment_container, new BloodPressureHistoryFragment(), "bp_history").addToBackStack(
+                    "bp_history").commit();
         }
     }
 

@@ -8,29 +8,27 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 import com.syber.base.BaseFragment;
 import com.syber.base.BaseViewHolder;
-import com.syber.hypoxia.data.HypoxiaHistoryResponse;
 import com.syber.hypoxia.data.IRequester;
+import com.syber.hypoxia.data.OxygenSaturationHistoryResponse;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Locale;
 
 /**
  * Created by liangtg on 16-6-6.
  */
-public class HypoxiaHistoryFragment extends BaseFragment {
+public class OxygenSaturationHistoryFragment extends BaseFragment {
     private RecyclerView allHistory;
-    private int page = 0;
-    private ArrayList<HypoxiaHistoryResponse.HistoryItem> data = new ArrayList<>();
     private HistoryAdapter historyAdapter;
+    private ArrayList<OxygenSaturationHistoryResponse.HistoryItem> data = new ArrayList<>();
+    private int page = 0;
     private Bus bus = new Bus();
 
     @Override
@@ -42,7 +40,7 @@ public class HypoxiaHistoryFragment extends BaseFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_hypoxia_history, container, false);
+        return inflater.inflate(R.layout.fragment_oxygen_saturation_history, container, false);
     }
 
     @Override
@@ -52,29 +50,28 @@ public class HypoxiaHistoryFragment extends BaseFragment {
         allHistory.setItemAnimator(new DefaultItemAnimator());
         historyAdapter = new HistoryAdapter();
         allHistory.setAdapter(historyAdapter);
-        IRequester.getInstance().hypoxiaData(bus, page);
+        IRequester.getInstance().spoData(bus, page);
     }
 
     @Subscribe
-    public void withData(HypoxiaHistoryResponse event) {
+    public void withData(OxygenSaturationHistoryResponse event) {
         if (null == getView() || getActivity().isFinishing()) return;
         if (event.isSuccess()) {
-            int old = data.size();
             data.addAll(event.list);
-            historyAdapter.notifyItemRangeInserted(old, event.list.size());
+            historyAdapter.notifyDataSetChanged();
             page++;
-            if (!event.list.isEmpty()) nextDelayRequest();
+            if (!event.list.isEmpty()) nextRequest();
         } else {
-            nextDelayRequest();
+            nextRequest();
         }
     }
 
-    private void nextDelayRequest() {
+    private void nextRequest() {
         allHistory.postDelayed(new Runnable() {
             @Override
             public void run() {
                 if (null == getView() || getActivity().isFinishing()) return;
-                IRequester.getInstance().hypoxiaData(bus, page);
+                IRequester.getInstance().bloodData(bus, page);
             }
         }, 500);
     }
@@ -85,18 +82,15 @@ public class HypoxiaHistoryFragment extends BaseFragment {
 
         @Override
         public AdapterHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new AdapterHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_hypoxia_history, parent, false));
+            return new AdapterHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_oxygen_history, parent, false));
         }
 
         @Override
         public void onBindViewHolder(AdapterHolder holder, int position) {
-            HypoxiaHistoryResponse.HistoryItem item = data.get(position);
-            holder.date.setText(dateFormat.format(new Date(item.time_start)));
-            holder.time.setText(String.format("%s~%s", timeFormat.format(new Date(item.time_start)), timeFormat.format(new Date(item.time_end))));
-            long minute = (item.time_end - item.time_start) / 1000 / 60;
-            holder.minute.setText(String.format("%d分钟", minute));
-            holder.mode.setText("模式" + (item.training.trainingMode + 1));
-            holder.progressBar.setProgress((int) minute);
+            OxygenSaturationHistoryResponse.HistoryItem item = data.get(position);
+            holder.date.setText(item.spo2.Time_Test);
+            holder.spo.setText(String.format("血氧%d%%", item.spo2.O2p));
+            holder.rate.setText("心率" + item.spo2.HeartRate);
         }
 
         @Override
@@ -105,17 +99,15 @@ public class HypoxiaHistoryFragment extends BaseFragment {
         }
     }
 
-    private class AdapterHolder extends RecyclerView.ViewHolder {
-        TextView date, time, minute, mode;
-        ProgressBar progressBar;
+    class AdapterHolder extends RecyclerView.ViewHolder {
+        TextView date, spo, rate;
 
         public AdapterHolder(View itemView) {
             super(itemView);
             date = BaseViewHolder.get(itemView, R.id.date);
-            time = BaseViewHolder.get(itemView, R.id.time);
-            minute = BaseViewHolder.get(itemView, R.id.minute);
-            mode = BaseViewHolder.get(itemView, R.id.mode);
-            progressBar = BaseViewHolder.get(itemView, R.id.progress);
+            spo = BaseViewHolder.get(itemView, R.id.high);
+            rate = BaseViewHolder.get(itemView, R.id.rate);
         }
     }
+
 }
