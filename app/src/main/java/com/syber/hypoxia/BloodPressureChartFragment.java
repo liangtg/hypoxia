@@ -1,9 +1,9 @@
 package com.syber.hypoxia;
 
-import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.content.res.ResourcesCompat;
 import android.util.TypedValue;
@@ -19,7 +19,6 @@ import com.github.mikephil.charting.buffer.ScatterBuffer;
 import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.charts.CombinedChart;
 import com.github.mikephil.charting.charts.ScatterChart;
-import com.github.mikephil.charting.components.MarkerView;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.CandleData;
@@ -32,8 +31,11 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.ScatterData;
 import com.github.mikephil.charting.data.ScatterDataSet;
 import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider;
 import com.github.mikephil.charting.interfaces.datasets.ICandleDataSet;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.IScatterDataSet;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.renderer.BarChartRenderer;
 import com.github.mikephil.charting.renderer.BubbleChartRenderer;
 import com.github.mikephil.charting.renderer.CandleStickChartRenderer;
@@ -47,7 +49,6 @@ import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 import com.syber.base.BaseFragment;
-import com.syber.base.BaseViewHolder;
 import com.syber.hypoxia.data.BPChartResponse;
 import com.syber.hypoxia.data.IRequester;
 
@@ -60,35 +61,59 @@ import java.util.Random;
 /**
  * Created by liangtg on 16-5-10.
  */
-public class BloodPressureChartFragment extends BaseFragment implements RadioGroup.OnCheckedChangeListener, View.OnClickListener {
+public class BloodPressureChartFragment extends BaseFragment implements RadioGroup.OnCheckedChangeListener, View.OnClickListener, OnChartValueSelectedListener {
+    private int lastHight = -1;
+    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
     private CombinedChart barChart;
-    private TextView selectedDate, totalTimes;
+    private TextView selectedDate, hightlightSys, highlightDia, highlightPul;
+    private TextView lastPeriod, nextPeriod;
     private ProgressBar progressBar;
+    private View abnormal;
 
-
-    private String day, weekStart, weekEnd, monthStart, monthEnd;
     private ChartDataProvider dayProvider, weekProvider, monthProvider;
     private ChartDataProvider curProvider;
+    private Handler handler = new Handler();
+    private Runnable highlightRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (getView() == null || getActivity().isFinishing() || barChart.isEmpty()) return;
+            barChart.highlightValue(lastHight, 0);
+        }
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
-        Calendar cal = Calendar.getInstance(Locale.CHINA);
-        day = sdf.format(cal.getTime());
-        while (cal.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY) cal.add(Calendar.DAY_OF_YEAR, -1);
-        weekStart = sdf.format(cal.getTime());
-        cal.add(Calendar.DAY_OF_WEEK, 6);
-        weekEnd = sdf.format(cal.getTime());
-        cal.setTimeInMillis(System.currentTimeMillis());
-        cal.set(Calendar.DAY_OF_MONTH, 1);
-        monthStart = sdf.format(cal.getTime());
-        cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
-        monthEnd = sdf.format(cal.getTime());
-        dayProvider = new ChartDataProvider(day, day, true);
-        weekProvider = new ChartDataProvider(weekStart, weekEnd, false);
-        monthProvider = new ChartDataProvider(monthStart, monthEnd, false);
+        createProvider();
+    }
+
+    private void createProvider() {
+        long now = System.currentTimeMillis();
+        dayProvider = new ChartDataProvider(createCalendar(now),
+                createCalendar(now),
+                1,
+                Calendar.DAY_OF_YEAR,
+                "%tF",
+                R.string.last_day,
+                R.string.next_day);
+        Calendar startDate = createCalendar(now), endDate = createCalendar(now);
+        while (startDate.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY) startDate.add(Calendar.DAY_OF_YEAR, -1);
+        endDate.setTimeInMillis(startDate.getTimeInMillis());
+        endDate.add(Calendar.DAY_OF_WEEK, 6);
+        weekProvider = new ChartDataProvider(startDate, endDate, 7, Calendar.DAY_OF_YEAR, "%tY-%3$d周", R.string.last_week, R.string.next_week);
+        startDate = createCalendar(now);
+        endDate = createCalendar(now);
+        startDate.set(Calendar.DAY_OF_MONTH, 1);
+        endDate.set(Calendar.DAY_OF_MONTH, endDate.getActualMaximum(Calendar.DAY_OF_MONTH));
+        monthProvider = new ChartDataProvider(startDate, endDate, 1, Calendar.MONTH, "%tY-%tm", R.string.last_month, R.string.next_month);
         curProvider = dayProvider;
+    }
+
+    private Calendar createCalendar(long time) {
+        Calendar calendar = Calendar.getInstance(Locale.CHINA);
+        calendar.setFirstDayOfWeek(Calendar.MONDAY);
+        calendar.setTimeInMillis(time);
+        return calendar;
     }
 
     @Nullable
@@ -99,10 +124,18 @@ public class BloodPressureChartFragment extends BaseFragment implements RadioGro
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        abnormal = get(R.id.abnormal);
+        lastPeriod = get(R.id.last_period);
+        nextPeriod = get(R.id.next_period);
+        lastPeriod.setOnClickListener(this);
+        nextPeriod.setOnClickListener(this);
+        hightlightSys = get(R.id.highlight_sys);
+        highlightDia = get(R.id.highlight_dia);
+        highlightPul = get(R.id.highlight_pul);
         selectedDate = get(R.id.selected_date);
-        totalTimes = get(R.id.total_times);
         progressBar = get(R.id.progress);
         barChart = get(R.id.chart);
+        barChart.setOnChartValueSelectedListener(this);
         get(R.id.bp_detail).setOnClickListener(this);
         get(R.id.add_bp).setOnClickListener(this);
         get(R.id.refresh).setOnClickListener(this);
@@ -118,7 +151,6 @@ public class BloodPressureChartFragment extends BaseFragment implements RadioGro
         barChart.getPaint(Chart.PAINT_INFO).setTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
                 16,
                 getResources().getDisplayMetrics()));
-//        barChart.setMarkerView(new IMarkerView(getActivity()));
         barChart.getLegend().setEnabled(false);
         barChart.getAxisRight().setEnabled(false);
         barChart.setScaleEnabled(false);
@@ -137,6 +169,7 @@ public class BloodPressureChartFragment extends BaseFragment implements RadioGro
         xAxis.setDrawGridLines(false);
         xAxis.setTextColor(color);
         xAxis.setAxisLineColor(color);
+        xAxis.setYOffset(15);
     }
 
 
@@ -162,23 +195,87 @@ public class BloodPressureChartFragment extends BaseFragment implements RadioGro
         } else if (R.id.bp_detail == id) {
             getFragmentManager().beginTransaction().add(R.id.fragment_container, new BloodPressureHistoryFragment(), "bp_history").addToBackStack(
                     "bp_history").commit();
+        } else if (R.id.last_period == id) {
+            curProvider.lastPeriod();
+        } else if (R.id.next_period == id) {
+            curProvider.nextPeriod();
         }
+    }
+
+    @Override
+    public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
+        lastHight = h.getXIndex();
+        BPChartResponse.ChartItem item = curProvider.dataResponse.chart.get(lastHight);
+        int sys = dayProvider == curProvider ? item.systolicMax : (int) item.systolicAvg;
+        hightlightSys.setText(String.valueOf(sys));
+        int dia = dayProvider == curProvider ? item.diastolicMax : (int) item.diastolicAvg;
+        highlightDia.setText(String.valueOf(dia));
+        int pul = dayProvider == curProvider ? item.heartRateMax : (int) item.heartRateAvg;
+        highlightPul.setText(String.valueOf(pul));
+        abnormal.setVisibility((sys < 130 && dia < 85) ? View.GONE : View.VISIBLE);
+    }
+
+    @Override
+    public void onNothingSelected() {
+        if (lastHight < 0) {
+            if (!barChart.isEmpty()) lastHight = 0;
+        } else {
+            if (barChart.isEmpty()) {
+                lastHight = -1;
+            } else if (lastHight >= barChart.getXValCount()) {
+                lastHight = barChart.getXValCount() - 1;
+            }
+        }
+        if (lastHight >= 0) handler.post(highlightRunnable);
     }
 
 
     class ChartDataProvider {
         BPChartResponse dataResponse;
         boolean working = false;
-        private String startDate, endDate;
+        private Calendar startDate;
+        private Calendar endDate;
+        private int period;
+        private int periodField;
+        private String format;
+        private int lastText;
+        private int nextText;
         private CombinedData barData;
         private Bus bus = new Bus();
-        private boolean max;
 
-        public ChartDataProvider(String startDate, String endDate, boolean max) {
+        public ChartDataProvider(Calendar startDate, Calendar endDate, int period, int periodField, String format, int lastText, int nextText) {
             this.startDate = startDate;
             this.endDate = endDate;
-            this.max = max;
+            this.period = period;
+            this.periodField = periodField;
+            this.format = format;
+            this.lastText = lastText;
+            this.nextText = nextText;
             bus.register(this);
+        }
+
+        private void nextPeriod() {
+            if (working) return;
+            dataResponse = null;
+            barData = null;
+            startDate.add(periodField, period);
+            endDate.add(periodField, period);
+            if (Calendar.MONTH == periodField) {
+                endDate.set(Calendar.DAY_OF_MONTH, endDate.getActualMaximum(Calendar.DAY_OF_MONTH));
+            }
+            updateChart();
+        }
+
+        private void lastPeriod() {
+            if (working) return;
+            dataResponse = null;
+            barData = null;
+            startDate.add(periodField, period * -1);
+            endDate.add(periodField, period * -1);
+            if (Calendar.MONTH == periodField) {
+                endDate.set(Calendar.DAY_OF_MONTH, endDate.getActualMaximum(Calendar.DAY_OF_MONTH));
+            }
+            updateChart();
         }
 
         @Subscribe
@@ -187,7 +284,7 @@ public class BloodPressureChartFragment extends BaseFragment implements RadioGro
             working = false;
             if (event.isSuccess()) {
                 dataResponse = event;
-                if (curProvider == this) createData();
+                if (curProvider == this) updateChart();
             } else if (curProvider == this) {
                 progressBar.setVisibility(View.GONE);
                 showToast("数据获取失败");
@@ -225,7 +322,7 @@ public class BloodPressureChartFragment extends BaseFragment implements RadioGro
             }
             progressBar.setVisibility(View.VISIBLE);
             working = true;
-            IRequester.getInstance().bloodChartData(bus, startDate, endDate);
+            IRequester.getInstance().bloodChartData(bus, sdf.format(startDate.getTime()), sdf.format(endDate.getTime()));
         }
 
         void createData() {
@@ -238,7 +335,7 @@ public class BloodPressureChartFragment extends BaseFragment implements RadioGro
             for (int i = 0; i < dataResponse.chart.size(); i++) {
                 BPChartResponse.ChartItem item = dataResponse.chart.get(i);
                 xVals.add(item.key);
-                if (max) {
+                if (dayProvider == curProvider) {
                     rateYVals.add(new Entry(item.heartRateMax, i));
                     sysYVals.add(new Entry(item.systolicMax, i));
                     diaYVals.add(new Entry(item.diastolicMax, i));
@@ -256,29 +353,23 @@ public class BloodPressureChartFragment extends BaseFragment implements RadioGro
             rateSet.setCircleColor(0xFFCF4C4C);
             rateSet.setDrawCircleHole(false);
             rateSet.setDrawFilled(false);
+            rateSet.setDrawHorizontalHighlightIndicator(false);
+            rateSet.setDrawVerticalHighlightIndicator(false);
             lineData.addDataSet(rateSet);
             rateSet = new LineDataSet(sysYVals, "");
+            rateSet.setDrawHorizontalHighlightIndicator(false);
+            rateSet.setDrawVerticalHighlightIndicator(false);
             rateSet.setColor(0x80FFF8AB);
             rateSet.setCircleColor(0xFFFFF8AB);
             rateSet.setDrawCircleHole(false);
             lineData.addDataSet(rateSet);
             rateSet = new LineDataSet(diaYVals, "");
+            rateSet.setDrawHorizontalHighlightIndicator(false);
+            rateSet.setDrawVerticalHighlightIndicator(false);
             rateSet.setColor(0x80FFFFFF);
             rateSet.setCircleColor(0xFFFFFFFF);
             rateSet.setDrawCircleHole(false);
             lineData.addDataSet(rateSet);
-            if (!max) {
-                rateSet = new LineDataSet(sysMinYVals, "");
-                rateSet.setColor(0x80FFF8AB);
-                rateSet.setCircleColor(0xFFFFF8AB);
-                rateSet.setDrawCircleHole(false);
-                lineData.addDataSet(rateSet);
-                rateSet = new LineDataSet(diaMinYVals, "");
-                rateSet.setColor(0x80FFFFFF);
-                rateSet.setCircleColor(0xFFFFFFFF);
-                rateSet.setDrawCircleHole(false);
-                lineData.addDataSet(rateSet);
-            }
             lineData.setDrawValues(false);
             barData = new CombinedData(xVals);
             barData.setData(lineData);
@@ -295,7 +386,7 @@ public class BloodPressureChartFragment extends BaseFragment implements RadioGro
                 BPChartResponse.ChartItem item = dataResponse.chart.get(i);
                 int sys, dia;
                 xVals.add(item.key);
-                if (max) {
+                if (dayProvider == this) {
                     rateYVals.add(new Entry(item.heartRateMax, i));
                     sys = item.systolicMax;
                     dia = item.diastolicMax;
@@ -311,7 +402,7 @@ public class BloodPressureChartFragment extends BaseFragment implements RadioGro
             dataSet.setDrawHighlightIndicators(false);
             barData = new CombinedData(xVals);
             CandleData candleData = new CandleData(xVals, dataSet);
-            if (!max) {
+            if (dayProvider != this) {
                 dataSet = new CandleDataSet(yValsLow, "舒张压");
                 dataSet.setColor(0x80FFFFFF);
                 dataSet.setDrawHighlightIndicators(false);
@@ -334,6 +425,7 @@ public class BloodPressureChartFragment extends BaseFragment implements RadioGro
             barChart.resetTracking();
             if (barData.getYValCount() > 0) {
                 barChart.setData(barData);
+                barChart.highlightValue(new Highlight(0, 0), true);
             } else {
                 barChart.setNoDataText("您还没有测量过血压");
             }
@@ -343,23 +435,20 @@ public class BloodPressureChartFragment extends BaseFragment implements RadioGro
             barChart.invalidate();
             barChart.animateY(500);
             progressBar.setVisibility(View.GONE);
-            ArrayList<BPChartResponse.ChartTotal> total = dataResponse.total;
-            totalTimes.setText(String.format("累计%d次", total.isEmpty() ? 0 : total.get(0).totalltimes));
-            selectedDate.setText(String.format("%s~%s", startDate, endDate));
         }
 
         public void updateChart() {
             progressBar.setVisibility(View.VISIBLE);
-            selectedDate.setText(String.format("%s~%s", startDate, endDate));
-            totalTimes.setText("");
+            selectedDate.setText(String.format(format, startDate.getTime(), endDate.getTime(), startDate.get(Calendar.WEEK_OF_YEAR)));
+            lastPeriod.setText(lastText);
+            nextPeriod.setText(nextText);
             if (working) {
                 barChart.clear();
                 return;
             }
             if (null == dataResponse) {
-                working = true;
                 barChart.clear();
-                IRequester.getInstance().bloodChartData(bus, startDate, endDate);
+                refresh();
             } else if (null == barData) {
                 createData();
             } else {
@@ -367,52 +456,6 @@ public class BloodPressureChartFragment extends BaseFragment implements RadioGro
             }
         }
 
-    }
-
-    private class IMarkerView extends MarkerView {
-        private TextView sys, dia, pul;
-
-        /**
-         * Constructor. Sets up the MarkerView with a custom layout resource.
-         *
-         * @param context
-         */
-        public IMarkerView(Context context) {
-            super(context, R.layout.marker_blood);
-            sys = BaseViewHolder.get(this, R.id.sys);
-            dia = BaseViewHolder.get(this, R.id.dia);
-            pul = BaseViewHolder.get(this, R.id.pul);
-        }
-
-        @Override
-        public void refreshContent(Entry e, Highlight highlight) {
-            BPChartResponse.ChartItem item = curProvider.dataResponse.chart.get(e.getXIndex());
-            if (curProvider.max) {
-                sys.setText(getString(R.string.sys_format, (int) item.systolicMax));
-                dia.setText(getString(R.string.dia_format, (int) item.diastolicMax));
-                pul.setText(getString(R.string.pul_format, (int) item.heartRateMax));
-            } else {
-                sys.setText(String.format("收缩压:%s~%s", item.systolicMin, item.systolicMax));
-                dia.setText(String.format("舒张压:%s~%s", item.diastolicMin, item.diastolicMax));
-                pul.setText(getString(R.string.pul_format, (int) item.heartRateAvg));
-            }
-        }
-
-        @Override
-        public int getXOffset(float xpos) {
-            if (xpos < getMeasuredWidth() / 2) {
-                return (int) -xpos;
-            } else if (xpos + getMeasuredWidth() / 2 > barChart.getMeasuredWidth()) {
-                return (int) (xpos - barChart.getWidth() + getMeasuredWidth()) * -1;
-            } else {
-                return -getMeasuredWidth() / 2;
-            }
-        }
-
-        @Override
-        public int getYOffset(float ypos) {
-            return (int) -ypos;
-        }
     }
 
     private class BPCombineRender extends CombinedChartRenderer {
@@ -438,7 +481,7 @@ public class BloodPressureChartFragment extends BaseFragment implements RadioGro
                         if (chart.getBubbleData() != null) mRenderers.add(new BubbleChartRenderer(chart, animator, viewPortHandler));
                         break;
                     case LINE:
-                        if (chart.getLineData() != null) mRenderers.add(new LineChartRenderer(chart, animator, viewPortHandler));
+                        if (chart.getLineData() != null) mRenderers.add(new BPLineRender(chart, animator, viewPortHandler));
                         break;
                     case CANDLE:
                         if (chart.getCandleData() != null) mRenderers.add(new BPRender());
@@ -450,6 +493,55 @@ public class BloodPressureChartFragment extends BaseFragment implements RadioGro
             }
         }
     }
+
+    private class BPLineRender extends LineChartRenderer {
+        private int highHalfWidth;
+        private Drawable highLight;
+
+        public BPLineRender(LineDataProvider chart, ChartAnimator animator, ViewPortHandler viewPortHandler) {
+            super(chart, animator, viewPortHandler);
+            highLight = getResources().getDrawable(R.drawable.high_light_orange, getActivity().getTheme());
+            highHalfWidth = highLight.getIntrinsicWidth() / 2;
+        }
+
+        @Override
+        public void drawExtras(Canvas c) {
+            super.drawExtras(c);
+            Highlight[] indices = barChart.getHighlighted();
+            if (null == indices) return;
+
+            for (int i = 0; i < indices.length; i++) {
+
+                ILineDataSet set = mChart.getLineData().getDataSetByIndex(indices[i].getDataSetIndex());
+
+                if (set == null || !set.isHighlightEnabled()) continue;
+
+                int xIndex = indices[i].getXIndex(); // get the
+                // x-position
+
+                if (xIndex > mChart.getXChartMax() * mAnimator.getPhaseX()) continue;
+
+                final float yVal = set.getYValForXIndex(xIndex);
+                if (yVal == Float.NaN) continue;
+
+                float y = yVal * mAnimator.getPhaseY(); // get
+                // the
+                // y-position
+
+                float[] pts = new float[]{xIndex, y};
+
+                mChart.getTransformer(set.getAxisDependency()).pointValuesToPixel(pts);
+
+                highLight.setBounds((int) (pts[0] - highHalfWidth),
+                        0,
+                        (int) (pts[0] + highHalfWidth),
+                        (int) (mViewPortHandler.contentBottom() + highLight.getIntrinsicHeight() / 2));
+                highLight.draw(c);
+            }
+
+        }
+    }
+
 
     private class BPRender extends CandleStickChartRenderer {
         int[] setDrawables = {R.drawable.high_pressure, R.drawable.low_pressure};

@@ -11,4 +11,10 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="prompt_input_pass_again">请输入确认密码</string>
     <string name="prompt_again_pwd_mismatch">两次密码不一致</string>
+    <string name="last_day">上一日</string>
+    <string name="next_day">下一日</string>
+    <string name="last_week">上一周</string>
+    <string name="next_week">下一周</string>
+    <string name="last_month">上一月</string>
+    <string name="next_month">下一月</string>
 </resources>

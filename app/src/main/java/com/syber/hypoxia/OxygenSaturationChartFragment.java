@@ -3,6 +3,7 @@ package com.syber.hypoxia;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.res.ResourcesCompat;
@@ -19,7 +20,6 @@ import com.github.mikephil.charting.buffer.BarBuffer;
 import com.github.mikephil.charting.buffer.ScatterBuffer;
 import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.charts.CombinedChart;
-import com.github.mikephil.charting.charts.ScatterChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
@@ -27,15 +27,17 @@ import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.CombinedData;
 import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.ScatterData;
-import com.github.mikephil.charting.data.ScatterDataSet;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.interfaces.datasets.IScatterDataSet;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.renderer.BarChartRenderer;
 import com.github.mikephil.charting.renderer.BubbleChartRenderer;
 import com.github.mikephil.charting.renderer.CandleStickChartRenderer;
 import com.github.mikephil.charting.renderer.CombinedChartRenderer;
-import com.github.mikephil.charting.renderer.DataRenderer;
 import com.github.mikephil.charting.renderer.LineChartRenderer;
 import com.github.mikephil.charting.renderer.ScatterChartRenderer;
 import com.github.mikephil.charting.utils.Transformer;
@@ -54,38 +56,60 @@ import java.util.Locale;
 /**
  * Created by liangtg on 16-5-18.
  */
-public class OxygenSaturationChartFragment extends BaseFragment implements RadioGroup.OnCheckedChangeListener, View.OnClickListener, FragmentManager.OnBackStackChangedListener {
+public class OxygenSaturationChartFragment extends BaseFragment implements RadioGroup.OnCheckedChangeListener, View.OnClickListener, FragmentManager.OnBackStackChangedListener, OnChartValueSelectedListener {
+    private int lastHight = -1;
+    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
     private CombinedChart barChart;
-    private TextView selectedDate, totalTimes;
+    private TextView selectedDate, lastPeriod, nextPeriod, highlightDate, highlightOxygen, highlightPul;
     private ProgressBar progressBar;
-    private Bus bus = new Bus();
+    private View abnormal;
 
-    private String day, weekStart, weekEnd, monthStart, monthEnd;
     private ChartDataProvider dayProvider, weekProvider, monthProvider;
     private ChartDataProvider curProvider;
+    private Handler handler = new Handler();
+    private Runnable highlightRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (getView() == null || getActivity().isFinishing() || barChart.isEmpty()) return;
+            barChart.highlightValue(lastHight, 0);
+        }
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
-        Calendar cal = Calendar.getInstance(Locale.CHINA);
-        day = sdf.format(cal.getTime());
-        while (cal.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY) cal.add(Calendar.DAY_OF_YEAR, -1);
-        weekStart = sdf.format(cal.getTime());
-        cal.add(Calendar.DAY_OF_WEEK, 6);
-        weekEnd = sdf.format(cal.getTime());
-        cal.setTimeInMillis(System.currentTimeMillis());
-        cal.set(Calendar.DAY_OF_MONTH, 1);
-        monthStart = sdf.format(cal.getTime());
-        cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
-        monthEnd = sdf.format(cal.getTime());
-        dayProvider = new ChartDataProvider(day, day, true);
-        weekProvider = new ChartDataProvider(weekStart, weekEnd, false);
-        monthProvider = new ChartDataProvider(monthStart, monthEnd, false);
-        curProvider = dayProvider;
-        bus.register(this);
+        createProvider();
         getFragmentManager().addOnBackStackChangedListener(this);
+    }
+
+    private void createProvider() {
+        long now = System.currentTimeMillis();
+        dayProvider = new ChartDataProvider(createCalendar(now),
+                createCalendar(now),
+                1,
+                Calendar.DAY_OF_YEAR,
+                "%tF",
+                R.string.last_day,
+                R.string.next_day);
+        Calendar startDate = createCalendar(now), endDate = createCalendar(now);
+        while (startDate.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY) startDate.add(Calendar.DAY_OF_YEAR, -1);
+        endDate.setTimeInMillis(startDate.getTimeInMillis());
+        endDate.add(Calendar.DAY_OF_WEEK, 6);
+        weekProvider = new ChartDataProvider(startDate, endDate, 7, Calendar.DAY_OF_YEAR, "%tY-%3$d周", R.string.last_week, R.string.next_week);
+        startDate = createCalendar(now);
+        endDate = createCalendar(now);
+        startDate.set(Calendar.DAY_OF_MONTH, 1);
+        endDate.set(Calendar.DAY_OF_MONTH, endDate.getActualMaximum(Calendar.DAY_OF_MONTH));
+        monthProvider = new ChartDataProvider(startDate, endDate, 1, Calendar.MONTH, "%tY-%tm", R.string.last_month, R.string.next_month);
+        curProvider = dayProvider;
+    }
+
+    private Calendar createCalendar(long time) {
+        Calendar calendar = Calendar.getInstance(Locale.CHINA);
+        calendar.setFirstDayOfWeek(Calendar.MONDAY);
+        calendar.setTimeInMillis(time);
+        return calendar;
     }
 
     @Nullable
@@ -96,10 +120,19 @@ public class OxygenSaturationChartFragment extends BaseFragment implements Radio
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        abnormal = get(R.id.abnormal);
+        highlightDate = get(R.id.highlight_date);
+        highlightOxygen = get(R.id.highlight_oxygen);
+        highlightPul = get(R.id.highlight_pul);
         selectedDate = get(R.id.selected_date);
-        totalTimes = get(R.id.total_times);
         progressBar = get(R.id.progress);
         barChart = get(R.id.chart);
+        barChart.setOnChartValueSelectedListener(this);
+
+        lastPeriod = get(R.id.last_period);
+        nextPeriod = get(R.id.next_period);
+        lastPeriod.setOnClickListener(this);
+        nextPeriod.setOnClickListener(this);
         get(R.id.oxygen_detail).setOnClickListener(this);
         get(R.id.add_oxygen).setOnClickListener(this);
         get(R.id.refresh).setOnClickListener(this);
@@ -139,12 +172,12 @@ public class OxygenSaturationChartFragment extends BaseFragment implements Radio
         xAxis.setDrawGridLines(false);
         xAxis.setTextColor(color);
         xAxis.setAxisLineColor(color);
+        xAxis.setYOffset(15);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        bus.unregister(this);
     }
 
     @Override
@@ -170,6 +203,10 @@ public class OxygenSaturationChartFragment extends BaseFragment implements Radio
                     "oxygen_history").addToBackStack("oxygen_history").commit();
         } else if (R.id.add_oxygen == id) {
             gotoActivity(AddSPOActivity.class);
+        } else if (R.id.last_period == id) {
+            curProvider.lastPeriod();
+        } else if (R.id.next_period == id) {
+            curProvider.nextPeriod();
         }
     }
 
@@ -180,19 +217,78 @@ public class OxygenSaturationChartFragment extends BaseFragment implements Radio
         }
     }
 
+    @Override
+    public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
+        lastHight = h.getXIndex();
+        OxygenSaturationChartResponse.ChartItem item = curProvider.dataResponse.chart.get(lastHight);
+        highlightDate.setText(item.key);
+        int spo = (int) (dayProvider == curProvider ? item.spO2Max : item.spO2Avg);
+        highlightOxygen.setText(String.valueOf(spo));
+        int pul = (int) (dayProvider == curProvider ? item.heartRateMax : item.heartRateAvg);
+        highlightPul.setText(String.valueOf(pul));
+        abnormal.setVisibility(spo < 90 ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    public void onNothingSelected() {
+        if (lastHight < 0) {
+            if (!barChart.isEmpty()) lastHight = 0;
+        } else {
+            if (barChart.isEmpty()) {
+                lastHight = -1;
+            } else if (lastHight >= barChart.getXValCount()) {
+                lastHight = barChart.getXValCount() - 1;
+            }
+        }
+        if (lastHight >= 0) handler.post(highlightRunnable);
+    }
+
     class ChartDataProvider {
         OxygenSaturationChartResponse dataResponse;
         boolean working = false;
-        private String startDate, endDate;
+        private Calendar startDate;
+        private Calendar endDate;
+        private int period;
+        private int periodField;
+        private String format;
+        private int lastText;
+        private int nextText;
         private CombinedData barData;
         private Bus bus = new Bus();
-        private boolean max;
 
-        public ChartDataProvider(String startDate, String endDate, boolean max) {
+        public ChartDataProvider(Calendar startDate, Calendar endDate, int period, int periodField, String format, int lastText, int nextText) {
             this.startDate = startDate;
             this.endDate = endDate;
-            this.max = max;
+            this.period = period;
+            this.periodField = periodField;
+            this.format = format;
+            this.lastText = lastText;
+            this.nextText = nextText;
             bus.register(this);
+        }
+
+        private void nextPeriod() {
+            if (working) return;
+            dataResponse = null;
+            barData = null;
+            startDate.add(periodField, period);
+            endDate.add(periodField, period);
+            if (Calendar.MONTH == periodField) {
+                endDate.set(Calendar.DAY_OF_MONTH, endDate.getActualMaximum(Calendar.DAY_OF_MONTH));
+            }
+            updateChart();
+        }
+
+        private void lastPeriod() {
+            if (working) return;
+            dataResponse = null;
+            barData = null;
+            startDate.add(periodField, period * -1);
+            endDate.add(periodField, period * -1);
+            if (Calendar.MONTH == periodField) {
+                endDate.set(Calendar.DAY_OF_MONTH, endDate.getActualMaximum(Calendar.DAY_OF_MONTH));
+            }
+            updateChart();
         }
 
         @Subscribe
@@ -201,12 +297,10 @@ public class OxygenSaturationChartFragment extends BaseFragment implements Radio
             working = false;
             if (event.isSuccess()) {
                 dataResponse = event;
-                if (curProvider == this) createData();
+                if (curProvider == this) updateChart();
             } else if (curProvider == this) {
                 progressBar.setVisibility(View.GONE);
                 showToast("数据获取失败");
-//                fillData();
-//                createData();
             }
         }
 
@@ -216,7 +310,7 @@ public class OxygenSaturationChartFragment extends BaseFragment implements Radio
                 return;
             }
             working = true;
-            IRequester.getInstance().spoChartData(bus, startDate, endDate);
+            IRequester.getInstance().spoChartData(bus, sdf.format(startDate.getTime()), sdf.format(endDate.getTime()));
         }
 
         void createData() {
@@ -225,12 +319,11 @@ public class OxygenSaturationChartFragment extends BaseFragment implements Radio
             ArrayList<BarEntry> yVals = new ArrayList<>();
             for (int i = 0; i < dataResponse.chart.size(); i++) {
                 OxygenSaturationChartResponse.ChartItem item = dataResponse.chart.get(i);
-                if (max) {
-                    xVals.add(item.key.substring(11));
+                xVals.add(item.key);
+                if (dayProvider == curProvider) {
                     rateYVals.add(new Entry(item.heartRateMax, i));
                     yVals.add(new BarEntry(item.spO2Max, i));
                 } else {
-                    xVals.add(item.key);
                     yVals.add(new BarEntry(item.spO2Avg, i));
                     rateYVals.add(new Entry(item.heartRateAvg, i));
                 }
@@ -241,13 +334,11 @@ public class OxygenSaturationChartFragment extends BaseFragment implements Radio
             barData = new CombinedData(xVals);
             BarData candleData = new BarData(xVals, dataSet);
             barData.setData(candleData);
-            ScatterDataSet scatterDataSet = new ScatterDataSet(rateYVals, "");
-            scatterDataSet.setScatterShape(ScatterChart.ScatterShape.CIRCLE);
-            scatterDataSet.setScatterShapeSize(10);
-            scatterDataSet.setColor(0xFFFF0000);
-            scatterDataSet.setDrawHighlightIndicators(false);
-            ScatterData scatterData = new ScatterData(xVals, scatterDataSet);
-            barData.setData(scatterData);
+            LineDataSet lineDataSet = new LineDataSet(rateYVals, "");
+            lineDataSet.setColor(0xFFFF0000);
+            lineDataSet.setCircleColor(0xFFFF0000);
+            lineDataSet.setCircleColorHole(0xFFFF0000);
+            barData.setData(new LineData(xVals, lineDataSet));
             barData.setDrawValues(false);
             resetData();
         }
@@ -257,6 +348,7 @@ public class OxygenSaturationChartFragment extends BaseFragment implements Radio
             barChart.resetTracking();
             if (barData.getYValCount() > 0) {
                 barChart.setData(barData);
+                barChart.highlightValue(new Highlight(0, 0), true);
             } else {
                 barChart.setNoDataText("您还没有测量过血氧");
             }
@@ -266,23 +358,20 @@ public class OxygenSaturationChartFragment extends BaseFragment implements Radio
             barChart.invalidate();
             barChart.animateY(500);
             progressBar.setVisibility(View.GONE);
-            ArrayList<OxygenSaturationChartResponse.ChartTotal> total = dataResponse.total;
-            totalTimes.setText(String.format("累计%d次", total.isEmpty() ? 0 : total.get(0).totallTimes));
-            selectedDate.setText(String.format("%s~%s", startDate, endDate));
         }
 
         public void updateChart() {
             progressBar.setVisibility(View.VISIBLE);
-            selectedDate.setText(String.format("%s~%s", startDate, endDate));
-            totalTimes.setText("");
+            selectedDate.setText(String.format(format, startDate.getTime(), endDate.getTime(), startDate.get(Calendar.WEEK_OF_YEAR)));
+            lastPeriod.setText(lastText);
+            nextPeriod.setText(nextText);
             if (working) {
                 barChart.clear();
                 return;
             }
             if (null == dataResponse) {
-                working = true;
                 barChart.clear();
-                IRequester.getInstance().spoChartData(bus, startDate, endDate);
+                refresh();
             } else if (null == barData) {
                 createData();
             } else {
@@ -301,7 +390,7 @@ public class OxygenSaturationChartFragment extends BaseFragment implements Radio
         @Override
         protected void createRenderers(CombinedChart chart, ChartAnimator animator, ViewPortHandler viewPortHandler) {
 
-            mRenderers = new ArrayList<DataRenderer>();
+            mRenderers = new ArrayList<>();
 
             CombinedChart.DrawOrder[] orders = chart.getDrawOrder();
 
@@ -328,6 +417,12 @@ public class OxygenSaturationChartFragment extends BaseFragment implements Radio
         }
     }
 
+    private class OxygenLineRender extends LineChartRenderer {
+
+        public OxygenLineRender(LineDataProvider chart, ChartAnimator animator, ViewPortHandler viewPortHandler) {
+            super(chart, animator, viewPortHandler);
+        }
+    }
 
     private class BPScatterRender extends ScatterChartRenderer {
         int width, height;
@@ -363,12 +458,15 @@ public class OxygenSaturationChartFragment extends BaseFragment implements Radio
 
     private class OxygenRender extends BarChartRenderer {
         int width;
-        private Drawable drawable;
+        private Drawable drawable, highLight;
+        private int highHalfWidth;
 
         public OxygenRender() {
             super(barChart, barChart.getAnimator(), barChart.getViewPortHandler());
             drawable = ResourcesCompat.getDrawable(getResources(), R.drawable.oxygen_bar, getActivity().getTheme());
             width = drawable.getIntrinsicWidth();
+            highLight = getResources().getDrawable(R.drawable.high_light_orange, getActivity().getTheme());
+            highHalfWidth = highLight.getIntrinsicWidth() / 2;
         }
 
         @Override
@@ -432,8 +530,52 @@ public class OxygenSaturationChartFragment extends BaseFragment implements Radio
                         buffer.buffer[j] += (v - width) / 2;
                         buffer.buffer[j + 2] -= (v - width) / 2;
                     }
+                    if (buffer.buffer[j + 3] > barChart.getViewPortHandler().contentBottom()) {
+                        buffer.buffer[j + 3] = barChart.getViewPortHandler().contentBottom();
+                    }
                     drawable.setBounds((int) buffer.buffer[j], (int) buffer.buffer[j + 1], (int) buffer.buffer[j + 2], (int) buffer.buffer[j + 3]);
                     drawable.draw(c);
+                }
+            }
+        }
+
+        @Override
+        public void drawExtras(Canvas c) {
+            Highlight[] indices = barChart.getHighlighted();
+            if (null == indices) return;
+            int setCount = mChart.getBarData().getDataSetCount();
+
+            for (int i = 0; i < indices.length; i++) {
+
+                Highlight h = indices[i];
+                int index = h.getXIndex();
+
+                int dataSetIndex = h.getDataSetIndex();
+                IBarDataSet set = mChart.getBarData().getDataSetByIndex(dataSetIndex);
+
+                if (set == null || !set.isHighlightEnabled()) continue;
+
+                Transformer trans = mChart.getTransformer(set.getAxisDependency());
+
+                // check outofbounds
+                if (index >= 0 && index < (mChart.getXChartMax() * mAnimator.getPhaseX()) / setCount) {
+
+                    BarEntry e = set.getEntryForXIndex(index);
+
+                    if (e == null || e.getXIndex() != index) continue;
+
+                    float groupspace = mChart.getBarData().getGroupSpace();
+
+                    // calculate the correct x-position
+                    float x = index * setCount + dataSetIndex + groupspace / 2f + groupspace * index;
+
+                    mBarRect.set(x, mChart.getYChartMax(), x, mChart.getYChartMin());
+                    trans.rectValueToPixel(mBarRect, mAnimator.getPhaseY());
+                    highLight.setBounds((int) (mBarRect.left - highHalfWidth),
+                            0,
+                            (int) (mBarRect.left + highHalfWidth),
+                            (int) mBarRect.bottom + highLight.getIntrinsicHeight() / 2);
+                    highLight.draw(c);
                 }
             }
         }

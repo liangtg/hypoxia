@@ -131,36 +131,41 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="#87B76C"
+            android:gravity="center"
             android:orientation="horizontal"
             android:paddingLeft="@dimen/spacing_double"
-            android:paddingRight="@dimen/spacing_double"
-            android:paddingTop="@dimen/spacing_double">
+            android:paddingRight="@dimen/spacing_double">
+
+            <Button
+                android:id="@+id/last_period"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?selectableItemBackgroundBorderless"
+                android:text="上一月"
+                android:textColor="?android:textColorPrimaryInverse" />
 
             <TextView
                 android:id="@+id/selected_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="2016-05-10~2016-05-11"
+                android:text="2016-05-10"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                 android:textColor="?android:textColorPrimaryInverse" />
 
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
-
-            <TextView
-                android:id="@+id/total_times"
+            <Button
+                android:id="@+id/next_period"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="累计4次"
-                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                android:background="?selectableItemBackgroundBorderless"
+                android:text="下一月"
                 android:textColor="?android:textColorPrimaryInverse" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
             android:orientation="horizontal"
             android:paddingBottom="@dimen/spacing_normal"
             android:paddingLeft="@dimen/spacing_double"
@@ -197,6 +202,90 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="分钟/次"
+                android:textColor="?android:textColorPrimaryInverse" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/spacing_double"
+            android:layout_marginRight="@dimen/spacing_double"
+            android:background="#6B9852"
+            android:orientation="horizontal"
+            android:padding="@dimen/spacing_double">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/spacing_normal"
+                android:text="记录时间"
+                android:textColor="?android:textColorPrimaryInverse" />
+
+            <TextView
+                android:id="@+id/highlight_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/spacing_normal"
+                android:text="2016-05-21"
+                android:textColor="?android:textColorPrimaryInverse" />
+
+            <TextView
+                android:id="@+id/abnormal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:text="血氧异常"
+                android:textColor="#6B9852"
+                android:visibility="visible" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/spacing_double"
+            android:layout_marginRight="@dimen/spacing_double"
+            android:background="#6B9852"
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/spacing_double"
+            android:paddingLeft="@dimen/spacing_double"
+            android:paddingRight="@dimen/spacing_double">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="血氧饱和度 "
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                android:textColor="?android:textColorPrimaryInverse" />
+
+            <TextView
+                android:id="@+id/highlight_oxygen"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="125"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                android:textColor="?android:textColorPrimaryInverse" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/spacing_double"
+                android:text="%"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                android:textColor="?android:textColorPrimaryInverse" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="心率 "
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                android:textColor="?android:textColorPrimaryInverse" />
+
+            <TextView
+                android:id="@+id/highlight_pul"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="125"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                 android:textColor="?android:textColorPrimaryInverse" />
         </LinearLayout>
 

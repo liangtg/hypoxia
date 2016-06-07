@@ -131,6 +131,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="#DD6940"
             android:gravity="center"
             android:orientation="horizontal"
             android:paddingLeft="@dimen/spacing_double"
@@ -203,6 +204,7 @@
                 android:textColor="?android:textColorPrimaryInverse" />
 
             <TextView
+                android:id="@+id/highlight_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="@dimen/spacing_normal"
@@ -210,11 +212,13 @@
                 android:textColor="?android:textColorPrimaryInverse" />
 
             <TextView
+                android:id="@+id/abnormal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@android:color/white"
                 android:text="血氧异常"
-                android:textColor="@color/colorPrimaryDark" />
+                android:textColor="@color/colorPrimaryDark"
+                android:visibility="gone" />
         </LinearLayout>
 
         <LinearLayout
@@ -236,9 +240,9 @@
                 android:textColor="?android:textColorPrimaryInverse" />
 
             <TextView
+                android:id="@+id/highlight_length"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:minEms="2"
                 android:text="125"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                 android:textColor="?android:textColorPrimaryInverse" />
@@ -248,29 +252,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginRight="@dimen/spacing_double"
                 android:text="分钟"
-                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                android:textColor="?android:textColorPrimaryInverse" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="血氧"
-                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                android:textColor="?android:textColorPrimaryInverse" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ems="2"
-                android:gravity="right"
-                android:text="80"
-                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                android:textColor="?android:textColorPrimaryInverse" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="%"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                 android:textColor="?android:textColorPrimaryInverse" />
         </LinearLayout>
