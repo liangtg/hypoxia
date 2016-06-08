@@ -23,7 +23,6 @@ import com.syber.hypoxia.data.SignInResponse;
 import com.syber.hypoxia.data.User;
 import com.syber.hypoxia.data.UserSummaryResponse;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 public class MainActivity extends BaseActivity {
@@ -135,8 +134,9 @@ public class MainActivity extends BaseActivity {
                 long time = dateFormat.parse(event.training.timeEnd).getTime();
                 time -= dateFormat.parse(event.training.timeStart).getTime();
                 hypoxiaTime.setText(time / 1000 / 60 + "");
-            } catch (ParseException e) {
+            } catch (Exception e) {
                 Logger.e(e, "");
+                hypoxiaTime.setText("0");
             }
             hypoxiaMode.setText(event.training.trainingMode + "");
             oxygen.setText(event.spo2.O2p + "");

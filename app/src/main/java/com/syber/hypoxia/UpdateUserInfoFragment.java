@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -132,7 +133,9 @@ public class UpdateUserInfoFragment extends BaseFragment implements View.OnClick
         get(R.id.user_weight_container).setOnClickListener(this);
         userName.setText(update.fullname);
         userSex.setText(update.sexstring);
-        userBirthday.setText(sdf.format(Long.parseLong(update.birthday)));
+        if (!TextUtils.isEmpty(update.birthday)) {
+            userBirthday.setText(sdf.format(Long.parseLong(update.birthday)));
+        }
         userHeight.setText(update.height);
         userWeight.setText(update.weight);
         Picasso.with(getActivity()).load(DataRequester.SERVER + "user/getavatar?id=" + update.user_id).into(userImage);
