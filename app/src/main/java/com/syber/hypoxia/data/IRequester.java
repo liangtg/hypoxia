@@ -32,7 +32,7 @@ public class IRequester extends DataRequester {
         TelephonyManager tm = (TelephonyManager) IApplication.getContext().getSystemService(Context.TELEPHONY_SERVICE);
         deviceId = tm.getDeviceId();
         userAgent = String.format("Hypoxia/%s (%s/%s; Android/%s)", BuildConfig.VERSION_NAME, Build.MODEL, Build.DEVICE, Build.VERSION.RELEASE);
-//        SERVER = "http://172.16.22.111:34376/";
+//        SERVER = "http://192.168.123.210:34376/";
     }
 
     public static IRequester getInstance() {
@@ -225,4 +225,12 @@ public class IRequester extends DataRequester {
         enque(postBuilder("user/uploadspo2?1", builder.build()).build(), callback);
         return callback;
     }
+
+    public DataRequest getUserSummary(Bus bus, String uid) {
+        GsonCallback callback = new GsonCallback(bus, UserSummaryResponse.class);
+        enque(getBuilder("user/userdashboard?id=" + uid).build(), callback);
+        return callback;
+    }
+
+
 }

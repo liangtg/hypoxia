@@ -12,28 +12,53 @@
     <android.support.v7.widget.Toolbar
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="添加血氧记录"
-            android:textAppearance="@style/TextAppearance.AppCompat.Title" />
-    </android.support.v7.widget.Toolbar>
+        android:layout_height="wrap_content"></android.support.v7.widget.Toolbar>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?selectableItemBackground"
+        android:layout_marginLeft="@dimen/spacing_double"
+        android:layout_marginRight="@dimen/spacing_double"
+        android:layout_marginTop="@dimen/spacing_normal"
+        android:background="@android:drawable/editbox_background"
         android:clickable="true"
-        android:onClick="onStartTimeClicked"
-        android:orientation="horizontal"
-        android:padding="@dimen/spacing_double">
+        android:gravity="center_vertical"
+        android:onClick="onStartDateClicked"
+        android:orientation="horizontal">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/spacing_double"
+            android:text="测量日期"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+
+        <TextView
+            android:id="@+id/start_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/spacing_normal"
+            android:text="2015-12-31"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            android:textColor="?android:textColorPrimary" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/spacing_double"
+        android:layout_marginRight="@dimen/spacing_double"
+        android:layout_marginTop="@dimen/spacing_normal"
+        android:background="@android:drawable/editbox_background"
+        android:clickable="true"
+        android:gravity="center_vertical"
+        android:onClick="onStartTimeClicked"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/spacing_double"
             android:text="测量时间"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
 
@@ -41,73 +66,84 @@
             android:id="@+id/start_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:drawablePadding="@dimen/spacing_double"
-            android:drawableRight="@drawable/arrow_r"
-            android:gravity="right"
-            android:text="13:24"
-            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-            android:textColor="?android:textColorSecondary" />
+            android:padding="@dimen/spacing_normal"
+            android:text="12:23"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            android:textColor="?android:textColorPrimary" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?selectableItemBackground"
-        android:clickable="true"
-        android:onClick="onSysClicked"
+        android:layout_marginLeft="@dimen/spacing_double"
+        android:layout_marginRight="@dimen/spacing_double"
+        android:layout_marginTop="@dimen/spacing_normal"
         android:orientation="horizontal">
 
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:paddingLeft="@dimen/spacing_double"
-            android:text="血氧饱和度"
-            android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+            android:layout_marginRight="@dimen/spacing_normal"
+            android:layout_weight="1"
+            android:background="@android:drawable/editbox_background"
+            android:clickable="true"
+            android:gravity="center_horizontal"
+            android:onClick="onSysClicked"
+            android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/spo2"
-            android:layout_width="match_parent"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="血氧(%)"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+
+            <EditText
+                android:id="@+id/spo2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:drawablePadding="@dimen/spacing_double"
+                android:ems="2"
+                android:gravity="center_horizontal"
+                android:inputType="number"
+                android:maxLength="3"
+                android:padding="@dimen/spacing_normal"
+                android:text="90"
+                android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                android:textColor="?android:textColorPrimary" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="@null"
-            android:drawablePadding="@dimen/spacing_double"
-            android:drawableRight="@drawable/arrow_r"
-            android:gravity="right"
-            android:inputType="number"
-            android:maxLength="3"
-            android:padding="@dimen/spacing_double"
-            android:text="90"
-            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-            android:textColor="?android:textColorSecondary" />
-    </LinearLayout>
+            android:layout_weight="1"
+            android:background="@android:drawable/editbox_background"
+            android:clickable="true"
+            android:gravity="center_horizontal"
+            android:onClick="onPulClicked"
+            android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?selectableItemBackground"
-        android:clickable="true"
-        android:onClick="onPulClicked"
-        android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="心率(分钟/次)"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingLeft="@dimen/spacing_double"
-            android:text="心率(分钟/次)"
-            android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
-
-        <EditText
-            android:id="@+id/pul"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@null"
-            android:drawablePadding="@dimen/spacing_double"
-            android:drawableRight="@drawable/arrow_r"
-            android:gravity="right"
-            android:inputType="number"
-            android:maxLength="3"
-            android:padding="@dimen/spacing_double"
-            android:text="90"
-            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-            android:textColor="?android:textColorSecondary" />
+            <EditText
+                android:id="@+id/pul"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:drawablePadding="@dimen/spacing_double"
+                android:ems="2"
+                android:gravity="center_horizontal"
+                android:inputType="number"
+                android:maxLength="3"
+                android:padding="@dimen/spacing_normal"
+                android:text="90"
+                android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                android:textColor="?android:textColorPrimary" />
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>
+

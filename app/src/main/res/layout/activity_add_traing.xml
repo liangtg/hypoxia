@@ -4,29 +4,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:divider="?dividerHorizontal"
     android:orientation="vertical"
-    android:showDividers="middle"
     tools:context="com.syber.hypoxia.AddTraingActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="添加训练记录"
-            android:textAppearance="@style/TextAppearance.AppCompat.Title" />
-    </android.support.v7.widget.Toolbar>
+        android:layout_height="wrap_content"></android.support.v7.widget.Toolbar>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?selectableItemBackground"
+        android:layout_marginLeft="@dimen/spacing_double"
+        android:layout_marginRight="@dimen/spacing_double"
+        android:layout_marginTop="@dimen/spacing_normal"
+        android:background="@android:drawable/editbox_background"
         android:clickable="true"
+        android:gravity="center_vertical"
         android:onClick="onStartTimeClicked"
         android:orientation="horizontal"
         android:padding="@dimen/spacing_double">
@@ -34,7 +28,8 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="开始时间"
+            android:layout_marginRight="@dimen/spacing_double"
+            android:text="开始日期"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
 
         <TextView
@@ -42,69 +37,20 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:drawablePadding="@dimen/spacing_double"
-            android:drawableRight="@drawable/arrow_r"
-            android:gravity="right"
             android:text="13:24"
-            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-            android:textColor="?android:textColorSecondary" />
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            android:textColor="?android:textColorPrimary" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?selectableItemBackground"
+        android:layout_marginLeft="@dimen/spacing_double"
+        android:layout_marginRight="@dimen/spacing_double"
+        android:layout_marginTop="@dimen/spacing_normal"
+        android:background="@android:drawable/editbox_background"
         android:clickable="true"
-        android:onClick="onEndTimeClicked"
-        android:orientation="horizontal"
-        android:padding="@dimen/spacing_double">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="结束时间"
-            android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
-
-        <TextView
-            android:id="@+id/end_time"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:drawablePadding="@dimen/spacing_double"
-            android:drawableRight="@drawable/arrow_r"
-            android:gravity="right"
-            android:text="13:24"
-            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-            android:textColor="?android:textColorSecondary" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="@dimen/spacing_double">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="总时长"
-            android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
-
-        <TextView
-            android:id="@+id/all_time"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:drawablePadding="@dimen/spacing_double"
-            android:drawableRight="@drawable/arrow_r"
-            android:gravity="right"
-            android:text="35分钟"
-            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-            android:textColor="?android:textColorSecondary" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?selectableItemBackground"
-        android:clickable="true"
+        android:gravity="center_vertical"
         android:onClick="onModeClicked"
         android:orientation="horizontal"
         android:padding="@dimen/spacing_double">
@@ -112,6 +58,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/spacing_double"
             android:text="训练模式"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
 
@@ -120,10 +67,77 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:drawablePadding="@dimen/spacing_double"
-            android:drawableRight="@drawable/arrow_r"
-            android:gravity="right"
-            android:text="模式1"
-            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-            android:textColor="?android:textColorSecondary" />
+            android:text="模式0"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            android:textColor="?android:textColorPrimary" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/spacing_double"
+        android:layout_marginRight="@dimen/spacing_double"
+        android:layout_marginTop="@dimen/spacing_normal"
+        android:background="@android:drawable/editbox_background"
+        android:clickable="true"
+        android:gravity="center_vertical"
+        android:onClick="onEndTimeClicked"
+        android:orientation="horizontal"
+        android:padding="@dimen/spacing_double">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/spacing_double"
+            android:text="开始时间"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+
+        <TextView
+            android:id="@+id/end_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawablePadding="@dimen/spacing_double"
+            android:text="13:24"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            android:textColor="?android:textColorPrimary" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/spacing_double"
+        android:layout_marginRight="@dimen/spacing_double"
+        android:layout_marginTop="@dimen/spacing_normal"
+        android:background="@android:drawable/editbox_background"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="@dimen/spacing_double">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/spacing_double"
+            android:text="训练时长"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+
+        <TextView
+            android:id="@+id/all_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawablePadding="@dimen/spacing_double"
+            android:ems="2"
+            android:inputType="number"
+            android:maxLength="3"
+            android:text="35"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            android:textColor="?android:textColorPrimary" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawablePadding="@dimen/spacing_double"
+            android:text="分钟"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            android:textColor="?android:textColorPrimary" />
     </LinearLayout>
 </LinearLayout>

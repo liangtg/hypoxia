@@ -65,7 +65,7 @@ public class BloodPressureChartFragment extends BaseFragment implements RadioGro
     private int lastHight = -1;
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
     private CombinedChart barChart;
-    private TextView selectedDate, hightlightSys, highlightDia, highlightPul;
+    private TextView selectedDate, hightlightSys, highlightDia, highlightPul, highlightDate;
     private TextView lastPeriod, nextPeriod;
     private ProgressBar progressBar;
     private View abnormal;
@@ -124,6 +124,7 @@ public class BloodPressureChartFragment extends BaseFragment implements RadioGro
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        highlightDate = get(R.id.highlight_date);
         abnormal = get(R.id.abnormal);
         lastPeriod = get(R.id.last_period);
         nextPeriod = get(R.id.next_period);
@@ -206,6 +207,7 @@ public class BloodPressureChartFragment extends BaseFragment implements RadioGro
     public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
         lastHight = h.getXIndex();
         BPChartResponse.ChartItem item = curProvider.dataResponse.chart.get(lastHight);
+        highlightDate.setText(item.key);
         int sys = dayProvider == curProvider ? item.systolicMax : (int) item.systolicAvg;
         hightlightSys.setText(String.valueOf(sys));
         int dia = dayProvider == curProvider ? item.diastolicMax : (int) item.diastolicAvg;
@@ -500,7 +502,7 @@ public class BloodPressureChartFragment extends BaseFragment implements RadioGro
 
         public BPLineRender(LineDataProvider chart, ChartAnimator animator, ViewPortHandler viewPortHandler) {
             super(chart, animator, viewPortHandler);
-            highLight = getResources().getDrawable(R.drawable.high_light_orange, getActivity().getTheme());
+            highLight = getResources().getDrawable(R.drawable.high_light_red, getActivity().getTheme());
             highHalfWidth = highLight.getIntrinsicWidth() / 2;
         }
 

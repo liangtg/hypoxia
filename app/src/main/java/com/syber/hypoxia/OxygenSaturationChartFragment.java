@@ -465,7 +465,7 @@ public class OxygenSaturationChartFragment extends BaseFragment implements Radio
             super(barChart, barChart.getAnimator(), barChart.getViewPortHandler());
             drawable = ResourcesCompat.getDrawable(getResources(), R.drawable.oxygen_bar, getActivity().getTheme());
             width = drawable.getIntrinsicWidth();
-            highLight = getResources().getDrawable(R.drawable.high_light_orange, getActivity().getTheme());
+            highLight = getResources().getDrawable(R.drawable.high_light_green, getActivity().getTheme());
             highHalfWidth = highLight.getIntrinsicWidth() / 2;
         }
 

@@ -132,7 +132,7 @@ public class UpdateUserInfoFragment extends BaseFragment implements View.OnClick
         get(R.id.user_weight_container).setOnClickListener(this);
         userName.setText(update.fullname);
         userSex.setText(update.sexstring);
-        userBirthday.setText(update.birthday);
+        userBirthday.setText(sdf.format(Long.parseLong(update.birthday)));
         userHeight.setText(update.height);
         userWeight.setText(update.weight);
         Picasso.with(getActivity()).load(DataRequester.SERVER + "user/getavatar?id=" + update.user_id).into(userImage);

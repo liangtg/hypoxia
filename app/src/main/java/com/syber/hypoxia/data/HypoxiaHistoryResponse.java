@@ -17,13 +17,16 @@ public class HypoxiaHistoryResponse extends BaseResponse {
         public String device_imei;// "123456789012345",
         public String first_activating;// "/Date(1459481050000)/",
         public String manufacturer;// "多美特",
+        @SerializedName("TrainingMode")
         public String model;// "Unknow",
         public String err_no;// "08",
         public String err_desc;// "记忆操作失败",
         public String id;// null,
         public String device_id;// null,
         public String user_id;// null,
+        @SerializedName("Time_Start")
         public long time_start;// "/Date(1462793104000)/",
+        @SerializedName("Time_End")
         public long time_end;// "/Date(1462793104000)/",
         public String time_upload;// "/Date(1462862448000)/",
         public String content_type;// 2,

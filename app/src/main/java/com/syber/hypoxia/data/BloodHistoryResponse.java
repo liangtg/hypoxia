@@ -136,7 +136,7 @@ public class BloodHistoryResponse extends BaseResponse {
         }
     }
 
-    public class Pressure {
+    public static class Pressure {
         /**
          * 2016-05-13 17:32:36
          **/

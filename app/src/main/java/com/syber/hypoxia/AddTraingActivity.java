@@ -22,25 +22,20 @@ import com.syber.hypoxia.data.IRequester;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Locale;
 
 public class AddTraingActivity extends BaseActivity implements TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener {
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     ProgressDialog progressDialog;
-
-    Calendar calendar = Calendar.getInstance(Locale.CHINA);
     Calendar start = Calendar.getInstance(), end = Calendar.getInstance();
-
     ViewHolder viewHolder;
     int traingMode = 0;
-    private boolean startTime = true;
+    private int[] modeTime = {35, 35, 45, 35, 45};
     private Bus bus = new Bus();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         startManageBus(bus, this);
-        setTitle("");
         setContentView(R.layout.activity_add_traing);
         initAppBar();
         viewHolder = new ViewHolder(findViewById(R.id.content));
@@ -55,13 +50,16 @@ public class AddTraingActivity extends BaseActivity implements TimePickerDialog.
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (R.id.save == item.getItemId()) {
-            if (end.after(start)) {
-                progressDialog = ProgressDialog.show(this, null, "正在上传，请稍等", true, true);
-                IRequester.getInstance().addTraing(bus, sdf.format(start.getTime()), sdf.format(end.getTime()), String.valueOf(traingMode));
-            } else {
-                showToast("请选择正确的结束时间");
+            if (viewHolder.allTime.getText().length() > 0) {
+                int minute = Integer.parseInt(viewHolder.allTime.getText().toString());
+                if (minute > 0) {
+                    end.setTimeInMillis(start.getTimeInMillis());
+                    end.add(Calendar.MINUTE, minute);
+                    progressDialog = ProgressDialog.show(this, null, "正在上传，请稍等", true, true);
+                    IRequester.getInstance().addTraing(bus, sdf.format(start.getTime()), sdf.format(end.getTime()), String.valueOf(traingMode));
+                    return true;
+                }
             }
-            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -74,23 +72,26 @@ public class AddTraingActivity extends BaseActivity implements TimePickerDialog.
     }
 
     public void onStartTimeClicked(View view) {
-        startTime = true;
-        new DatePickerDialog(this, this, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
+        new DatePickerDialog(this, this, start.get(Calendar.YEAR), start.get(Calendar.MONTH), start.get(Calendar.DAY_OF_MONTH)).show();
     }
 
     public void onEndTimeClicked(View view) {
-        startTime = false;
-        new DatePickerDialog(this, this, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
+        new TimePickerDialog(this, this, start.get(Calendar.HOUR_OF_DAY), start.get(Calendar.MINUTE), true).show();
     }
 
     public void onModeClicked(final View view) {
+//        1，	35，	180
+//        2，	45，	180
+//        3，	35，	220
+//        4，	45，	220
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("训练模式");
-        builder.setItems(new String[]{"模式1", "模式2", "模式3", "模式4"}, new DialogInterface.OnClickListener() {
+        builder.setItems(new String[]{"模式0", "模式1", "模式2", "模式3", "模式4"}, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 traingMode = which;
-                viewHolder.mode.setText("模式" + (which + 1));
+                viewHolder.mode.setText("模式" + which);
+                viewHolder.allTime.setText(String.valueOf(modeTime[which]));
             }
         });
         builder.show();
@@ -98,24 +99,15 @@ public class AddTraingActivity extends BaseActivity implements TimePickerDialog.
 
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-        calendar.set(Calendar.MINUTE, minute);
-        if (startTime) {
-            start.setTimeInMillis(calendar.getTimeInMillis());
-            viewHolder.startTime.setText(sdf.format(start.getTime()));
-        } else {
-            end.setTimeInMillis(calendar.getTimeInMillis());
-            viewHolder.endTime.setText(sdf.format(end.getTime()));
-        }
-        if (end.after(start)) {
-            viewHolder.allTime.setText((end.getTimeInMillis() - start.getTimeInMillis()) / 1000 / 60 + "分钟");
-        }
+        start.set(Calendar.HOUR_OF_DAY, hourOfDay);
+        start.set(Calendar.MINUTE, minute);
+        viewHolder.endTime.setText(sdf.format(start.getTime()).substring(11, 16));
     }
 
     @Override
     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-        calendar.set(year, monthOfYear, dayOfMonth);
-        new TimePickerDialog(this, this, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show();
+        start.set(year, monthOfYear, dayOfMonth);
+        viewHolder.startTime.setText(sdf.format(start.getTime()).substring(0, 10));
     }
 
     class ViewHolder extends BaseViewHolder {
@@ -127,10 +119,8 @@ public class AddTraingActivity extends BaseActivity implements TimePickerDialog.
             endTime = get(R.id.end_time);
             allTime = get(R.id.all_time);
             mode = get(R.id.mode);
-            startTime.setText(sdf.format(calendar.getTime()));
-            end.add(Calendar.MINUTE, 20);
-            endTime.setText(sdf.format(end.getTime()));
-            allTime.setText("20分钟");
+            startTime.setText(sdf.format(start.getTime()).substring(0, 10));
+            endTime.setText(sdf.format(start.getTime()).substring(11, 16));
         }
     }
 

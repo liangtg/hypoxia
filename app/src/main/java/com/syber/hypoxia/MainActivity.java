@@ -11,24 +11,31 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.orhanobut.logger.Logger;
 import com.pgyersdk.update.PgyUpdateManager;
+import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 import com.syber.base.BaseActivity;
 import com.syber.base.BaseViewHolder;
-import com.syber.base.data.DataRequester;
 import com.syber.hypoxia.data.IRequester;
 import com.syber.hypoxia.data.SignInResponse;
 import com.syber.hypoxia.data.User;
+import com.syber.hypoxia.data.UserSummaryResponse;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 public class MainActivity extends BaseActivity {
     private ViewHolder viewHolder;
+    private Bus bus = new Bus();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        startManageBus(bus, this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.app_bar);
-        toolbar.setTitle("");
         setSupportActionBar(toolbar);
         PgyUpdateManager.register(this);
         if (!User.isSignIn()) {
@@ -47,6 +54,17 @@ public class MainActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         viewHolder.updateUserInfo();
+        if (User.isSignIn()) IRequester.getInstance().getUserSummary(bus, User.getUserInfoExt().user_id);
+    }
+
+    @Subscribe
+    public void withSummary(UserSummaryResponse event) {
+        if (isFinishing()) return;
+        if (event.isSuccess()) {
+            viewHolder.updateSummary(event);
+        } else {
+            showToast("用户数据获取失败");
+        }
     }
 
     @Override
@@ -79,7 +97,9 @@ public class MainActivity extends BaseActivity {
 
     private class ViewHolder extends BaseViewHolder {
         TextView userInfo, userName;
+        TextView hypoxiaTime, hypoxiaMode, sys, dia, oxygen, oxygenRate;
         private ImageView userImage;
+        private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         public ViewHolder() {
             super(findViewById(R.id.view_holder));
@@ -87,9 +107,17 @@ public class MainActivity extends BaseActivity {
             get(R.id.ecg).setOnClickListener(this);
             get(R.id.blood).setOnClickListener(this);
             get(R.id.spo2).setOnClickListener(this);
+            get(R.id.manage_info).setOnClickListener(this);
+            get(R.id.doctor).setOnClickListener(this);
             userInfo = get(R.id.user_info);
             userName = get(R.id.user_name);
             userImage = get(R.id.user_image);
+            hypoxiaTime = get(R.id.hypoxia_time);
+            hypoxiaMode = get(R.id.hypoxia_mode);
+            sys = get(R.id.sys);
+            dia = get(R.id.dia);
+            oxygen = get(R.id.oxygen);
+            oxygenRate = get(R.id.oxygen_rate);
         }
 
         void updateUserInfo() {
@@ -100,6 +128,21 @@ public class MainActivity extends BaseActivity {
                 Picasso.with(MainActivity.this).load(IRequester.SERVER + "user/getavatar?id=" + User.getUserInfoExt().user_id).placeholder(R.drawable.user).into(
                         userImage);
             }
+        }
+
+        private void updateSummary(UserSummaryResponse event) {
+            try {
+                long time = dateFormat.parse(event.training.timeEnd).getTime();
+                time -= dateFormat.parse(event.training.timeStart).getTime();
+                hypoxiaTime.setText(time / 1000 / 60 + "");
+            } catch (ParseException e) {
+                Logger.e(e, "");
+            }
+            hypoxiaMode.setText(event.training.trainingMode + "");
+            oxygen.setText(event.spo2.O2p + "");
+            oxygenRate.setText(event.spo2.HeartRate + "");
+            sys.setText(event.pressure.Systolic + "");
+            dia.setText(event.pressure.Diastolic + "");
         }
 
         @Override
@@ -122,6 +165,8 @@ public class MainActivity extends BaseActivity {
                 } catch (PackageManager.NameNotFoundException e) {
                     showToast("您没有安装该程序");
                 }
+            } else if (R.id.manage_info == id) {
+                gotoActivity(UpdateUserInfoActivity.class);
             }
         }
     }

@@ -130,7 +130,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#DD6940"
+            android:background="#FFDC6B6B"
             android:gravity="center"
             android:orientation="horizontal"
             android:paddingLeft="@dimen/spacing_double"
@@ -141,6 +141,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="?selectableItemBackgroundBorderless"
+                android:drawableLeft="@drawable/ic_arrow_drop_left_24dp"
                 android:text="上一月"
                 android:textColor="?android:textColorPrimaryInverse" />
 
@@ -157,6 +158,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="?selectableItemBackgroundBorderless"
+                android:drawableRight="@drawable/ic_arrow_drop_right_24dp"
                 android:text="下一月"
                 android:textColor="?android:textColorPrimaryInverse" />
         </LinearLayout>

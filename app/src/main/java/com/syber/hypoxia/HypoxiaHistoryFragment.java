@@ -95,7 +95,7 @@ public class HypoxiaHistoryFragment extends BaseFragment {
             holder.time.setText(String.format("%s~%s", timeFormat.format(new Date(item.time_start)), timeFormat.format(new Date(item.time_end))));
             long minute = (item.time_end - item.time_start) / 1000 / 60;
             holder.minute.setText(String.format("%d分钟", minute));
-            holder.mode.setText("模式" + (item.training.trainingMode + 1));
+            holder.mode.setText("模式" + item.training.trainingMode);
             holder.progressBar.setProgress((int) minute);
         }
 

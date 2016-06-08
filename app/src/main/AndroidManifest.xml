@@ -43,14 +43,14 @@
             android:name=".BloodPressureActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:exported="true"
-            android:label="@string/app_name"
+            android:label="血压记录"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".AddTraingActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:exported="true"
-            android:label="@string/app_name"
+            android:label="添加训练记录"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
@@ -71,7 +71,7 @@
             android:name=".AddSPOActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:exported="true"
-            android:label="@string/app_name"
+            android:label="添加血氧记录"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
