@@ -524,7 +524,7 @@ public class BloodPressureChartFragment extends BaseFragment implements RadioGro
                 if (xIndex > mChart.getXChartMax() * mAnimator.getPhaseX()) continue;
 
                 final float yVal = set.getYValForXIndex(xIndex);
-                if (yVal == Float.NaN) continue;
+                if (Float.isNaN(yVal)) continue;
 
                 float y = yVal * mAnimator.getPhaseY(); // get
                 // the

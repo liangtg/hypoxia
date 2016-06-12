@@ -61,7 +61,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:addStatesFromChildren="true"
-        app:cardBackgroundColor="#FFFF0000">
+        app:cardBackgroundColor="@color/colorPrimary">
 
         <Button
             android:id="@+id/signin"
