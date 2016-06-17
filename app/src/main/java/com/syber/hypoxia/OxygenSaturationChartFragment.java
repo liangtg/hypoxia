@@ -309,6 +309,7 @@ public class OxygenSaturationChartFragment extends BaseFragment implements Radio
             if (working) {
                 return;
             }
+            barData = null;
             working = true;
             IRequester.getInstance().spoChartData(bus, sdf.format(startDate.getTime()), sdf.format(endDate.getTime()));
         }
@@ -338,6 +339,7 @@ public class OxygenSaturationChartFragment extends BaseFragment implements Radio
             lineDataSet.setColor(0xFFFF0000);
             lineDataSet.setCircleColor(0xFFFF0000);
             lineDataSet.setCircleColorHole(0xFFFF0000);
+            lineDataSet.setHighlightEnabled(false);
             barData.setData(new LineData(xVals, lineDataSet));
             barData.setDrawValues(false);
             resetData();
@@ -537,6 +539,10 @@ public class OxygenSaturationChartFragment extends BaseFragment implements Radio
                     drawable.draw(c);
                 }
             }
+        }
+
+        @Override
+        public void drawHighlighted(Canvas c, Highlight[] indices) {
         }
 
         @Override

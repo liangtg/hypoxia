@@ -23,7 +23,7 @@ import java.util.ArrayList;
 public class BloodPressureHistoryFragment extends BaseFragment {
     private RecyclerView allHistory;
     private Bus bus = new Bus();
-    private int page = 0;
+    private int page = 1;
     private ArrayList<BloodHistoryResponse.HistoryItem> data = new ArrayList<>();
     private HistoryAdapter historyAdapter;
 

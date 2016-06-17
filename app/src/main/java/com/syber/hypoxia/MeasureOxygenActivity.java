@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothProfile;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -31,6 +32,7 @@ public class MeasureOxygenActivity extends BaseActivity implements BluetoothAdap
     private static final UUID NOTIFY3 = UUID.fromString("0000cd03-0000-1000-8000-00805f9b34fb");
     private static final UUID NOTIFY4 = UUID.fromString("0000cd04-0000-1000-8000-00805f9b34fb");
     private static final UUID[] NOTIFY = {NOTIFY1, NOTIFY2, NOTIFY3, NOTIFY4};
+    private static final int OPEN_BLUETOOTH = 100;
     public static UUID SERVICE = UUID.fromString("ba11f08c-5f14-0b0d-1080-007cbe422c76");
     private boolean blueEanbled;
     private ViewHolder viewHolder;
@@ -44,18 +46,25 @@ public class MeasureOxygenActivity extends BaseActivity implements BluetoothAdap
     private BluetoothGattCallback callback = new GattCallback();
     private BluetoothGatt gatt;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_measure_oxygen);
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         blueEanbled = bluetoothAdapter.isEnabled();
-        setTitle("");
         initAppBar();
-        bluetoothAdapter.enable();
         handler = new AHandler(this);
         viewHolder = new ViewHolder();
+        if (!blueEanbled) {
+            startActivityForResult(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE), OPEN_BLUETOOTH);
+        } else {
+            ViewPost.postOnAnimation(viewHolder.indeterminate, new Runnable() {
+                @Override
+                public void run() {
+                    scan(true);
+                }
+            });
+        }
     }
 
     private void scan(boolean enable) {
@@ -66,6 +75,18 @@ public class MeasureOxygenActivity extends BaseActivity implements BluetoothAdap
             handler.postDelayed(stopRunnable, SCAN_TIME);
         } else {
             stopRunnable.run();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (OPEN_BLUETOOTH == requestCode) {
+            if (RESULT_OK == resultCode) {
+                scan(true);
+            } else {
+                showToast("没有打开蓝牙");
+                finish();
+            }
         }
     }
 
@@ -150,12 +171,6 @@ public class MeasureOxygenActivity extends BaseActivity implements BluetoothAdap
             super(findViewById(R.id.view_holder));
             indeterminate = get(R.id.indeterminate);
             switcher = get(R.id.switcher);
-            ViewPost.postOnAnimation(indeterminate, new Runnable() {
-                @Override
-                public void run() {
-                    scan(true);
-                }
-            });
         }
     }
 

@@ -78,7 +78,7 @@
             android:name=".MeasureOxygenActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:exported="true"
-            android:label="@string/app_name"
+            android:label="测量血氧"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity

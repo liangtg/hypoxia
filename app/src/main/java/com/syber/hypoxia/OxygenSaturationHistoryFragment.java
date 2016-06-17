@@ -17,9 +17,7 @@ import com.syber.base.BaseViewHolder;
 import com.syber.hypoxia.data.IRequester;
 import com.syber.hypoxia.data.OxygenSaturationHistoryResponse;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Locale;
 
 /**
  * Created by liangtg on 16-6-6.
@@ -28,7 +26,7 @@ public class OxygenSaturationHistoryFragment extends BaseFragment {
     private RecyclerView allHistory;
     private HistoryAdapter historyAdapter;
     private ArrayList<OxygenSaturationHistoryResponse.HistoryItem> data = new ArrayList<>();
-    private int page = 0;
+    private int page = 1;
     private Bus bus = new Bus();
 
     @Override
@@ -77,8 +75,6 @@ public class OxygenSaturationHistoryFragment extends BaseFragment {
     }
 
     private class HistoryAdapter extends RecyclerView.Adapter<AdapterHolder> {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
-        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.CHINA);
 
         @Override
         public AdapterHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -88,6 +84,7 @@ public class OxygenSaturationHistoryFragment extends BaseFragment {
         @Override
         public void onBindViewHolder(AdapterHolder holder, int position) {
             OxygenSaturationHistoryResponse.HistoryItem item = data.get(position);
+            if (null == item.spo2) return;
             holder.date.setText(item.spo2.Time_Test);
             holder.spo.setText(String.format("血氧%d%%", item.spo2.O2p));
             holder.rate.setText("心率" + item.spo2.HeartRate);

@@ -290,6 +290,7 @@ public class HypoxiaChartFragment extends BaseFragment implements RadioGroup.OnC
             progressBar.setVisibility(View.VISIBLE);
             if (working) return;
             working = true;
+            barData = null;
             IRequester.getInstance().hypoxiaChartData(bus, sdf.format(startDate.getTime()), sdf.format(endDate.getTime()));
         }
 

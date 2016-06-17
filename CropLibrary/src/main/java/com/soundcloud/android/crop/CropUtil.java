@@ -128,6 +128,7 @@ class CropUtil {
         return outputFile.getAbsolutePath();
     }
 
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings("ANDROID_OPEN_STREAM")
     @Nullable
     private static File getFromMediaUriPfd(Context context, ContentResolver resolver, Uri uri) {
         if (uri == null) return null;

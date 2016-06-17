@@ -323,6 +323,7 @@ public class BloodPressureChartFragment extends BaseFragment implements RadioGro
                 return;
             }
             progressBar.setVisibility(View.VISIBLE);
+            barData = null;
             working = true;
             IRequester.getInstance().bloodChartData(bus, sdf.format(startDate.getTime()), sdf.format(endDate.getTime()));
         }
@@ -332,8 +333,6 @@ public class BloodPressureChartFragment extends BaseFragment implements RadioGro
             ArrayList<Entry> rateYVals = new ArrayList<>();
             ArrayList<Entry> sysYVals = new ArrayList<>();
             ArrayList<Entry> diaYVals = new ArrayList<>();
-            ArrayList<Entry> sysMinYVals = new ArrayList<>();
-            ArrayList<Entry> diaMinYVals = new ArrayList<>();
             for (int i = 0; i < dataResponse.chart.size(); i++) {
                 BPChartResponse.ChartItem item = dataResponse.chart.get(i);
                 xVals.add(item.key);
@@ -344,9 +343,7 @@ public class BloodPressureChartFragment extends BaseFragment implements RadioGro
                 } else {
                     rateYVals.add(new Entry(item.heartRateAvg, i));
                     sysYVals.add(new Entry(item.systolicMax, i));
-                    sysMinYVals.add(new Entry(item.systolicMin, i));
                     diaYVals.add(new Entry(item.diastolicMax, i));
-                    diaMinYVals.add(new Entry(item.diastolicMin, i));
                 }
             }
             LineData lineData = new LineData(xVals);
