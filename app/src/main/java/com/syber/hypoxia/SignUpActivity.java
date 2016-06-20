@@ -52,14 +52,15 @@ public class SignUpActivity extends BaseActivity {
     }
 
     private class ViewHolder extends BaseViewHolder implements TextView.OnEditorActionListener {
-        TextInputLayout inputPhone, inputPass, inputPassAgain;
+        TextInputLayout inputPhone, inputPass, inputPassAgain, inputID;
 
         public ViewHolder() {
             super(findViewById(R.id.view_holder));
             inputPhone = get(R.id.input_phone);
             inputPass = get(R.id.input_pass);
             inputPassAgain = get(R.id.input_pass_again);
-            inputPassAgain.getEditText().setOnEditorActionListener(this);
+            inputID = get(R.id.input_id);
+            inputID.getEditText().setOnEditorActionListener(this);
             get(R.id.signup).setOnClickListener(this);
         }
 
@@ -78,8 +79,11 @@ public class SignUpActivity extends BaseActivity {
         }
 
         private void attemptSignup() {
-            if (checkPhone() && checkPass() && checkPassAgain()) {
-                IRequester.getInstance().signUp(bus, inputPhone.getEditText().getText().toString(), inputPass.getEditText().getText().toString());
+            if (checkPhone() && checkPass() && checkPassAgain() && checkID()) {
+                IRequester.getInstance().signUp(bus,
+                        inputPhone.getEditText().getText().toString(),
+                        inputPass.getEditText().getText().toString(),
+                        inputID.getEditText().getText().toString());
             }
         }
 
@@ -122,6 +126,20 @@ public class SignUpActivity extends BaseActivity {
                 result = true;
             }
             inputPassAgain.setErrorEnabled(!result);
+            return result;
+        }
+
+        private boolean checkID() {
+            boolean result = false;
+            Editable again = inputID.getEditText().getText();
+            if (again.length() == 0) {
+                inputID.setError(getString(R.string.prompt_input_id));
+            } else if (again.length() != 15 && again.length() != 18) {
+                inputID.setError(getString(R.string.prompt_input_correct_id));
+            } else {
+                result = true;
+            }
+            inputID.setErrorEnabled(!result);
             return result;
         }
 

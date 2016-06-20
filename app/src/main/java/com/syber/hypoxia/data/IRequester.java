@@ -49,11 +49,12 @@ public class IRequester extends DataRequester {
         return callback;
     }
 
-    public DataRequest signUp(Bus bus, String phone, String pass) {
+    public DataRequest signUp(Bus bus, String phone, String pass, String id) {
         GsonCallback callback = new GsonCallback(bus, SignInResponse.class);
         FormBody.Builder builder = new FormBody.Builder();
         builder.add("user_name", phone);
         builder.add("pswd", pass);
+        builder.add("identitycard", id);
         enque(postBuilder("user/register?1", builder.build()).build(), callback);
         return callback;
     }

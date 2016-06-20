@@ -49,7 +49,7 @@ public class UpdateUserInfoFragment extends BaseFragment implements View.OnClick
     private boolean editable = false;
     private ImageView userImage;
     private TextView userSex, userBirthday, userHeight, userWeight;
-    private EditText userName;
+    private EditText userName, userID;
     private File file;
     private SignInResponse.UserInfoExt update = new SignInResponse.UserInfoExt();
     private ProgressDialog progressDialog;
@@ -68,6 +68,7 @@ public class UpdateUserInfoFragment extends BaseFragment implements View.OnClick
         update.birthday = ext.birthday;
         update.height = ext.height;
         update.weight = ext.weight;
+        update.identitycard = ext.identitycard;
         editable = getActivity().getIntent().getBooleanExtra(UpdateUserInfoActivity.KEY_EDIT, false);
     }
 
@@ -126,6 +127,7 @@ public class UpdateUserInfoFragment extends BaseFragment implements View.OnClick
         userBirthday = get(R.id.user_birthday_text);
         userHeight = get(R.id.user_height_text);
         userWeight = get(R.id.user_weight_text);
+        userID = get(R.id.user_id_text);
         get(R.id.user_image_container).setOnClickListener(this);
         get(R.id.user_sex_container).setOnClickListener(this);
         get(R.id.user_birthday_container).setOnClickListener(this);
@@ -138,6 +140,7 @@ public class UpdateUserInfoFragment extends BaseFragment implements View.OnClick
         }
         userHeight.setText(update.height);
         userWeight.setText(update.weight);
+        userID.setText(update.identitycard);
         Picasso.with(getActivity()).load(DataRequester.SERVER + "user/getavatar?id=" + update.user_id).into(userImage);
         updateEdit();
     }

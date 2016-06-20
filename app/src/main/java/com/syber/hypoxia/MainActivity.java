@@ -167,6 +167,8 @@ public class MainActivity extends BaseActivity {
                 }
             } else if (R.id.manage_info == id) {
                 gotoActivity(UpdateUserInfoActivity.class);
+            } else if (R.id.doctor == id) {
+                gotoActivity(AdviceListActivity.class);
             }
         }
     }
