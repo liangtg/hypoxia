@@ -67,10 +67,11 @@ public class IRequester extends DataRequester {
 //    weight		(必须)	double		体重
 //    blood
 
-    public DataRequest updateUserInfo(Bus bus, SignInResponse.UserInfoExt ext) {
+    public DataRequest updateUserInfo(Bus bus, String pass, SignInResponse.UserInfoExt ext) {
         GsonCallback<SignInResponse> callback = new GsonCallback<>(bus, SignInResponse.class);
         FormBody.Builder builder = new FormBody.Builder();
         formAdd(builder, "user_id", ext.user_id);
+        formAdd(builder, "pswd", pass);
         formAdd(builder, "fullname", ext.fullname);
         formAdd(builder, "sex", ext.sex);
         formAdd(builder, "birthday", ext.birthday);
@@ -89,14 +90,12 @@ public class IRequester extends DataRequester {
         return callback;
     }
 
-    public DataRequest resetPwd(Bus bus, SignInResponse.UserInfoExt ext, String pswd) {
+    public DataRequest resetPwd(Bus bus, String phone, String id, String pswd) {
         GsonCallback callback = new GsonCallback(bus, SignInResponse.class);
         FormBody.Builder builder = new FormBody.Builder();
         formAdd(builder, "pswd", pswd);
-        formAdd(builder, "user_id", ext.user_id);
-        formAdd(builder, "sex", ext.sex);
-        formAdd(builder, "height", ext.height);
-        formAdd(builder, "weight", ext.weight);
+        formAdd(builder, "phone", phone);
+        formAdd(builder, "identitycard", id);
         enque(postBuilder("user/resetpassword?1", builder.build()).build(), callback);
         return callback;
     }

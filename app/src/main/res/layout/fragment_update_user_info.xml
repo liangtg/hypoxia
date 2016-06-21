@@ -61,8 +61,38 @@
             android:id="@+id/user_name_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@null"
             android:drawableRight="@drawable/arrow_r"
             android:inputType="text"
+            android:padding="@dimen/spacing_double"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+            android:textColor="?android:textColorSecondary" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/user_id_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?selectableItemBackground"
+        android:clickable="true"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:minEms="5"
+            android:padding="@dimen/spacing_double"
+            android:text="身份证号"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+
+        <EditText
+            android:id="@+id/user_id_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:inputType="textVisiblePassword"
+            android:maxLength="18"
             android:padding="@dimen/spacing_double"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
             android:textColor="?android:textColorSecondary" />
@@ -143,6 +173,7 @@
             android:id="@+id/user_height_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@null"
             android:inputType="number"
             android:maxLength="3"
             android:padding="@dimen/spacing_double"
@@ -171,36 +202,9 @@
             android:id="@+id/user_weight_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@null"
             android:inputType="number"
             android:maxLength="3"
-            android:padding="@dimen/spacing_double"
-            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-            android:textColor="?android:textColorSecondary" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/user_id_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?selectableItemBackground"
-        android:clickable="true"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:minEms="5"
-            android:padding="@dimen/spacing_double"
-            android:text="身份证"
-            android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
-
-        <EditText
-            android:id="@+id/user_id_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textVisiblePassword"
-            android:maxLength="18"
             android:padding="@dimen/spacing_double"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
             android:textColor="?android:textColorSecondary" />

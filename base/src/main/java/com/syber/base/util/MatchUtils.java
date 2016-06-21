@@ -16,6 +16,6 @@ public class MatchUtils {
     }
 
     public static boolean matchPass(CharSequence input) {
-        return Pattern.matches("^(?!\\d+$)(?![a-zA-Z]+$)[0-9a-zA-Z]{8,}$", input);
+        return Pattern.matches("^(?!\\d+$)(?![a-zA-Z]+$)[0-9a-zA-Z]{6,}$", input);
     }
 }

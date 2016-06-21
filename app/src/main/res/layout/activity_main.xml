@@ -102,6 +102,15 @@
                 android:background="?selectableItemBackground"
                 android:text="医生建议"
                 android:textColor="?android:textColorPrimaryInverse" />
+
+            <Button
+                android:id="@+id/device"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="?selectableItemBackground"
+                android:text="健康手环"
+                android:textColor="?android:textColorPrimaryInverse" />
         </LinearLayout>
     </LinearLayout>
 
@@ -109,6 +118,7 @@
         android:id="@+id/ecg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_normal"
         android:background="@android:color/white"
         android:clickable="true">
 
@@ -123,9 +133,9 @@
             android:paddingLeft="@dimen/spacing_double"
             android:paddingRight="@dimen/spacing_double"
             android:paddingTop="@dimen/spacing_normal"
-            android:text="心电检测"
+            android:text="心率记录"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-            android:textColor="?android:textColorSecondary" />
+            android:textColor="#E8A496" />
 
         <ImageView
             android:id="@+id/ecg_divider"
@@ -138,7 +148,7 @@
             android:scaleType="fitXY"
             android:src="?dividerVertical" />
 
-        <GridLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
@@ -148,29 +158,7 @@
             android:orientation="horizontal">
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="@dimen/spacing_double"
-                android:text="心率" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="64"
-                android:textAppearance="@style/TextAppearance.AppCompat.Title" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="次/分钟" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="@dimen/spacing_double"
-                android:text="呼吸" />
-
-            <TextView
+                android:id="@+id/heart_rate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="75"
@@ -180,7 +168,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="次/分钟" />
-        </GridLayout>
+        </LinearLayout>
 
         <ImageView
             android:layout_width="wrap_content"
@@ -189,6 +177,148 @@
             android:layout_centerVertical="true"
             android:layout_margin="@dimen/spacing_double"
             android:src="@drawable/arrow_r" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/blood"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_normal"
+        android:background="@android:color/white"
+        android:clickable="true">
+
+        <TextView
+            android:id="@+id/blood_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawablePadding="@dimen/spacing_micro"
+            android:drawableTop="@drawable/ic_bp"
+            android:gravity="center_vertical"
+            android:paddingBottom="@dimen/spacing_normal"
+            android:paddingLeft="@dimen/spacing_double"
+            android:paddingRight="@dimen/spacing_double"
+            android:paddingTop="@dimen/spacing_normal"
+            android:text="血压记录"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+            android:textColor="#e98b8b" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_margin="@dimen/spacing_double"
+            android:src="@drawable/arrow_r" />
+
+        <ImageView
+            android:id="@+id/blood_divider"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/blood_icon"
+            android:layout_alignTop="@id/blood_icon"
+            android:layout_margin="@dimen/spacing_normal"
+            android:layout_toRightOf="@id/blood_icon"
+            android:scaleType="fitXY"
+            android:src="?dividerVertical" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/spacing_double"
+            android:layout_toRightOf="@id/blood_divider"
+            android:columnCount="3"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@id/sys"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="135"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="/" />
+
+            <TextView
+                android:id="@+id/dia"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="mmHg" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/spo2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_normal"
+        android:background="@android:color/white"
+        android:clickable="true">
+
+        <TextView
+            android:id="@+id/spo2_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawablePadding="@dimen/spacing_micro"
+            android:drawableTop="@drawable/ic_oxygen"
+            android:gravity="center_vertical"
+            android:paddingBottom="@dimen/spacing_normal"
+            android:paddingLeft="@dimen/spacing_double"
+            android:paddingRight="@dimen/spacing_double"
+            android:paddingTop="@dimen/spacing_normal"
+            android:text="血氧记录"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+            android:textColor="#9DCB83" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_margin="@dimen/spacing_double"
+            android:src="@drawable/arrow_r" />
+
+        <ImageView
+            android:id="@+id/spo2_divider"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/spo2_icon"
+            android:layout_alignTop="@id/spo2_icon"
+            android:layout_margin="@dimen/spacing_normal"
+            android:layout_toRightOf="@id/spo2_icon"
+            android:scaleType="fitXY"
+            android:src="?dividerVertical" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/spacing_double"
+            android:layout_toRightOf="@id/spo2_divider"
+            android:columnCount="3"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/oxygen"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="96"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="%" />
+        </LinearLayout>
     </RelativeLayout>
 
     <RelativeLayout
@@ -203,8 +333,6 @@
             android:id="@+id/hypoxia_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="?selectableItemBackground"
-            android:clickable="true"
             android:drawablePadding="@dimen/spacing_micro"
             android:drawableTop="@drawable/ic_hypoxia"
             android:gravity="center_vertical"
@@ -235,7 +363,7 @@
             android:scaleType="fitXY"
             android:src="?dividerVertical" />
 
-        <GridLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
@@ -247,25 +375,6 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="@dimen/spacing_double"
-                android:text="时长" />
-
-            <TextView
-                android:id="@+id/hypoxia_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="35"
-                android:textAppearance="@style/TextAppearance.AppCompat.Title" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="分钟" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="@dimen/spacing_double"
                 android:text="模式" />
 
             <TextView
@@ -274,189 +383,23 @@
                 android:layout_height="wrap_content"
                 android:text="1"
                 android:textAppearance="@style/TextAppearance.AppCompat.Title" />
-        </GridLayout>
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/blood"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_normal"
-        android:background="@android:color/white"
-        android:clickable="true">
-
-        <TextView
-            android:id="@+id/blood_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="?selectableItemBackground"
-            android:clickable="true"
-            android:drawablePadding="@dimen/spacing_micro"
-            android:drawableTop="@drawable/ic_bp"
-            android:gravity="center_vertical"
-            android:paddingBottom="@dimen/spacing_normal"
-            android:paddingLeft="@dimen/spacing_double"
-            android:paddingRight="@dimen/spacing_double"
-            android:paddingTop="@dimen/spacing_normal"
-            android:text="血压记录"
-            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-            android:textColor="?android:textColorSecondary" />
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_margin="@dimen/spacing_double"
-            android:src="@drawable/arrow_r" />
-
-        <ImageView
-            android:id="@+id/blood_divider"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@id/blood_icon"
-            android:layout_alignTop="@id/blood_icon"
-            android:layout_margin="@dimen/spacing_normal"
-            android:layout_toRightOf="@id/blood_icon"
-            android:scaleType="fitXY"
-            android:src="?dividerVertical" />
-
-        <GridLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="@dimen/spacing_double"
-            android:layout_toRightOf="@id/blood_divider"
-            android:columnCount="3"
-            android:orientation="horizontal">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="@dimen/spacing_double"
-                android:text="收缩压" />
+                android:text="(" />
 
             <TextView
-                android:id="@id/sys"
+                android:id="@+id/hypoxia_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="135"
-                android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+                android:text="35" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="mmHg" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="@dimen/spacing_double"
-                android:text="舒张压" />
-
-            <TextView
-                android:id="@+id/dia"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="1"
-                android:textAppearance="@style/TextAppearance.AppCompat.Title" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="mmHg" />
-        </GridLayout>
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/spo2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_normal"
-        android:background="@android:color/white"
-        android:clickable="true">
-
-        <TextView
-            android:id="@+id/spo2_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="?selectableItemBackground"
-            android:clickable="true"
-            android:drawablePadding="@dimen/spacing_micro"
-            android:drawableTop="@drawable/ic_oxygen"
-            android:gravity="center_vertical"
-            android:paddingBottom="@dimen/spacing_normal"
-            android:paddingLeft="@dimen/spacing_double"
-            android:paddingRight="@dimen/spacing_double"
-            android:paddingTop="@dimen/spacing_normal"
-            android:text="血氧记录"
-            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-            android:textColor="?android:textColorSecondary" />
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_margin="@dimen/spacing_double"
-            android:src="@drawable/arrow_r" />
-
-        <ImageView
-            android:id="@+id/spo2_divider"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@id/spo2_icon"
-            android:layout_alignTop="@id/spo2_icon"
-            android:layout_margin="@dimen/spacing_normal"
-            android:layout_toRightOf="@id/spo2_icon"
-            android:scaleType="fitXY"
-            android:src="?dividerVertical" />
-
-        <GridLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="@dimen/spacing_double"
-            android:layout_toRightOf="@id/spo2_divider"
-            android:columnCount="3"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="@dimen/spacing_double"
-                android:text="血氧" />
-
-            <TextView
-                android:id="@+id/oxygen"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="96"
-                android:textAppearance="@style/TextAppearance.AppCompat.Title" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="%" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="@dimen/spacing_double"
-                android:text="心率" />
-
-            <TextView
-                android:id="@+id/oxygen_rate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="64"
-                android:textAppearance="@style/TextAppearance.AppCompat.Title" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="次/分钟" />
-        </GridLayout>
+                android:text="分钟)" />
+        </LinearLayout>
     </RelativeLayout>
 
     <Space

@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -42,7 +43,7 @@ import java.util.Locale;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class UpdateUserInfoFragment extends BaseFragment implements View.OnClickListener, DatePickerDialog.OnDateSetListener, StringPickerFragment.OnItemClickedListener {
+public class UpdateUserInfoFragment extends BaseFragment implements View.OnClickListener, DatePickerDialog.OnDateSetListener, StringPickerFragment.OnItemClickedListener, PassFragment.OnInputPassListener {
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
     private Calendar calendar = Calendar.getInstance(Locale.CHINA);
     private Bus bus = new Bus();
@@ -149,6 +150,7 @@ public class UpdateUserInfoFragment extends BaseFragment implements View.OnClick
         userName.setEnabled(editable);
         userHeight.setEnabled(editable);
         userWeight.setEnabled(editable);
+        userID.setEnabled(editable);
     }
 
     @Override
@@ -175,17 +177,8 @@ public class UpdateUserInfoFragment extends BaseFragment implements View.OnClick
     }
 
     private void attemptUpload() {
-        if (checkName() && checkSex() && checkBirthday() && checkHeight() && checkWeight()) {
-            if (null == progressDialog) {
-                progressDialog = ProgressDialog.show(getActivity(), null, "正在保存", true, false);
-            } else {
-                progressDialog.show();
-            }
-            if (null != file) {
-                IRequester.getInstance().uploadImage(bus, file);
-            } else {
-                IRequester.getInstance().updateUserInfo(bus, update);
-            }
+        if (checkName() && checkSex() && checkBirthday() && checkHeight() && checkWeight() && checkID()) {
+            PassFragment.from(this).show(getFragmentManager().beginTransaction().addToBackStack("pass"), "pass");
         }
     }
 
@@ -215,12 +208,10 @@ public class UpdateUserInfoFragment extends BaseFragment implements View.OnClick
     private boolean checkName() {
         boolean result = false;
         if (userName.getText().length() == 0) {
-            showToast("请输入您的名字");
-            userName.requestFocus();
         } else {
-            result = true;
-            update.fullname = userName.getText().toString();
         }
+        result = true;
+        update.fullname = userName.getText().toString();
         return result;
     }
 
@@ -231,28 +222,29 @@ public class UpdateUserInfoFragment extends BaseFragment implements View.OnClick
         } else {
             result = true;
         }
-        return result;
+        return true;
     }
 
 
     private boolean checkBirthday() {
         boolean result = false;
         if (userBirthday.getText().length() == 0) {
-            showToast("请选择您的出生日期");
+//            showToast("请选择您的出生日期");
         } else {
             result = true;
         }
-        return result;
+        update.birthday = userBirthday.getText().toString();
+        return true;
     }
 
     private boolean checkHeight() {
         boolean result = false;
         if (userHeight.getText().length() == 0) {
-            showToast("请输入您的身高");
+//            showToast("请输入您的身高");
         } else {
-            update.height = userHeight.getText().toString();
-            result = true;
         }
+        update.height = userHeight.getText().toString();
+        result = true;
         return result;
     }
 
@@ -260,11 +252,11 @@ public class UpdateUserInfoFragment extends BaseFragment implements View.OnClick
     private boolean checkWeight() {
         boolean result = false;
         if (userWeight.getText().length() == 0) {
-            showToast("请输入您的体重");
+//            showToast("请输入您的体重");
         } else {
-            update.weight = userWeight.getText().toString();
-            result = true;
         }
+        update.weight = userWeight.getText().toString();
+        result = true;
         return result;
     }
 
@@ -280,5 +272,33 @@ public class UpdateUserInfoFragment extends BaseFragment implements View.OnClick
     public void onItemClicked(int which, String[] array) {
         update.sex = String.valueOf(which + 1);
         userSex.setText(array[which]);
+    }
+
+    private boolean checkID() {
+        boolean result = false;
+        Editable text = userID.getText();
+        if (text.length() == 0) {
+            showToast(R.string.prompt_input_id);
+        } else if (text.length() != 15 && text.length() != 18) {
+            showToast(R.string.prompt_input_correct_id);
+        } else {
+            result = true;
+        }
+        return result;
+    }
+
+
+    @Override
+    public void onInputPass(String pass) {
+        if (null == progressDialog) {
+            progressDialog = ProgressDialog.show(getActivity(), null, "正在保存", true, false);
+        } else {
+            progressDialog.show();
+        }
+        if (null != file) {
+            IRequester.getInstance().uploadImage(bus, file);
+        } else {
+            IRequester.getInstance().updateUserInfo(bus, pass, update);
+        }
     }
 }

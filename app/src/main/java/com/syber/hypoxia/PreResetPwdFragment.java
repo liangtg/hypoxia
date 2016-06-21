@@ -123,7 +123,7 @@ public class PreResetPwdFragment extends BaseFragment implements View.OnClickLis
     private void verify() {
         if (checkName() && checkSex() && checkHeight() && checkWeight()) {
             if (pre.equals(update)) {
-                getFragmentManager().beginTransaction().hide(this).add(R.id.fragment_container, ResetPwdFragment.from(pre), "reset").commit();
+//                getFragmentManager().beginTransaction().hide(this).add(R.id.fragment_container, ResetPwdFragment.from(pre), "reset").commit();
             } else {
                 showToast("信息不匹配");
             }

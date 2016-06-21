@@ -11,7 +11,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.orhanobut.logger.Logger;
 import com.pgyersdk.update.PgyUpdateManager;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -96,7 +95,7 @@ public class MainActivity extends BaseActivity {
 
     private class ViewHolder extends BaseViewHolder {
         TextView userInfo, userName;
-        TextView hypoxiaTime, hypoxiaMode, sys, dia, oxygen, oxygenRate;
+        TextView hypoxiaTime, hypoxiaMode, sys, dia, oxygen, heartRate;
         private ImageView userImage;
         private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -108,6 +107,7 @@ public class MainActivity extends BaseActivity {
             get(R.id.spo2).setOnClickListener(this);
             get(R.id.manage_info).setOnClickListener(this);
             get(R.id.doctor).setOnClickListener(this);
+            get(R.id.device).setOnClickListener(this);
             userInfo = get(R.id.user_info);
             userName = get(R.id.user_name);
             userImage = get(R.id.user_image);
@@ -116,7 +116,7 @@ public class MainActivity extends BaseActivity {
             sys = get(R.id.sys);
             dia = get(R.id.dia);
             oxygen = get(R.id.oxygen);
-            oxygenRate = get(R.id.oxygen_rate);
+            heartRate = get(R.id.heart_rate);
         }
 
         void updateUserInfo() {
@@ -130,19 +130,22 @@ public class MainActivity extends BaseActivity {
         }
 
         private void updateSummary(UserSummaryResponse event) {
-            try {
-                long time = dateFormat.parse(event.training.timeEnd).getTime();
-                time -= dateFormat.parse(event.training.timeStart).getTime();
+            if (null != event.training) {
+                long time = Long.parseLong(event.training.time_end);
+                time -= Long.parseLong(event.training.time_start);
                 hypoxiaTime.setText(time / 1000 / 60 + "");
-            } catch (Exception e) {
-                Logger.e(e, "");
-                hypoxiaTime.setText("0");
+                hypoxiaMode.setText(event.training.mode + "");
             }
-            hypoxiaMode.setText(event.training.trainingMode + "");
-            oxygen.setText(event.spo2.O2p + "");
-            oxygenRate.setText(event.spo2.HeartRate + "");
-            sys.setText(event.pressure.Systolic + "");
-            dia.setText(event.pressure.Diastolic + "");
+            if (null != event.spo2) {
+                oxygen.setText(event.spo2.o2p + "");
+            }
+            if (null != event.pressure) {
+                sys.setText(event.pressure.systolic + "");
+                dia.setText(event.pressure.diastolic + "");
+            }
+            if (null != event.heartrate) {
+                heartRate.setText(event.heartrate.heartrate + "");
+            }
         }
 
         @Override
@@ -169,6 +172,8 @@ public class MainActivity extends BaseActivity {
                 gotoActivity(UpdateUserInfoActivity.class);
             } else if (R.id.doctor == id) {
                 gotoActivity(AdviceListActivity.class);
+            } else if (R.id.device == id) {
+                gotoActivity(DeviceListActivity.class);
             }
         }
     }

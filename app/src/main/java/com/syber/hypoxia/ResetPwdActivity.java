@@ -6,7 +6,7 @@ import com.syber.base.BaseActivity;
 
 public class ResetPwdActivity extends BaseActivity {
     public static final String FRAGMENT_PRE = "FRAGMENT_PRE";
-    private PreResetPwdFragment preResetPwdFragment;
+    private ResetPwdFragment preResetPwdFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -14,7 +14,7 @@ public class ResetPwdActivity extends BaseActivity {
         setContentView(R.layout.activity_reset_pwd);
         initAppBar();
         if (null == savedInstanceState) {
-            preResetPwdFragment = new PreResetPwdFragment();
+            preResetPwdFragment = new ResetPwdFragment();
             getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, preResetPwdFragment, FRAGMENT_PRE).commit();
         }
     }

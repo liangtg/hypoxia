@@ -105,5 +105,11 @@
             android:label="医生建议"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
+        <activity
+            android:name=".DeviceListActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="健康手环"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
     </application>
 </manifest>
