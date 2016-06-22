@@ -93,14 +93,14 @@ public class MeasureOxygenActivity extends BaseActivity implements BluetoothAdap
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (!blueEanbled) {
-            BluetoothAdapter.getDefaultAdapter().disable();
-        }
         scan(false);
         viewHolder = null;
         if (null != gatt) {
             gatt.disconnect();
             gatt = null;
+        }
+        if (!blueEanbled) {
+            BluetoothAdapter.getDefaultAdapter().disable();
         }
     }
 

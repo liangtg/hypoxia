@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/anchor1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:divider="?dividerVertical"
+        android:dividerPadding="@dimen/spacing_normal"
+        android:orientation="horizontal"
+        android:showDividers="middle">
+
+        <Button
+            android:id="@+id/bp_detail"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="?selectableItemBackground"
+            android:text="详细记录"
+            android:textColor="@color/colorPrimary" />
+
+        <Button
+            android:id="@+id/add_bp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="?selectableItemBackground"
+            android:text="添加记录"
+            android:textColor="@color/colorPrimary" />
+
+        <Button
+            android:id="@+id/refresh"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="?selectableItemBackground"
+            android:text="刷 新"
+            android:textColor="@color/colorPrimary" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/anchor1"
+        android:background="#e98b8b"
+        android:orientation="vertical">
+
+        <RadioGroup
+            android:id="@+id/date_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            android:checkedButton="@+id/day"
+            android:orientation="horizontal"
+            android:paddingTop="@dimen/spacing_normal">
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="2" />
+
+            <RadioButton
+                android:id="@+id/day"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/tab_bg2"
+                android:button="@null"
+                android:gravity="center"
+                android:minWidth="72dp"
+                android:paddingBottom="@dimen/spacing_normal"
+                android:paddingLeft="@dimen/spacing_double"
+                android:paddingRight="@dimen/spacing_double"
+                android:paddingTop="@dimen/spacing_normal"
+                android:text="日"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="@color/tab_text_inverse" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <RadioButton
+                android:id="@+id/week"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/tab_bg2"
+                android:button="@null"
+                android:gravity="center"
+                android:minWidth="72dp"
+                android:paddingBottom="@dimen/spacing_normal"
+                android:paddingLeft="@dimen/spacing_double"
+                android:paddingRight="@dimen/spacing_double"
+                android:paddingTop="@dimen/spacing_normal"
+                android:text="周"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="@color/tab_text_inverse" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <RadioButton
+                android:id="@+id/month"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/tab_bg2"
+                android:button="@null"
+                android:gravity="center"
+                android:minWidth="72dp"
+                android:paddingBottom="@dimen/spacing_normal"
+                android:paddingLeft="@dimen/spacing_double"
+                android:paddingRight="@dimen/spacing_double"
+                android:paddingTop="@dimen/spacing_normal"
+                android:text="月"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="@color/tab_text_inverse" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="2" />
+        </RadioGroup>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#FFDC6B6B"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingLeft="@dimen/spacing_double"
+            android:paddingRight="@dimen/spacing_double">
+
+            <Button
+                android:id="@+id/last_period"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?selectableItemBackgroundBorderless"
+                android:drawableLeft="@drawable/ic_arrow_drop_left_24dp"
+                android:text="上一月"
+                android:textColor="?android:textColorPrimaryInverse" />
+
+            <TextView
+                android:id="@+id/selected_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2016-05-10"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                android:textColor="?android:textColorPrimaryInverse" />
+
+            <Button
+                android:id="@+id/next_period"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?selectableItemBackgroundBorderless"
+                android:drawableRight="@drawable/ic_arrow_drop_right_24dp"
+                android:text="下一月"
+                android:textColor="?android:textColorPrimaryInverse" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/spacing_normal"
+            android:paddingLeft="@dimen/spacing_double"
+            android:paddingRight="@dimen/spacing_double"
+            android:paddingTop="@dimen/spacing_normal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawablePadding="@dimen/spacing_normal"
+                android:drawableRight="@drawable/heart"
+                android:paddingRight="@dimen/spacing_normal"
+                android:text="心率"
+                android:textColor="?android:textColorPrimaryInverse" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="分钟/次"
+                android:textColor="?android:textColorPrimaryInverse" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/spacing_double"
+            android:layout_marginRight="@dimen/spacing_double"
+            android:background="#CF4C4C"
+            android:orientation="horizontal"
+            android:padding="@dimen/spacing_double">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/spacing_normal"
+                android:text="记录时间"
+                android:textColor="?android:textColorPrimaryInverse" />
+
+            <TextView
+                android:id="@+id/highlight_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/spacing_normal"
+                android:text=""
+                android:textColor="?android:textColorPrimaryInverse" />
+
+            <TextView
+                android:id="@+id/abnormal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:text="血压异常"
+                android:textColor="@color/colorPrimaryDark"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/spacing_double"
+            android:layout_marginRight="@dimen/spacing_double"
+            android:background="#CF4C4C"
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/spacing_double"
+            android:paddingLeft="@dimen/spacing_double"
+            android:paddingRight="@dimen/spacing_double">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="心率"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                android:textColor="?android:textColorPrimaryInverse" />
+
+            <TextView
+                android:id="@+id/highlight_pul"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="2"
+                android:text=""
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                android:textColor="?android:textColorPrimaryInverse" />
+        </LinearLayout>
+
+        <android.support.percent.PercentFrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingBottom="@dimen/spacing_normal">
+
+            <com.github.mikephil.charting.charts.CombinedChart
+                android:id="@+id/chart"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </android.support.percent.PercentFrameLayout>
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progress"
+        style="?android:progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true" />
+</RelativeLayout>

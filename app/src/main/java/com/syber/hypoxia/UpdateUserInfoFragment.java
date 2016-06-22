@@ -283,6 +283,7 @@ public class UpdateUserInfoFragment extends BaseFragment implements View.OnClick
             showToast(R.string.prompt_input_correct_id);
         } else {
             result = true;
+            update.identitycard = text.toString();
         }
         return result;
     }

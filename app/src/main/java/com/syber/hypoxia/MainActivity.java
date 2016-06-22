@@ -1,8 +1,5 @@
 package com.syber.hypoxia;
 
-import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -89,6 +86,9 @@ public class MainActivity extends BaseActivity {
             User.signOut();
             recreate();
             return true;
+        } else if (R.id.reset_pwd == id) {
+            gotoActivity(ResetPwdActivity.class);
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -158,16 +158,7 @@ public class MainActivity extends BaseActivity {
             } else if (R.id.spo2 == id) {
                 gotoActivity(OxygenSaturationActivity.class);
             } else if (R.id.ecg == id) {
-                try {
-                    PackageInfo info = getPackageManager().getPackageInfo("com.hes.hpmobile", PackageManager.GET_ACTIVITIES);
-                    Intent intent = new Intent(Intent.ACTION_MAIN);
-                    intent.setClassName("com.hes.hpmobile", "com.hes.hpmobile.UI.Activities.SplashScreen");
-                    intent.addCategory(Intent.CATEGORY_LAUNCHER);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
-                } catch (PackageManager.NameNotFoundException e) {
-                    showToast("您没有安装该程序");
-                }
+                gotoActivity(HeartRateActivity.class);
             } else if (R.id.manage_info == id) {
                 gotoActivity(UpdateUserInfoActivity.class);
             } else if (R.id.doctor == id) {

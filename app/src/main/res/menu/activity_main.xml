@@ -17,6 +17,9 @@
         android:id="@+id/add_spo"
         android:title="添加血氧数据" />
     <item
+        android:id="@+id/reset_pwd"
+        android:title="修改密码" />
+    <item
         android:id="@+id/sign_out"
         android:title="退出账号" />
 </menu>

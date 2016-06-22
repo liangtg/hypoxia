@@ -78,6 +78,7 @@ public class IRequester extends DataRequester {
         formAdd(builder, "height", ext.height);
         formAdd(builder, "weight", ext.weight);
         formAdd(builder, "blood", ext.blood);
+        formAdd(builder, "identitycard", ext.identitycard);
         enque(postBuilder("user/modifyuserinfo?1", builder.build()).build(), callback);
         return callback;
     }
@@ -232,5 +233,23 @@ public class IRequester extends DataRequester {
         return callback;
     }
 
+    public DataRequest heartChartData(Bus bus, String start, String end) {
+        GsonCallback callback = new GsonCallback(bus, HeartChartResponse.class);
+        FormBody.Builder builder = new FormBody.Builder();
+        builder.add("user_id", User.getUserInfoExt().user_id);
+        builder.add("starttime", start);
+        builder.add("endtime", end);
+        enque(postBuilder("user/heartratechart?1", builder.build()).build(), callback);
+        return callback;
+    }
 
+
+    public DataRequest heartData(Bus bus, int page) {
+        GsonCallback callback = new GsonCallback(bus, HeartHistoryResponse.class);
+        FormBody.Builder builder = new FormBody.Builder();
+        builder.add("pageno", String.valueOf(page));
+        builder.add("user_id", User.getUserInfoExt().user_id);
+        enque(postBuilder("user/heartratedata?1", builder.build()).build(), callback);
+        return callback;
+    }
 }

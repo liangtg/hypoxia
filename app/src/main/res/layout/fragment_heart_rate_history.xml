@@ -1,0 +1,13 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:windowBackground"
+    android:clickable="true"
+    tools:context="com.syber.hypoxia.BloodPressureHistoryFragment">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/all_history"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</FrameLayout>

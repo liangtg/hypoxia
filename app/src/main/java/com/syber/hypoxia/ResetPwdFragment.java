@@ -80,7 +80,7 @@ public class ResetPwdFragment extends BaseFragment implements View.OnClickListen
         Editable text = inputPhone.getText();
         if (text.length() == 0) {
             showToast(R.string.prompt_input_phone);
-        } else if (MatchUtils.matchPhone(text)) {
+        } else if (!MatchUtils.matchPhone(text)) {
             showToast(R.string.prompt_input_correct_phone);
         } else {
             result = true;

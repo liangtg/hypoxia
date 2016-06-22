@@ -90,7 +90,7 @@
         <activity
             android:name=".ResetPwdActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="重置密码"
+            android:label="修改密码"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
@@ -109,6 +109,12 @@
             android:name=".DeviceListActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="健康手环"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".HeartRateActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="心率记录"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
     </application>
