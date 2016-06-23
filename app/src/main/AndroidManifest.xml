@@ -117,5 +117,11 @@
             android:label="心率记录"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
+        <activity
+            android:name=".HeloDeviceActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="健康手环"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
     </application>
 </manifest>

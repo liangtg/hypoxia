@@ -161,7 +161,7 @@
                 android:id="@+id/heart_rate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="75"
+                android:text="0"
                 android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
             <TextView
@@ -234,7 +234,7 @@
                 android:id="@id/sys"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="135"
+                android:text="0"
                 android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
             <TextView
@@ -246,7 +246,7 @@
                 android:id="@+id/dia"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="1"
+                android:text="0"
                 android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
             <TextView
@@ -311,7 +311,7 @@
                 android:id="@+id/oxygen"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="96"
+                android:text="0"
                 android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
             <TextView
@@ -381,7 +381,7 @@
                 android:id="@+id/hypoxia_mode"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="1"
+                android:text="0"
                 android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
             <TextView
@@ -393,7 +393,7 @@
                 android:id="@+id/hypoxia_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="35" />
+                android:text="0" />
 
             <TextView
                 android:layout_width="wrap_content"
