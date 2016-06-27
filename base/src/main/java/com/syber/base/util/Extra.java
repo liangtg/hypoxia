@@ -5,4 +5,5 @@ package com.syber.base.util;
  */
 public class Extra {
     public static final String FRAGMENT = "fragment";
+    public static final String OPERATION = "operation";
 }

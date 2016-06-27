@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/helo_heart_rate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="测心率" />
+
+    <Button
+        android:id="@+id/helo_bp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="测血压" />
+
+    <Button
+        android:id="@+id/helo_ecg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="测心电" />
+
+    <ProgressBar
+        android:id="@+id/indeterminate"
+        android:layout_width="44dp"
+        android:layout_height="169.3dp"
+        android:layout_gravity="center_horizontal"
+        android:indeterminateDrawable="@drawable/ble_connect"
+        android:maxHeight="400dp" />
+</LinearLayout>

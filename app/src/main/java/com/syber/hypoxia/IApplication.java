@@ -21,7 +21,7 @@ public class IApplication extends BaseApplication {
     public void onCreate() {
         super.onCreate();
         context = this;
-        Logger.init("hypoxia").hideThreadInfo().methodCount(1);
+        Logger.init("hypoxia").methodCount(1);
         User.init();
         PgyCrashManager.register(this);
     }
