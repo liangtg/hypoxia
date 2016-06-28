@@ -123,5 +123,7 @@
             android:label="健康手环"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
+
+        <service android:name=".HeloService" />
     </application>
 </manifest>

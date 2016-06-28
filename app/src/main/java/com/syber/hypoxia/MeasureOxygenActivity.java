@@ -150,7 +150,7 @@ public class MeasureOxygenActivity extends BaseActivity implements BluetoothAdap
                     break;
                 case MSG_PAIR:
 //                    BluetoothGattDescriptor desc = activity.gatt.getService(SERVICE).getCharacteristic(WRITE).getDescriptor(WRITE_CCC);
-//                    desc.setValue(CMD.PAIR);
+//                    desc.setValue(HeloCMD.PAIR);
 //                    activity.gatt.writeDescriptor(desc);
                     characteristic = activity.gatt.getService(SERVICE).getCharacteristic(WRITE);
                     characteristic.setValue(CMD.PAIR);

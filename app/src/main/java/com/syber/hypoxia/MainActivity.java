@@ -1,5 +1,6 @@
 package com.syber.hypoxia;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -27,6 +28,7 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        startService(new Intent(this, HeloService.class));
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         startManageBus(bus, this);

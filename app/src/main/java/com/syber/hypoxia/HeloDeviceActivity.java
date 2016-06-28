@@ -25,7 +25,6 @@ import com.syber.base.util.Extra;
 import com.syber.base.view.ViewPost;
 
 import java.lang.ref.WeakReference;
-import java.util.Arrays;
 import java.util.UUID;
 
 public class HeloDeviceActivity extends BaseActivity implements BluetoothAdapter.LeScanCallback {
@@ -33,21 +32,9 @@ public class HeloDeviceActivity extends BaseActivity implements BluetoothAdapter
     public static final int OP_BP = 1;
     public static final int OP_HR = 2;
     public static final int OP_ECG = 3;
-    private static final UUID S0N1 = UUID.fromString("facebead-ffff-eeee-0001-facebeadaaaa");
-    private static final UUID S0N2 = UUID.fromString("facebead-ffff-eeee-0002-facebeadaaaa");
-    private static final UUID S0N3 = UUID.fromString("facebead-ffff-eeee-0003-facebeadaaaa");
-    private static final UUID S0N4 = UUID.fromString("facebead-ffff-eeee-0004-facebeadaaaa");
-    private static final UUID S0N5 = UUID.fromString("facebead-ffff-eeee-0005-facebeadaaaa");
-    private static final UUID S1N1 = UUID.fromString("facebead-ffff-eeee-0010-facebeadaaaa");
-    private static final UUID S1N2 = UUID.fromString("facebead-ffff-eeee-0020-facebeadaaaa");
-    private static final UUID S2N1 = UUID.fromString("facebead-ffff-eeee-0100-facebeadaaaa");
-    private static final UUID S2N2 = UUID.fromString("facebead-ffff-eeee-0200-facebeadaaaa");
 
     private static final int OPEN_BLUETOOTH = 100;
-    public static UUID SERVICE0 = UUID.fromString("0aabcdef-1111-2222-0000-facebeadaaaa");
-    public static UUID SERVICE1 = UUID.fromString("1aabcdef-1111-2222-0000-facebeadaaaa");
-    public static UUID SERVICE2 = UUID.fromString("2aabcdef-1111-2222-0000-facebeadaaaa");
-    private static final UUID[] ALL = {SERVICE0, S0N1, SERVICE0, S0N2, SERVICE0, S0N3, SERVICE0, S0N4, SERVICE0, S0N5, SERVICE1, S1N1, SERVICE1, S1N2, SERVICE2, S2N1, SERVICE2, S2N2};
+    private static final UUID[] ALL = {Helo.SERVICE0, Helo.S0N1, Helo.SERVICE0, Helo.S0N2, Helo.SERVICE0, Helo.S0N3, Helo.SERVICE0, Helo.S0N4, Helo.SERVICE0, Helo.S0N5, Helo.SERVICE1, Helo.S1N1, Helo.SERVICE1, Helo.S1N2, Helo.SERVICE2, Helo.S2N1, Helo.SERVICE2, Helo.S2N2};
     private boolean blueEanbled;
     private ViewHolder viewHolder;
     private AHandler handler;
@@ -99,11 +86,11 @@ public class HeloDeviceActivity extends BaseActivity implements BluetoothAdapter
         super.onNewIntent(intent);
         int op = intent.getIntExtra(Extra.OPERATION, -1);
         if (OP_BP == op) {
-            Message.obtain(handler, AHandler.MSG_WRITE, 0, 0, CMD.GET_BP).sendToTarget();
+            Message.obtain(handler, AHandler.MSG_WRITE, 0, 0, HeloCMD.GET_BP).sendToTarget();
         } else if (OP_HR == op) {
-            Message.obtain(handler, AHandler.MSG_WRITE, 0, 0, CMD.GET_HR).sendToTarget();
+            Message.obtain(handler, AHandler.MSG_WRITE, 0, 0, HeloCMD.GET_HR).sendToTarget();
         } else if (OP_ECG == op) {
-            Message.obtain(handler, AHandler.MSG_WRITE, 0, 0, CMD.GET_ECG).sendToTarget();
+            Message.obtain(handler, AHandler.MSG_WRITE, 0, 0, HeloCMD.GET_ECG).sendToTarget();
         }
     }
 
@@ -156,37 +143,6 @@ public class HeloDeviceActivity extends BaseActivity implements BluetoothAdapter
         }
     }
 
-    private enum CMD {
-        MATCH(new byte[]{0x12, 0x34, 0x0B, 0x11, 0x04, 0x11, 0x11, 0x11, 0x11, 0x64, 0, 0, 0, 0x43, 0x21}, SERVICE1, S1N1),
-        RESPONSE_BIND(new byte[]{0x12, 0x34, 0x0B, 0x13, 0x04, 0x11, 0x11, 0x11, 0x11, 0x66, 0, 0, 0, 0x43, 0x21}, SERVICE1, S1N1),
-        GET_BP(new byte[]{0x12, 0x34, 0x0A, 0x0C, 0x16, 0, 0, 0, 0x43, 0x21}, SERVICE0, S0N2),
-        GET_HR(new byte[]{0x12, 0x34, 0x0A, 0x02, 0x0C, 0, 0, 0, 0x43, 0x21}, SERVICE0, S0N2),
-        GET_ECG(new byte[]{0x12, 0x34, 0x0A, 0x0D, 0x17, 0, 0, 0, 0x43, 0x21}, SERVICE0, S0N2),
-        REQUEST_UNBIND(new byte[]{0x12, 0x34, 0x0A, 0x9, 0x13, 0, 0, 0, 0x43, 0x21}, SERVICE1, S1N1),;
-        private byte[] cmd;
-        private UUID service;
-        private UUID cha;
-
-        CMD(byte[] cmd, UUID service, UUID cha) {
-            this.cmd = cmd;
-            this.service = service;
-            this.cha = cha;
-        }
-
-        public byte cmdByte() {
-            return cmd[3];
-        }
-
-        @Override
-        public String toString() {
-            return "CMD{" +
-                    "cmd=" + Arrays.toString(cmd) +
-                    ", service=" + service +
-                    ", cha=" + cha +
-                    '}';
-        }
-    }
-
     private static class AHandler extends Handler {
         public static final int MSG_DISCORRY = 1;
         public static final int MSG_ENABLE = 2;
@@ -206,27 +162,27 @@ public class HeloDeviceActivity extends BaseActivity implements BluetoothAdapter
         public void handleMessage(Message msg) {
             HeloDeviceActivity activity = reference.get();
             if (null == activity) return;
-            CMD cmd;
+            HeloCMD cmd;
             switch (msg.what) {
                 case MSG_DISCORRY:
                     activity.viewHolder.switcher.showNext();
                     activity.gatt.discoverServices();
                     break;
                 case MSG_ENABLE:
-                    cmd = (CMD) msg.obj;
+                    cmd = (HeloCMD) msg.obj;
                     BluetoothGattCharacteristic characteristic = activity.gatt.getService(cmd.service).getCharacteristic(cmd.cha);
                     boolean e = activity.gatt.setCharacteristicNotification(characteristic, true);
                     Logger.d("enable:" + cmd.cha + "\t" + e);
                     break;
                 case MSG_WRITE:
-                    cmd = (CMD) msg.obj;
+                    cmd = (HeloCMD) msg.obj;
                     Logger.d("ready write:" + cmd);
                     characteristic = activity.gatt.getService(cmd.service).getCharacteristic(cmd.cha);
                     characteristic.setValue(cmd.cmd);
                     activity.gatt.writeCharacteristic(characteristic);
                     break;
                 case MSG_READ_CHARA:
-                    cmd = (CMD) msg.obj;
+                    cmd = (HeloCMD) msg.obj;
                     Logger.d("read:" + cmd);
                     activity.gatt.readCharacteristic(activity.gatt.getService(cmd.service).getCharacteristic(cmd.cha));
                     break;
@@ -247,47 +203,6 @@ public class HeloDeviceActivity extends BaseActivity implements BluetoothAdapter
                     break;
             }
         }
-    }
-
-    private static class HeloResponse {
-        public static final byte MATCH = 0x37;
-        public static final byte REQUEST_BIND = 0x23;
-        public static final byte BP = 0x41;
-        public static final byte HR = 0x32;
-        public static final byte ECG = 0x42;
-        private byte[] array;
-
-        public HeloResponse(byte[] array) {
-            this.array = array;
-        }
-
-        public boolean verify() {
-            boolean result = false;
-            byte[] cmd = array;
-            if (cmd.length >= 10) {
-                if (cmd[0] == 0x12 && cmd[1] == 0x34 && cmd[cmd.length - 2] == 0x43 && cmd[cmd.length - 1] == 0x21) {
-                    result = true;
-                }
-            }
-            return result;
-        }
-
-        public byte cmd() {
-            return array[3];
-        }
-
-        public byte byteValue() {
-            return byteValue(0);
-        }
-
-        public byte byteValue(int offset) {
-            return array[5 + offset];
-        }
-
-        public int intValue(int offset) {
-            return byteValue(offset) & 0xFF;
-        }
-
     }
 
     private class ViewHolder extends BaseViewHolder {
@@ -317,9 +232,9 @@ public class HeloDeviceActivity extends BaseActivity implements BluetoothAdapter
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             Logger.d("onServicesDiscovered:" + status);
-            handler.sendMessageDelayed(Message.obtain(handler, AHandler.MSG_ENABLE, CMD.MATCH), 0);
-            handler.sendMessageDelayed(Message.obtain(handler, AHandler.MSG_ENABLE, CMD.GET_BP), 100);
-            handler.sendMessageDelayed(Message.obtain(handler, AHandler.MSG_WRITE, CMD.MATCH), 500);
+            handler.sendMessageDelayed(Message.obtain(handler, AHandler.MSG_ENABLE, HeloCMD.MATCH), 0);
+            handler.sendMessageDelayed(Message.obtain(handler, AHandler.MSG_ENABLE, HeloCMD.GET_BP), 100);
+            handler.sendMessageDelayed(Message.obtain(handler, AHandler.MSG_WRITE, HeloCMD.MATCH), 500);
         }
 
         @Override
@@ -344,10 +259,10 @@ public class HeloDeviceActivity extends BaseActivity implements BluetoothAdapter
             HeloResponse response = new HeloResponse(characteristic.getValue());
             if (response.verify()) {
                 if (HeloResponse.REQUEST_BIND == response.cmd()) {
-                    handler.obtainMessage(AHandler.MSG_WRITE, CMD.RESPONSE_BIND).sendToTarget();
+                    handler.obtainMessage(AHandler.MSG_WRITE, HeloCMD.RESPONSE_BIND).sendToTarget();
                 } else if (HeloResponse.MATCH == response.cmd()) {
-                    Message.obtain(handler, AHandler.MSG_DEVICE_MATCHED, response.byteValue(), 0).sendToTarget();
-//                    Message.obtain(handler, AHandler.MSG_WRITE, 0, 0, CMD.REQUEST_UNBIND).sendToTarget();
+//                    Message.obtain(handler, AHandler.MSG_DEVICE_MATCHED, response.byteValue(), 0).sendToTarget();
+                    Message.obtain(handler, AHandler.MSG_WRITE, 0, 0, HeloCMD.REQUEST_UNBIND).sendToTarget();
                 } else if (HeloResponse.BP == response.cmd()) {
                     Message.obtain(handler, AHandler.MSG_BP_RESULT, 0, 0, response).sendToTarget();
                 } else if (HeloResponse.HR == response.cmd()) {
