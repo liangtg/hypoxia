@@ -15,6 +15,7 @@ import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.orhanobut.logger.Logger;
 import com.squareup.otto.Bus;
@@ -28,6 +29,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Created by liangtg on 16-6-28.
  */
 public class HeloService extends Service implements BluetoothAdapter.LeScanCallback {
+    private boolean destoryed;
     private AtomicInteger atomic = new AtomicInteger();
     private boolean matched;
     private boolean serviceDiscovered;
@@ -52,8 +54,25 @@ public class HeloService extends Service implements BluetoothAdapter.LeScanCallb
         if (!BluetoothAdapter.getDefaultAdapter().isEnabled()) {
             BluetoothAdapter.getDefaultAdapter().enable();
         }
+        String mac = BluetoothAdapter.getDefaultAdapter().getAddress();
+        String[] value = mac.split(":");
+        int sum = 0, b = 0;
+        for (int i = 2; i < value.length; i++) {
+            b = Integer.parseInt(value[i], 16);
+            HeloCMD.MATCH.cmd[i + 3] = (byte) b;
+            Log.e("mac", "" + value[i]);
+            sum += b;
+        }
+        sum += HeloCMD.MATCH.cmd[2] + HeloCMD.MATCH.cmd[3] + HeloCMD.MATCH.cmd[4];
+        String s = Integer.toHexString(sum);
+        Log.e("mac", "sum" + s);
+        StringBuffer sb = new StringBuffer(s);
+        if (sb.length() % 2 == 1) sb.insert(0, "0");
+        for (int i = 0; i < sb.length() / 2; i++) {
+            HeloCMD.MATCH.cmd[9 + i] = Byte.parseByte(sb.substring(sb.length() - (i + 1) * 2, sb.length() - i * 2));
+        }
+
 //        BluetoothAdapter.getDefaultAdapter().startLeScan(new UUID[]{Helo.SERVICE0, Helo.SERVICE1, Helo.SERVICE2}, this);
-        BluetoothAdapter.getDefaultAdapter().startLeScan(this);
         builder = new Notification.Builder(this);
         builder.setAutoCancel(false);
         builder.setContentTitle("Helo手环");
@@ -65,6 +84,7 @@ public class HeloService extends Service implements BluetoothAdapter.LeScanCallb
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
         builder.setContentIntent(PendingIntent.getActivity(this, 0, intent, 0));
         startForeground(1, builder.build());
+        handler.sendEmptyMessageDelayed(SHandler.MSG_SCAN, 1000);
     }
 
     @Override
@@ -78,6 +98,8 @@ public class HeloService extends Service implements BluetoothAdapter.LeScanCallb
 
     @Override
     public void onDestroy() {
+        destoryed = true;
+        BluetoothAdapter.getDefaultAdapter().stopLeScan(this);
         if (null != sgatt) {
             sgatt.disconnect();
             sgatt = null;
@@ -99,8 +121,12 @@ public class HeloService extends Service implements BluetoothAdapter.LeScanCallb
                 meassurement.quit();
                 meassurement = null;
             }
-            if (null != sgatt) sgatt.disconnect();
-            BluetoothAdapter.getDefaultAdapter().startLeScan(this);
+            if (null != sgatt) {
+                sgatt.disconnect();
+                sgatt = null;
+                handler.removeMessages(SHandler.MSG_SCAN);
+                handler.sendEmptyMessageDelayed(SHandler.MSG_SCAN, 1000);
+            }
         }
     }
 
@@ -112,9 +138,10 @@ public class HeloService extends Service implements BluetoothAdapter.LeScanCallb
             }
         } else {
             serviceDiscovered = true;
-            handler.sendMessageDelayed(Message.obtain(handler, SHandler.MSG_ENABLE, 0, 0, HeloCMD.MATCH), 0);
-            handler.sendMessageDelayed(Message.obtain(handler, SHandler.MSG_ENABLE, 0, 0, HeloCMD.GET_BP), 100);
-            handler.sendMessageDelayed(Message.obtain(handler, SHandler.MSG_WRITE, 0, 0, HeloCMD.MATCH), 500);
+            handler.sendMessageDelayed(Message.obtain(handler, SHandler.MSG_ENABLE, 0, 0, HeloCMD.MATCH), 100);
+            handler.sendMessageDelayed(Message.obtain(handler, SHandler.MSG_ENABLE, 0, 0, HeloCMD.GET_BP), 500);
+            handler.sendMessageDelayed(Message.obtain(handler, SHandler.MSG_ENABLE, 0, 0, HeloCMD.RESPONSE_BATTERY), 1000);
+            handler.sendMessageDelayed(Message.obtain(handler, SHandler.MSG_WRITE, 0, 0, HeloCMD.MATCH), 1500);
         }
     }
 
@@ -169,6 +196,7 @@ public class HeloService extends Service implements BluetoothAdapter.LeScanCallb
         private static final int MSG_SERVICE_DISCOVERED = 4;
         private static final int MSG_ENABLE = 5;
         private static final int MSG_WRITE = 6;
+        private static final int MSG_SCAN = 7;
         private WeakReference<HeloService> reference;
 
         public SHandler(HeloService service) {
@@ -191,6 +219,8 @@ public class HeloService extends Service implements BluetoothAdapter.LeScanCallb
                 service.enableNotify((HeloCMD) msg.obj);
             } else if (MSG_WRITE == msg.what) {
                 service.writeCMD((HeloCMD) msg.obj);
+            } else if (MSG_SCAN == msg.what) {
+                if (!service.destoryed) BluetoothAdapter.getDefaultAdapter().startLeScan(service);
             }
         }
     }

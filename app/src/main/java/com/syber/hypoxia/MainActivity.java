@@ -54,6 +54,12 @@ public class MainActivity extends BaseActivity {
         if (User.isSignIn()) IRequester.getInstance().getUserSummary(bus, User.getUserInfoExt().user_id);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        stopService(new Intent(this, HeloService.class));
+    }
+
     @Subscribe
     public void withSummary(UserSummaryResponse event) {
         if (isFinishing()) return;
