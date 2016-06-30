@@ -8,7 +8,7 @@ import android.util.Log;
  */
 public class PR {
     public static void log(BluetoothGattCharacteristic chara) {
-        Log.e("cmd", chara.getUuid().toString() + "\t" + toHex(chara.getValue()));
+        Log.e("cmd", chara.getService().getUuid() + "\t" + chara.getUuid().toString() + "\t" + toHex(chara.getValue()));
     }
 
     public static String toHex(byte[] to) {

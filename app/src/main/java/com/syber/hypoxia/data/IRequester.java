@@ -252,4 +252,15 @@ public class IRequester extends DataRequester {
         enque(postBuilder("user/heartratedata?1", builder.build()).build(), callback);
         return callback;
     }
+
+    public DataRequest adviceList(Bus bus, String uid, String startDate, int page) {
+        GsonCallback callback = new GsonCallback(bus, AdviceResponse.class);
+        FormBody.Builder builder = new FormBody.Builder();
+        builder.add("pageno", String.valueOf(page));
+        builder.add("user_id", uid);
+        builder.add("starttime", startDate);
+        enque(postBuilder("apidoctor/doctoradvices?1", builder.build()).build(), callback);
+        return callback;
+    }
+
 }

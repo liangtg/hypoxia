@@ -20,9 +20,11 @@ import android.util.Log;
 import com.orhanobut.logger.Logger;
 import com.squareup.otto.Bus;
 import com.syber.base.util.ByteUtil;
+import com.syber.hypoxia.data.IRequester;
 import com.syber.hypoxia.data.User;
 
 import java.lang.ref.WeakReference;
+import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -65,11 +67,15 @@ public class HeloService extends Service implements BluetoothAdapter.LeScanCallb
         }
         sum += HeloCMD.MATCH.cmd[2] + HeloCMD.MATCH.cmd[3] + HeloCMD.MATCH.cmd[4];
         String s = Integer.toHexString(sum);
-        Log.e("mac", "sum" + s);
         StringBuffer sb = new StringBuffer(s);
         if (sb.length() % 2 == 1) sb.insert(0, "0");
+        Log.e("mac", "sum" + sb.toString());
         for (int i = 0; i < sb.length() / 2; i++) {
-            HeloCMD.MATCH.cmd[9 + i] = Byte.parseByte(sb.substring(sb.length() - (i + 1) * 2, sb.length() - i * 2));
+            int start = sb.length() - (i + 1) * 2;
+            Log.e("mac", "start" + start);
+            String substring = sb.substring(start, start + 2);
+            Log.e("mac", "start" + substring);
+            HeloCMD.MATCH.cmd[9 + i] = Byte.parseByte(substring, 16);
         }
 
 //        BluetoothAdapter.getDefaultAdapter().startLeScan(new UUID[]{Helo.SERVICE0, Helo.SERVICE1, Helo.SERVICE2}, this);
@@ -138,7 +144,7 @@ public class HeloService extends Service implements BluetoothAdapter.LeScanCallb
             }
         } else {
             serviceDiscovered = true;
-            handler.sendMessageDelayed(Message.obtain(handler, SHandler.MSG_ENABLE, 0, 0, HeloCMD.MATCH), 100);
+            handler.sendMessageDelayed(Message.obtain(handler, SHandler.MSG_ENABLE, 0, 0, HeloCMD.MATCH), 0);
             handler.sendMessageDelayed(Message.obtain(handler, SHandler.MSG_ENABLE, 0, 0, HeloCMD.GET_BP), 500);
             handler.sendMessageDelayed(Message.obtain(handler, SHandler.MSG_ENABLE, 0, 0, HeloCMD.RESPONSE_BATTERY), 1000);
             handler.sendMessageDelayed(Message.obtain(handler, SHandler.MSG_WRITE, 0, 0, HeloCMD.MATCH), 1500);
@@ -160,6 +166,7 @@ public class HeloService extends Service implements BluetoothAdapter.LeScanCallb
                     if (response.byteValue() == 1) {
                         matched = true;
                         onServiceDiscovered();
+                        handler.sendEmptyMessage(SHandler.MSG_GET_BATTERY);
                     } else {
                         builder.setContentTitle("手环已绑定在其他设备");
                         startForeground(1, builder.build());
@@ -176,11 +183,14 @@ public class HeloService extends Service implements BluetoothAdapter.LeScanCallb
     }
 
     private void writeCMD(HeloCMD cmd) {
-        Logger.d("ready write:" + cmd);
-        if (null == sgatt) return;
+        if (null == sgatt || !connected) return;
         BluetoothGattCharacteristic characteristic = sgatt.getService(cmd.service).getCharacteristic(cmd.cha);
         characteristic.setValue(cmd.cmd);
-        sgatt.writeCharacteristic(characteristic);
+        boolean b = sgatt.writeCharacteristic(characteristic);
+        Logger.d("ready write:" + cmd + b);
+        if (!b) {
+            Message.obtain(handler, SHandler.MSG_WRITE, 0, 0, cmd).sendToTarget();
+        }
     }
 
     public void enableNotify(HeloCMD cmd) {
@@ -197,6 +207,7 @@ public class HeloService extends Service implements BluetoothAdapter.LeScanCallb
         private static final int MSG_ENABLE = 5;
         private static final int MSG_WRITE = 6;
         private static final int MSG_SCAN = 7;
+        private static final int MSG_GET_BATTERY = 8;
         private WeakReference<HeloService> reference;
 
         public SHandler(HeloService service) {
@@ -221,6 +232,10 @@ public class HeloService extends Service implements BluetoothAdapter.LeScanCallb
                 service.writeCMD((HeloCMD) msg.obj);
             } else if (MSG_SCAN == msg.what) {
                 if (!service.destoryed) BluetoothAdapter.getDefaultAdapter().startLeScan(service);
+            } else if (MSG_GET_BATTERY == msg.what) {
+                removeMessages(msg.what);
+                service.writeCMD(HeloCMD.GET_BATTERY);
+                sendEmptyMessageDelayed(msg.what, 15 * 1000);
             }
         }
     }
@@ -273,7 +288,7 @@ public class HeloService extends Service implements BluetoothAdapter.LeScanCallb
             public void run() {
                 quit();
                 if (User.isSignIn() && sys > 0 && dia > 0 && pul > 0) {
-//                    IRequester.getInstance().addBP(bus, IApplication.dateFormat.format(new Date()), sys, dia, pul);
+                    IRequester.getInstance().addBP(bus, IApplication.dateFormat.format(new Date()), sys, dia, pul);
                     Logger.d(String.format("exit:%d-%d-%d", sys, dia, pul));
                 }
                 if (meassurement == Meassurement.this) {
@@ -306,12 +321,12 @@ public class HeloService extends Service implements BluetoothAdapter.LeScanCallb
         protected void onLooperPrepared() {
             Logger.d("meassurement start");
             handler = new Handler(getLooper());
-            handler.postDelayed(exitRunnable, 120 * 1000);
+            handler.postDelayed(exitRunnable, 5 * 60 * 1000);
             handler.post(getBPRunnable);
         }
 
         public void postResponse(HeloResponse response) {
-            getLooper();
+            if (null == handler) return;
             handler.post(new ResponseRunnable(response));
         }
 
@@ -330,15 +345,13 @@ public class HeloService extends Service implements BluetoothAdapter.LeScanCallb
                         sys = response.intValue(4);
                         dia = response.intValue(5);
                         handler.removeCallbacks(getBatteryRunnable);
-                        handler.postDelayed(getBatteryRunnable, 10 * 1000);
+                        handler.postDelayed(getBatteryRunnable, 1000);
                     } else if (HeloResponse.BATTERY == response.cmd()) {
-                        handler.removeCallbacks(getBatteryRunnable);
                         pul = response.intValue(0);
                     }
                 }
             }
         }
-
 
     }
 
