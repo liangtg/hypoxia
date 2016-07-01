@@ -283,14 +283,11 @@ public class HeloService extends Service implements BluetoothAdapter.LeScanCallb
     private class Meassurement extends HandlerThread {
         private int sys, dia, pul;
         private Handler handler;
+        private boolean uploaded = false;
         private Runnable exitRunnable = new Runnable() {
             @Override
             public void run() {
                 quit();
-                if (User.isSignIn() && sys > 0 && dia > 0 && pul > 0) {
-                    IRequester.getInstance().addBP(bus, IApplication.dateFormat.format(new Date()), sys, dia, pul);
-                    Logger.d(String.format("exit:%d-%d-%d", sys, dia, pul));
-                }
                 if (meassurement == Meassurement.this) {
                     meassurement = null;
                     HeloService.this.handler.sendEmptyMessage(SHandler.MSG_SERVICE_DISCOVERED);
@@ -348,6 +345,11 @@ public class HeloService extends Service implements BluetoothAdapter.LeScanCallb
                         handler.postDelayed(getBatteryRunnable, 1000);
                     } else if (HeloResponse.BATTERY == response.cmd()) {
                         pul = response.intValue(0);
+                        if (User.isSignIn() && sys > 0 && dia > 0 && pul > 0 && !uploaded) {
+                            uploaded = true;
+                            IRequester.getInstance().addBP(bus, IApplication.dateFormat.format(new Date()), sys, dia, pul);
+                            Logger.d(String.format("Request:%d-%d-%d", sys, dia, pul));
+                        }
                     }
                 }
             }

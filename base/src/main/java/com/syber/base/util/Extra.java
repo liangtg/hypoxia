@@ -6,4 +6,6 @@ package com.syber.base.util;
 public class Extra {
     public static final String FRAGMENT = "fragment";
     public static final String OPERATION = "operation";
+    public static final String TITLE = "title";
+    public static final String CONTENT = "content";
 }

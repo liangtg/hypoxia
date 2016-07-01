@@ -28,12 +28,13 @@ public class AdviceResponse extends BaseResponse {
      * time_create : 1466648980000
      */
     public static class DataBean {
-        public int id;
+        public String id;
         public int doctor_id;
         public int user_id;
         public String doctor;
         public String usr;
         public String content;
-        public String time_create;
+        public long time_create;
+        public boolean readed;
     }
 }

@@ -259,7 +259,17 @@ public class IRequester extends DataRequester {
         builder.add("pageno", String.valueOf(page));
         builder.add("user_id", uid);
         builder.add("starttime", startDate);
+        builder.add("pagesize", "20");
+        builder.add("byPage", "true");
         enque(postBuilder("apidoctor/doctoradvices?1", builder.build()).build(), callback);
+        return callback;
+    }
+
+    public DataRequest adviceReaded(Bus bus, String id) {
+        GsonCallback callback = new GsonCallback(bus, EmptyResponse.class);
+        FormBody.Builder builder = new FormBody.Builder();
+        builder.add("id", id);
+        enque(postBuilder("apidoctor/advicereaded?1", builder.build()).build(), callback);
         return callback;
     }
 
