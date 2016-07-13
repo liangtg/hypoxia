@@ -273,4 +273,14 @@ public class IRequester extends DataRequester {
         return callback;
     }
 
+    public DataRequest bloodLipidList(Bus bus, String uid, String lasttime, int page) {
+        GsonCallback callback = new GsonCallback(bus, BloodLipidResponse.class);
+        FormBody.Builder builder = new FormBody.Builder();
+        builder.add("pageno", String.valueOf(page));
+        builder.add("user_id", uid);
+        builder.add("lasttime", lasttime);
+        enque(postBuilder("user/blood6itemsdata?1", builder.build()).build(), callback);
+        return callback;
+    }
+
 }

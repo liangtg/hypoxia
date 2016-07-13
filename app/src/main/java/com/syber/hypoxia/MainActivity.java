@@ -1,6 +1,5 @@
 package com.syber.hypoxia;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -28,7 +27,7 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        startService(new Intent(this, HeloService.class));
+//        startService(new Intent(this, HeloService.class));
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         startManageBus(bus, this);
@@ -114,6 +113,7 @@ public class MainActivity extends BaseActivity {
             get(R.id.blood).setOnClickListener(this);
             get(R.id.spo2).setOnClickListener(this);
             get(R.id.manage_info).setOnClickListener(this);
+            get(R.id.blood_lipid).setOnClickListener(this);
             get(R.id.doctor).setOnClickListener(this);
             get(R.id.device).setOnClickListener(this);
             userInfo = get(R.id.user_info);
@@ -173,6 +173,8 @@ public class MainActivity extends BaseActivity {
                 gotoActivity(AdviceListActivity.class);
             } else if (R.id.device == id) {
                 gotoActivity(DeviceListActivity.class);
+            } else if (R.id.blood_lipid == id) {
+                gotoActivity(BloodLipidActivity.class);
             }
         }
     }
