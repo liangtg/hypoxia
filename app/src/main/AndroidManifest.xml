@@ -125,11 +125,13 @@
             android:theme="@style/AppTheme" />
 
         <service android:name=".HeloService" />
+
         <activity
             android:name=".BloodLipidActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="血液6项"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
+        <activity android:name=".helo.HeloBpActivity"></activity>
     </application>
 </manifest>

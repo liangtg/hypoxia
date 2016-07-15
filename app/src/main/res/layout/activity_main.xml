@@ -109,7 +109,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="?selectableItemBackground"
-                android:text="健康手环"
+                android:text="我的设备"
                 android:textColor="?android:textColorPrimaryInverse" />
         </LinearLayout>
     </LinearLayout>
