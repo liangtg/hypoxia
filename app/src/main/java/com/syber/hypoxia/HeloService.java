@@ -56,27 +56,6 @@ public class HeloService extends Service implements BluetoothAdapter.LeScanCallb
         if (!BluetoothAdapter.getDefaultAdapter().isEnabled()) {
             BluetoothAdapter.getDefaultAdapter().enable();
         }
-        String mac = BluetoothAdapter.getDefaultAdapter().getAddress();
-        String[] value = mac.split(":");
-        int sum = 0, b = 0;
-        for (int i = 2; i < value.length; i++) {
-            b = Integer.parseInt(value[i], 16);
-            HeloCMD.MATCH.cmd[i + 3] = (byte) b;
-            Log.e("mac", "" + value[i]);
-            sum += b;
-        }
-        sum += HeloCMD.MATCH.cmd[2] + HeloCMD.MATCH.cmd[3] + HeloCMD.MATCH.cmd[4];
-        String s = Integer.toHexString(sum);
-        StringBuffer sb = new StringBuffer(s);
-        if (sb.length() % 2 == 1) sb.insert(0, "0");
-        Log.e("mac", "sum" + sb.toString());
-        for (int i = 0; i < sb.length() / 2; i++) {
-            int start = sb.length() - (i + 1) * 2;
-            Log.e("mac", "start" + start);
-            String substring = sb.substring(start, start + 2);
-            Log.e("mac", "start" + substring);
-            HeloCMD.MATCH.cmd[9 + i] = Byte.parseByte(substring, 16);
-        }
 
 //        BluetoothAdapter.getDefaultAdapter().startLeScan(new UUID[]{Helo.SERVICE0, Helo.SERVICE1, Helo.SERVICE2}, this);
         builder = new Notification.Builder(this);

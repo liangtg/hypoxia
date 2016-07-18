@@ -3,7 +3,7 @@ package com.syber.hypoxia;
 /**
  * Created by liangtg on 16-6-28.
  */
-class HeloResponse {
+public class HeloResponse {
     public static final byte MATCH = 0x37;
     public static final byte REQUEST_BIND = 0x23;
     public static final byte BP = 0x41;

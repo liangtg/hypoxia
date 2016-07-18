@@ -132,6 +132,17 @@
             android:label="血液6项"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
-        <activity android:name=".helo.HeloBpActivity"></activity>
+        <activity
+            android:name=".helo.HeloBpActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="测量血压"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".helo.HeloHrActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="测量心率"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
     </application>
 </manifest>

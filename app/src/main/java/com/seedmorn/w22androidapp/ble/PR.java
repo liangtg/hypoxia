@@ -7,8 +7,12 @@ import android.util.Log;
  * Created by liangtg on 16-6-28.
  */
 public class PR {
-    public static void log(BluetoothGattCharacteristic chara) {
-        Log.e("cmd", chara.getService().getUuid() + "\t" + chara.getUuid().toString() + "\t" + toHex(chara.getValue()));
+    public static void logW(BluetoothGattCharacteristic chara) {
+        Log.e("cmd", "w " + chara.getService().getUuid() + "\t" + chara.getUuid().toString() + "\t" + toHex(chara.getValue()));
+    }
+
+    public static void logR(BluetoothGattCharacteristic chara) {
+        Log.e("cmd", "r " + chara.getService().getUuid() + "\t" + chara.getUuid().toString() + "\t" + toHex(chara.getValue()));
     }
 
     public static String toHex(byte[] to) {

@@ -20,11 +20,11 @@ public class Tsmali {
     }
 
     public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
-        PR.log(characteristic);
+        PR.logW(characteristic);
     }
 
     public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
-        PR.log(characteristic);
+        PR.logR(characteristic);
     }
 
 }

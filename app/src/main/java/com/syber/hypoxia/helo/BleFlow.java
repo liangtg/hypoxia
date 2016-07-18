@@ -3,22 +3,40 @@ package com.syber.hypoxia.helo;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 
+import com.syber.base.util.ByteUtil;
+
 import java.util.UUID;
 
 /**
  * Created by liangtg on 16-7-15.
  */
 public abstract class BleFlow {
-    protected BleFlow dependency;
-    private boolean handleEnd = false;
-    private BluetoothGatt bluetoothGatt;
+    public static final String KEY_SYS = "sys";
+    public static final String KEY_DIA = "dia";
+    public static final String KEY_PUL = "pul";
+    public static final int CONFIRM_OK = 1;
+    public static final int CONFIRM_CANCEL = 2;
 
-    public void attachBluetoothGatt(BluetoothGatt gatt) {
-        bluetoothGatt = gatt;
+    public static final int REQUEST_BIND = 1;
+    public static final int REQUEST_BINDED_OTHER = 2;
+    public static final int REQUEST_MATCHED = 3;
+    public static final int RESULT_BP = 4;
+    public static final int RESULT_HR = 5;
+    public static final int RESULT_ECG = 6;
+
+    protected BleFlow dependency;
+    protected BleFlow next;
+    protected IBleManager manager;
+    private boolean handleEnd = false;
+
+    public void setBleManager(IBleManager manager) {
+        if (null != dependency) dependency.setBleManager(manager);
+        this.manager = manager;
     }
 
     public void start() {
-        if (null != dependency) {
+        BleHelper.e("start:\t" + getClass().getSimpleName());
+        if (null != dependency && !dependency.handleEnd()) {
             dependency.start();
         } else {
             onStart();
@@ -56,7 +74,18 @@ public abstract class BleFlow {
     protected abstract void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic);
 
     protected boolean enableNotify(UUID service, UUID chara, boolean enable) {
-        return bluetoothGatt.setCharacteristicNotification(bluetoothGatt.getService(service).getCharacteristic(chara), enable);
+        return manager.getBlutoothGatt().setCharacteristicNotification(manager.getBlutoothGatt().getService(service).getCharacteristic(chara),
+                enable);
+    }
+
+    protected void writeChara(UUID service, UUID chara, byte[] value) {
+        BleHelper.e(String.format("ready write:%s\t%s", chara, ByteUtil.toHex(value)));
+        BluetoothGattCharacteristic characteristic = manager.getBlutoothGatt().getService(service).getCharacteristic(chara);
+        characteristic.setValue(value);
+        manager.getBlutoothGatt().writeCharacteristic(characteristic);
+    }
+
+    protected void onRequestConfirmed(int request, int result) {
     }
 
 }

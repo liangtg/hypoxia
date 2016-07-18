@@ -23,6 +23,7 @@ import com.syber.base.BaseViewHolder;
 import com.syber.base.util.ByteUtil;
 import com.syber.base.util.Extra;
 import com.syber.base.view.ViewPost;
+import com.syber.hypoxia.helo.BleHelper;
 
 import java.lang.ref.WeakReference;
 import java.util.UUID;
@@ -53,6 +54,7 @@ public class HeloDeviceActivity extends BaseActivity implements BluetoothAdapter
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_helo_device);
         initAppBar();
+//        BleHelper.initCmd();
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         blueEanbled = bluetoothAdapter.isEnabled();
         handler = new AHandler(this);

@@ -16,27 +16,26 @@ import com.syber.base.BaseViewHolder;
 import com.syber.base.view.ViewPost;
 import com.syber.hypoxia.IApplication;
 import com.syber.hypoxia.R;
-import com.syber.hypoxia.data.BloodHistoryResponse;
+import com.syber.hypoxia.data.HeartHistoryResponse;
 import com.syber.hypoxia.data.IRequester;
 
 import java.util.ArrayList;
 import java.util.Date;
 
-public class HeloBpActivity extends BaseActivity implements BleHelper.RequestListener {
-    private int sys, dia;
+public class HeloHrActivity extends BaseActivity implements BleHelper.RequestListener {
+    private int pul;
     private BleHelper bleHelper;
     private ConnectHeloFragment connectHeloFragment;
     private ViewHolder viewHolder;
     private Bus bus = new Bus();
-    private ArrayList<BloodHistoryResponse.HistoryItem> data = new ArrayList<>();
-
+    private ArrayList<HeartHistoryResponse.HistoryItem> data = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_helo_bp);
+        setContentView(R.layout.activity_helo_hr);
         initAppBar();
-        bleHelper = new BleHelper("HeloHL01", new BPFlow());
+        bleHelper = new BleHelper("HeloHL01", new HRFlow());
         bleHelper.setRequestListener(this);
         connectHeloFragment = new ConnectHeloFragment();
         connectHeloFragment.show(getSupportFragmentManager(), "connect");
@@ -44,10 +43,11 @@ public class HeloBpActivity extends BaseActivity implements BleHelper.RequestLis
         ViewPost.postOnAnimation(getWindow().getDecorView(), new Runnable() {
             @Override
             public void run() {
-                bleHelper.startFlow(HeloBpActivity.this);
+                bleHelper.startFlow(HeloHrActivity.this);
             }
         });
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -79,9 +79,8 @@ public class HeloBpActivity extends BaseActivity implements BleHelper.RequestLis
             viewHolder.start.setClickable(true);
             connectHeloFragment.dismiss();
             new HeloBindedOtherFragment().show(getSupportFragmentManager(), "connected_other");
-        } else if (BleFlow.RESULT_BP == request) {
-            sys = data.getIntExtra(BleFlow.KEY_SYS, 0);
-            dia = data.getIntExtra(BleFlow.KEY_DIA, 0);
+        } else if (BleFlow.RESULT_HR == request) {
+            pul = data.getIntExtra(BleFlow.KEY_PUL, 0);
         }
     }
 
@@ -107,7 +106,7 @@ public class HeloBpActivity extends BaseActivity implements BleHelper.RequestLis
             int id = v.getId();
             if (R.id.start == id) {
                 connectHeloFragment.show(getSupportFragmentManager(), "connect");
-                bleHelper.startFlow(HeloBpActivity.this);
+                bleHelper.startFlow(HeloHrActivity.this);
                 v.setClickable(false);
             }
         }
@@ -127,15 +126,13 @@ public class HeloBpActivity extends BaseActivity implements BleHelper.RequestLis
         public void onFinish() {
             viewHolder.start.setClickable(true);
             viewHolder.countDown.setText("");
-            if (sys > 0 && dia > 0) {
+            if (pul > 0) {
                 viewHolder.state.setText("测量结束");
                 String start = IApplication.dateFormat.format(new Date());
-                IRequester.getInstance().addBP(bus, start, sys, dia, 0);
-                BloodHistoryResponse.HistoryItem item = new BloodHistoryResponse.HistoryItem();
-                item.pressure = new BloodHistoryResponse.Pressure();
-                item.pressure.Systolic = sys;
-                item.pressure.Diastolic = dia;
-                item.pressure.Time_Test = start;
+                IRequester.getInstance().addBP(bus, start, 0, 0, 0);
+                HeartHistoryResponse.HistoryItem item = new HeartHistoryResponse.HistoryItem();
+                item.heartrate = pul;
+                item.time_test = start;
                 data.add(0, item);
                 viewHolder.recyclerView.getAdapter().notifyItemInserted(0);
             } else {
@@ -148,18 +145,14 @@ public class HeloBpActivity extends BaseActivity implements BleHelper.RequestLis
 
         @Override
         public AdapterHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new AdapterHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_bloodpressure_history, parent, false));
+            return new AdapterHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_heart_rate_history, parent, false));
         }
 
         @Override
         public void onBindViewHolder(AdapterHolder holder, int position) {
-            BloodHistoryResponse.HistoryItem item = data.get(position);
-            holder.date.setText(item.pressure.Time_Test);
-            holder.high.setText("收缩压" + item.pressure.Systolic);
-            holder.low.setText("舒张压" + item.pressure.Diastolic);
-            holder.rate.setText("心率" + item.pressure.HeartRate);
-            holder.rate.setVisibility(View.GONE);
-            holder.abnormal.setVisibility((item.pressure.Systolic < 130 && item.pressure.Diastolic < 85) ? View.GONE : View.VISIBLE);
+            HeartHistoryResponse.HistoryItem item = data.get(position);
+            holder.date.setText(item.time_test);
+            holder.rate.setText("心率" + item.heartrate);
         }
 
         @Override
@@ -169,18 +162,15 @@ public class HeloBpActivity extends BaseActivity implements BleHelper.RequestLis
     }
 
     private class AdapterHolder extends RecyclerView.ViewHolder {
-        TextView date, high, low, rate;
+        TextView date, rate;
         View abnormal;
 
         public AdapterHolder(View itemView) {
             super(itemView);
             date = BaseViewHolder.get(itemView, R.id.date);
-            high = BaseViewHolder.get(itemView, R.id.high);
-            low = BaseViewHolder.get(itemView, R.id.low);
             rate = BaseViewHolder.get(itemView, R.id.rate);
             abnormal = BaseViewHolder.get(itemView, R.id.state);
         }
     }
-
 
 }
