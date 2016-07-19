@@ -19,7 +19,7 @@ import com.syber.hypoxia.R;
 
 /**
  * HoloCircularProgressBar custom view.
- * <p/>
+ * <p>
  * https://github.com/passsy/android-HoloCircularProgressBar
  *
  * @author Pascal.Welsch
@@ -88,7 +88,7 @@ public class HoloCircularProgressBar extends View {
     private int mCircleStrokeWidth = 10;
     /**
      * The gravity of the view. Where should the Circle be drawn within the given bounds
-     * <p/>
+     * <p>
      * {@link #computeInsets(int, int)}
      */
     private int mGravity = Gravity.CENTER;
@@ -150,14 +150,14 @@ public class HoloCircularProgressBar extends View {
     private Paint mThumbColorPaint = new Paint();
     /**
      * The Thumb pos x.
-     * <p/>
+     * <p>
      * Care. the position is not the position of the rotated thumb. The position is only calculated
      * in {@link #onMeasure(int, int)}
      */
     private float mThumbPosX;
     /**
      * The Thumb pos y.
-     * <p/>
+     * <p>
      * Care. the position is not the position of the rotated thumb. The position is only calculated
      * in {@link #onMeasure(int, int)}
      */
@@ -180,6 +180,7 @@ public class HoloCircularProgressBar extends View {
      */
     private int mVerticalInset = 0;
     private int rotate;
+    private boolean start = false;
 
     /**
      * Instantiates a new holo circular progress bar.
@@ -242,11 +243,15 @@ public class HoloCircularProgressBar extends View {
 
     }
 
+    public void setStart(boolean start) {
+        this.start = start;
+    }
+
     @Override
     public void computeScroll() {
         super.computeScroll();
         invalidate();
-        rotate++;
+        if (start) rotate++;
         if (rotate >= 360) rotate = 0;
     }
 
@@ -523,7 +528,7 @@ public class HoloCircularProgressBar extends View {
 
     /**
      * Compute insets.
-     * <p/>
+     * <p>
      * <pre>
      *  ______________________
      * |_________dx/2_________|

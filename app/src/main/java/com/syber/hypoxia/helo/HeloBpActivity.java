@@ -18,6 +18,7 @@ import com.syber.hypoxia.IApplication;
 import com.syber.hypoxia.R;
 import com.syber.hypoxia.data.BloodHistoryResponse;
 import com.syber.hypoxia.data.IRequester;
+import com.syber.hypoxia.widget.HoloCircularProgressBar;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -36,17 +37,22 @@ public class HeloBpActivity extends BaseActivity implements BleHelper.RequestLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_helo_bp);
         initAppBar();
-        bleHelper = new BleHelper("HeloHL01", new BPFlow());
-        bleHelper.setRequestListener(this);
         connectHeloFragment = new ConnectHeloFragment();
-        connectHeloFragment.show(getSupportFragmentManager(), "connect");
         viewHolder = new ViewHolder();
         ViewPost.postOnAnimation(getWindow().getDecorView(), new Runnable() {
             @Override
             public void run() {
-                bleHelper.startFlow(HeloBpActivity.this);
+                startFlow();
             }
         });
+    }
+
+    private void startFlow() {
+        connectHeloFragment.show(getSupportFragmentManager(), "connect");
+        bleHelper = new BleHelper("HeloHL01", new BPFlow());
+        bleHelper.setRequestListener(this);
+        viewHolder.start.setStart(true);
+        bleHelper.startFlow(HeloBpActivity.this);
     }
 
     @Override
@@ -77,6 +83,7 @@ public class HeloBpActivity extends BaseActivity implements BleHelper.RequestLis
             bleHelper.setRequestConfirmed(request, BleFlow.CONFIRM_OK);
         } else if (BleFlow.REQUEST_BINDED_OTHER == request) {
             viewHolder.start.setClickable(true);
+            bleHelper.endFlow();
             connectHeloFragment.dismiss();
             new HeloBindedOtherFragment().show(getSupportFragmentManager(), "connected_other");
         } else if (BleFlow.RESULT_BP == request) {
@@ -88,7 +95,8 @@ public class HeloBpActivity extends BaseActivity implements BleHelper.RequestLis
     private class ViewHolder extends BaseViewHolder {
         TextView countDown, state;
         RecyclerView recyclerView;
-        View start;
+        HoloCircularProgressBar start;
+
 
         public ViewHolder() {
             super(findViewById(R.id.view_holder));
@@ -106,9 +114,8 @@ public class HeloBpActivity extends BaseActivity implements BleHelper.RequestLis
         public void onClick(View v) {
             int id = v.getId();
             if (R.id.start == id) {
-                connectHeloFragment.show(getSupportFragmentManager(), "connect");
-                bleHelper.startFlow(HeloBpActivity.this);
                 v.setClickable(false);
+                startFlow();
             }
         }
     }
@@ -126,7 +133,9 @@ public class HeloBpActivity extends BaseActivity implements BleHelper.RequestLis
         @Override
         public void onFinish() {
             viewHolder.start.setClickable(true);
-            viewHolder.countDown.setText("");
+            viewHolder.start.setStart(false);
+            bleHelper.endFlow();
+            viewHolder.countDown.setText("重新测量");
             if (sys > 0 && dia > 0) {
                 viewHolder.state.setText("测量结束");
                 String start = IApplication.dateFormat.format(new Date());

@@ -18,6 +18,7 @@ import com.syber.hypoxia.IApplication;
 import com.syber.hypoxia.R;
 import com.syber.hypoxia.data.HeartHistoryResponse;
 import com.syber.hypoxia.data.IRequester;
+import com.syber.hypoxia.widget.HoloCircularProgressBar;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -35,17 +36,22 @@ public class HeloHrActivity extends BaseActivity implements BleHelper.RequestLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_helo_hr);
         initAppBar();
-        bleHelper = new BleHelper("HeloHL01", new HRFlow());
-        bleHelper.setRequestListener(this);
         connectHeloFragment = new ConnectHeloFragment();
-        connectHeloFragment.show(getSupportFragmentManager(), "connect");
         viewHolder = new ViewHolder();
         ViewPost.postOnAnimation(getWindow().getDecorView(), new Runnable() {
             @Override
             public void run() {
-                bleHelper.startFlow(HeloHrActivity.this);
+                startFlow();
             }
         });
+    }
+
+    private void startFlow() {
+        bleHelper = new BleHelper("HeloHL01", new HRFlow());
+        bleHelper.setRequestListener(this);
+        connectHeloFragment.show(getSupportFragmentManager(), "connect");
+        viewHolder.start.setStart(true);
+        bleHelper.startFlow(HeloHrActivity.this);
     }
 
 
@@ -76,6 +82,7 @@ public class HeloHrActivity extends BaseActivity implements BleHelper.RequestLis
             showToast("发现设备,准备绑定");
             bleHelper.setRequestConfirmed(request, BleFlow.CONFIRM_OK);
         } else if (BleFlow.REQUEST_BINDED_OTHER == request) {
+            bleHelper.endFlow();
             viewHolder.start.setClickable(true);
             connectHeloFragment.dismiss();
             new HeloBindedOtherFragment().show(getSupportFragmentManager(), "connected_other");
@@ -87,7 +94,7 @@ public class HeloHrActivity extends BaseActivity implements BleHelper.RequestLis
     private class ViewHolder extends BaseViewHolder {
         TextView countDown, state;
         RecyclerView recyclerView;
-        View start;
+        HoloCircularProgressBar start;
 
         public ViewHolder() {
             super(findViewById(R.id.view_holder));
@@ -105,9 +112,8 @@ public class HeloHrActivity extends BaseActivity implements BleHelper.RequestLis
         public void onClick(View v) {
             int id = v.getId();
             if (R.id.start == id) {
-                connectHeloFragment.show(getSupportFragmentManager(), "connect");
-                bleHelper.startFlow(HeloHrActivity.this);
                 v.setClickable(false);
+                startFlow();
             }
         }
     }
@@ -125,7 +131,9 @@ public class HeloHrActivity extends BaseActivity implements BleHelper.RequestLis
         @Override
         public void onFinish() {
             viewHolder.start.setClickable(true);
-            viewHolder.countDown.setText("");
+            viewHolder.start.setStart(false);
+            bleHelper.endFlow();
+            viewHolder.countDown.setText("重新测量");
             if (pul > 0) {
                 viewHolder.state.setText("测量结束");
                 String start = IApplication.dateFormat.format(new Date());
