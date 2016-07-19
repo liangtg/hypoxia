@@ -7,6 +7,7 @@ import android.view.View;
 import com.syber.base.BaseActivity;
 import com.syber.base.BaseViewHolder;
 import com.syber.hypoxia.helo.HeloBpActivity;
+import com.syber.hypoxia.helo.HeloEcgActivity;
 import com.syber.hypoxia.helo.HeloHrActivity;
 
 public class DeviceListActivity extends BaseActivity {
@@ -67,6 +68,7 @@ public class DeviceListActivity extends BaseActivity {
                 gotoActivity(HeloHrActivity.class);
             } else if (R.id.helo_option_ecg == id) {
                 dialog.dismiss();
+                gotoActivity(HeloEcgActivity.class);
             }
         }
     }

@@ -7,29 +7,69 @@
     android:orientation="horizontal"
     android:padding="@dimen/spacing_double">
 
-    <ImageButton
+    <FrameLayout
         android:id="@+id/helo_option_bp"
-        style="@style/Widget.AppCompat.Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@null"
-        android:src="@drawable/ic_helo_bp" />
+        android:measureAllChildren="true">
 
-    <ImageButton
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:src="@drawable/ic_helo_bp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|bottom"
+            android:layout_marginBottom="@dimen/spacing_normal"
+            android:text="测量血压"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textColor="?android:textColorPrimaryInverse" />
+    </FrameLayout>
+
+    <FrameLayout
         android:id="@+id/helo_option_hr"
-        style="@style/Widget.AppCompat.Button"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/spacing_double"
-        android:layout_marginRight="@dimen/spacing_double"
-        android:background="@null"
-        android:src="@drawable/ic_helo_hr" />
+        android:layout_height="wrap_content">
 
-    <ImageButton
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/spacing_double"
+            android:layout_marginRight="@dimen/spacing_double"
+            android:background="@null"
+            android:src="@drawable/ic_helo_hr" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|bottom"
+            android:paddingBottom="@dimen/spacing_normal"
+            android:text="测量心率"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textColor="?android:textColorPrimaryInverse" />
+    </FrameLayout>
+
+    <FrameLayout
         android:id="@+id/helo_option_ecg"
-        style="@style/Widget.AppCompat.Button"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@null"
-        android:src="@drawable/ic_helo_ecg" />
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:src="@drawable/ic_helo_ecg" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|bottom"
+            android:paddingBottom="@dimen/spacing_normal"
+            android:text="测量心电"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textColor="?android:textColorPrimaryInverse" />
+    </FrameLayout>
 </LinearLayout>

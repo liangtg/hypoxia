@@ -144,5 +144,11 @@
             android:label="测量心率"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
+        <activity
+            android:name=".helo.HeloEcgActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="测量心电"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme"></activity>
     </application>
 </manifest>

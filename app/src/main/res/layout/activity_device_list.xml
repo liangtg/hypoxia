@@ -133,6 +133,7 @@
         android:layout_marginTop="@dimen/spacing_normal"
         android:addStatesFromChildren="true"
         android:clickable="false"
+        android:visibility="gone"
         app:cardBackgroundColor="@color/colorPrimary">
 
         <Button
