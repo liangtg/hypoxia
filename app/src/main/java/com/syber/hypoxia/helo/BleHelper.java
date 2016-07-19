@@ -9,6 +9,7 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -16,12 +17,18 @@ import android.util.SparseArray;
 
 import com.syber.base.util.ByteUtil;
 import com.syber.hypoxia.HeloCMD;
+import com.syber.hypoxia.IApplication;
+
+import java.io.File;
+import java.io.PrintStream;
+import java.util.Date;
 
 /**
  * Created by liangtg on 16-7-15.
  */
 public class BleHelper implements BluetoothAdapter.LeScanCallback, IBleManager {
     public static final int OPEN_BLUETOOTH = 1366;
+    private static PrintStream printStream;
     private Handler handler = new Handler(Looper.getMainLooper());
     private String deviceName;
     private BleFlow bleFlow;
@@ -35,6 +42,11 @@ public class BleHelper implements BluetoothAdapter.LeScanCallback, IBleManager {
     private RequestListener listener;
 
     public BleHelper(String deviceName, BleFlow bleFlow) {
+        try {
+            printStream = new PrintStream(new File(Environment.getExternalStorageDirectory(), IApplication.dateFormat.format(new Date()) + ".log"));
+        } catch (Exception e) {
+            Log.e("flow", "", e);
+        }
         this.deviceName = deviceName;
         this.bleFlow = bleFlow;
         initCmd();
@@ -48,7 +60,7 @@ public class BleHelper implements BluetoothAdapter.LeScanCallback, IBleManager {
             b = Integer.parseInt(value[i], 16);
             HeloCMD.MATCH.cmd[i + 3] = (byte) b;
 //            HeloCMD.RESPONSE_BIND.cmd[i + 3] = (byte) b;
-            Log.e("mac", "" + value[i]);
+            e("" + value[i]);
             sum += b;
         }
         sum += HeloCMD.MATCH.cmd[2] + HeloCMD.MATCH.cmd[3] + HeloCMD.MATCH.cmd[4];
@@ -72,6 +84,7 @@ public class BleHelper implements BluetoothAdapter.LeScanCallback, IBleManager {
     }
 
     public static void e(Object msg) {
+        printStream.println("" + msg);
         Log.e("flow", "" + msg);
     }
 
@@ -97,6 +110,8 @@ public class BleHelper implements BluetoothAdapter.LeScanCallback, IBleManager {
     }
 
     public void endFlow() {
+        printStream.flush();
+        printStream.close();
         exit = true;
         stopScan();
         if (null != bluetoothGatt) bluetoothGatt.disconnect();
