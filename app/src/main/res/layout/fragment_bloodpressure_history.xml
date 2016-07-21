@@ -233,7 +233,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="@dimen/spacing_normal"
-                android:text="2016-05-21"
+                android:text=""
                 android:textColor="?android:textColorPrimaryInverse" />
 
             <TextView
@@ -243,7 +243,7 @@
                 android:background="@android:color/white"
                 android:text="血压异常"
                 android:textColor="@color/colorPrimaryDark"
-                android:visibility="visible" />
+                android:visibility="gone" />
         </LinearLayout>
 
         <LinearLayout
@@ -269,7 +269,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ems="2"
-                android:text="125"
+                android:text="0"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                 android:textColor="?android:textColorPrimaryInverse" />
 
@@ -285,7 +285,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ems="2"
-                android:text="125"
+                android:text="0"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                 android:textColor="?android:textColorPrimaryInverse" />
 
@@ -294,7 +294,8 @@
                 android:layout_height="wrap_content"
                 android:text="心率"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                android:textColor="?android:textColorPrimaryInverse" />
+                android:textColor="?android:textColorPrimaryInverse"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/highlight_pul"
@@ -303,7 +304,8 @@
                 android:ems="2"
                 android:text="125"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                android:textColor="?android:textColorPrimaryInverse" />
+                android:textColor="?android:textColorPrimaryInverse"
+                android:visibility="gone" />
         </LinearLayout>
 
         <android.support.percent.PercentFrameLayout

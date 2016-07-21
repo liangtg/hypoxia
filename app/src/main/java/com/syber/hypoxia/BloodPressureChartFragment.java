@@ -348,13 +348,13 @@ public class BloodPressureChartFragment extends BaseFragment implements RadioGro
             }
             LineData lineData = new LineData(xVals);
             LineDataSet rateSet = new LineDataSet(rateYVals, "");
-            rateSet.setColor(0x80CF4C4C);
-            rateSet.setCircleColor(0xFFCF4C4C);
-            rateSet.setDrawCircleHole(false);
-            rateSet.setDrawFilled(false);
-            rateSet.setDrawHorizontalHighlightIndicator(false);
-            rateSet.setDrawVerticalHighlightIndicator(false);
-            lineData.addDataSet(rateSet);
+//            rateSet.setColor(0x80CF4C4C);
+//            rateSet.setCircleColor(0xFFCF4C4C);
+//            rateSet.setDrawCircleHole(false);
+//            rateSet.setDrawFilled(false);
+//            rateSet.setDrawHorizontalHighlightIndicator(false);
+//            rateSet.setDrawVerticalHighlightIndicator(false);
+//            lineData.addDataSet(rateSet);
             rateSet = new LineDataSet(sysYVals, "");
             rateSet.setDrawHorizontalHighlightIndicator(false);
             rateSet.setDrawVerticalHighlightIndicator(false);

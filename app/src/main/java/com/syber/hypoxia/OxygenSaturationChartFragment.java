@@ -27,8 +27,6 @@ import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.CombinedData;
 import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
@@ -335,12 +333,12 @@ public class OxygenSaturationChartFragment extends BaseFragment implements Radio
             barData = new CombinedData(xVals);
             BarData candleData = new BarData(xVals, dataSet);
             barData.setData(candleData);
-            LineDataSet lineDataSet = new LineDataSet(rateYVals, "");
-            lineDataSet.setColor(0xFFFF0000);
-            lineDataSet.setCircleColor(0xFFFF0000);
-            lineDataSet.setCircleColorHole(0xFFFF0000);
-            lineDataSet.setHighlightEnabled(false);
-            barData.setData(new LineData(xVals, lineDataSet));
+//            LineDataSet lineDataSet = new LineDataSet(rateYVals, "");
+//            lineDataSet.setColor(0xFFFF0000);
+//            lineDataSet.setCircleColor(0xFFFF0000);
+//            lineDataSet.setCircleColorHole(0xFFFF0000);
+//            lineDataSet.setHighlightEnabled(false);
+//            barData.setData(new LineData(xVals, lineDataSet));
             barData.setDrawValues(false);
             resetData();
         }

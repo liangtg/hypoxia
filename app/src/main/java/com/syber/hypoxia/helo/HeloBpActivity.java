@@ -48,11 +48,12 @@ public class HeloBpActivity extends BaseActivity implements BleHelper.RequestLis
     }
 
     private void startFlow() {
+        sys = dia = 0;
         connectHeloFragment.show(getSupportFragmentManager(), "connect");
         bleHelper = new BleHelper("HeloHL01", new BPFlow());
         bleHelper.setRequestListener(this);
-        viewHolder.start.setStart(true);
         bleHelper.startFlow(HeloBpActivity.this);
+        viewHolder.state.setText("测量中");
     }
 
     @Override
@@ -77,6 +78,7 @@ public class HeloBpActivity extends BaseActivity implements BleHelper.RequestLis
         if (BleFlow.REQUEST_MATCHED == request) {
             connectHeloFragment.dismiss();
             bleHelper.setRequestConfirmed(request, BleFlow.CONFIRM_OK);
+            viewHolder.start.setStart(true);
             new Timer().start();
         } else if (BleFlow.REQUEST_BIND == request) {
             showToast("发现设备,准备绑定");
@@ -135,9 +137,9 @@ public class HeloBpActivity extends BaseActivity implements BleHelper.RequestLis
             viewHolder.start.setClickable(true);
             viewHolder.start.setStart(false);
             bleHelper.endFlow();
-            viewHolder.countDown.setText("重新测量");
+            viewHolder.countDown.setText("测量");
             if (sys > 0 && dia > 0) {
-                viewHolder.state.setText("测量结束");
+                viewHolder.state.setText("测量完成");
                 String start = IApplication.dateFormat.format(new Date());
                 IRequester.getInstance().addBP(bus, start, sys, dia, 0);
                 BloodHistoryResponse.HistoryItem item = new BloodHistoryResponse.HistoryItem();

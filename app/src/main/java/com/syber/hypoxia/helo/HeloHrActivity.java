@@ -50,8 +50,8 @@ public class HeloHrActivity extends BaseActivity implements BleHelper.RequestLis
         bleHelper = new BleHelper("HeloHL01", new HRFlow());
         bleHelper.setRequestListener(this);
         connectHeloFragment.show(getSupportFragmentManager(), "connect");
-        viewHolder.start.setStart(true);
         bleHelper.startFlow(HeloHrActivity.this);
+        viewHolder.state.setText("测量中");
     }
 
 
@@ -77,6 +77,7 @@ public class HeloHrActivity extends BaseActivity implements BleHelper.RequestLis
         if (BleFlow.REQUEST_MATCHED == request) {
             connectHeloFragment.dismiss();
             bleHelper.setRequestConfirmed(request, BleFlow.CONFIRM_OK);
+            viewHolder.start.setStart(true);
             new Timer().start();
         } else if (BleFlow.REQUEST_BIND == request) {
             showToast("发现设备,准备绑定");
@@ -133,9 +134,9 @@ public class HeloHrActivity extends BaseActivity implements BleHelper.RequestLis
             viewHolder.start.setClickable(true);
             viewHolder.start.setStart(false);
             bleHelper.endFlow();
-            viewHolder.countDown.setText("重新测量");
+            viewHolder.countDown.setText("测量");
             if (pul > 0) {
-                viewHolder.state.setText("测量结束");
+                viewHolder.state.setText("测量完成");
                 String start = IApplication.dateFormat.format(new Date());
                 IRequester.getInstance().addBP(bus, start, 0, 0, 0);
                 HeartHistoryResponse.HistoryItem item = new HeartHistoryResponse.HistoryItem();

@@ -2,6 +2,7 @@ package com.syber.hypoxia;
 
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -102,7 +103,7 @@ public class MainActivity extends BaseActivity {
 
     private class ViewHolder extends BaseViewHolder {
         TextView userInfo, userName;
-        TextView hypoxiaTime, hypoxiaMode, sys, dia, oxygen, heartRate;
+        TextView hypoxiaTime, hypoxiaMode, sys, dia, oxygen, heartRate, lipidType, lipidValue, lipidUnit;
         private ImageView userImage;
         private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -125,6 +126,9 @@ public class MainActivity extends BaseActivity {
             dia = get(R.id.dia);
             oxygen = get(R.id.oxygen);
             heartRate = get(R.id.heart_rate);
+            lipidType = get(R.id.lipid_type);
+            lipidValue = get(R.id.lipid_value);
+            lipidUnit = get(R.id.lipid_unit);
         }
 
         void updateUserInfo() {
@@ -153,6 +157,23 @@ public class MainActivity extends BaseActivity {
             }
             if (null != event.heartrate) {
                 heartRate.setText(event.heartrate.heartrate + "");
+            }
+            if (null != event.bloodfat) {
+                if (!TextUtils.isEmpty(event.bloodfat.cholvalue)) {
+                    lipidType.setText("血脂");
+                    lipidValue.setText(event.bloodfat.cholvalue);
+                    lipidUnit.setText("mmol/L");
+                }
+            }
+            if (null != event.bloodsugar && !TextUtils.isEmpty(event.bloodsugar.sugarvalue)) {
+                lipidType.setText("血糖");
+                lipidValue.setText(event.bloodsugar.sugarvalue);
+                lipidUnit.setText("mmol/L");
+            }
+            if (null != event.uricacid && !TextUtils.isEmpty(event.uricacid.uricacidvalue)) {
+                lipidType.setText("血尿酸");
+                lipidValue.setText(event.uricacid.uricacidvalue);
+                lipidUnit.setText("mmol/L");
             }
         }
 

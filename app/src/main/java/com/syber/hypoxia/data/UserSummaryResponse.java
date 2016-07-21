@@ -39,6 +39,36 @@ public class UserSummaryResponse extends BaseResponse {
      */
 
     public HeartrateBean heartrate;
+    /**
+     * cholsymbol : null
+     * cholvalue : > 2.86
+     * tgsymbol : null
+     * tgvalue :  0.68
+     * hdlsymbol : null
+     * hdlvalue : >= 1.29
+     * ldlsymbol : null
+     * ldlvalue : < 1.25
+     * time_test : -59011459200000
+     * record_id : 15707
+     */
+
+    public BloodfatBean bloodfat;
+    /**
+     * sugarsymbol : null
+     * sugarvalue : < 5.11
+     * time_test : -59011459200000
+     * record_id : 15693
+     */
+
+    public BloodsugarBean bloodsugar;
+    /**
+     * uricacidsymbol : null
+     * uricacidvalue : >= 0.39
+     * time_test : -59011459200000
+     * record_id : 15694
+     */
+
+    public UricacidBean uricacid;
 
     public static class PressureBean {
         public int diastolic;
@@ -64,6 +94,33 @@ public class UserSummaryResponse extends BaseResponse {
 
     public static class HeartrateBean {
         public int heartrate;
+        public String time_test;
+        public int record_id;
+    }
+
+    public static class BloodfatBean {
+        public String cholsymbol;
+        public String cholvalue;
+        public String tgsymbol;
+        public String tgvalue;
+        public String hdlsymbol;
+        public String hdlvalue;
+        public String ldlsymbol;
+        public String ldlvalue;
+        public String time_test;
+        public int record_id;
+    }
+
+    public static class BloodsugarBean {
+        public String sugarsymbol;
+        public String sugarvalue;
+        public String time_test;
+        public int record_id;
+    }
+
+    public static class UricacidBean {
+        public String uricacidsymbol;
+        public String uricacidvalue;
         public String time_test;
         public int record_id;
     }

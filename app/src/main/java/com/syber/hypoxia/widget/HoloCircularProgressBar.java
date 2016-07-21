@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.graphics.SweepGradient;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -19,7 +20,7 @@ import com.syber.hypoxia.R;
 
 /**
  * HoloCircularProgressBar custom view.
- * <p>
+ * <p/>
  * https://github.com/passsy/android-HoloCircularProgressBar
  *
  * @author Pascal.Welsch
@@ -85,10 +86,10 @@ public class HoloCircularProgressBar extends View {
     /**
      * The stroke width used to paint the circle.
      */
-    private int mCircleStrokeWidth = 10;
+    private int mCircleStrokeWidth = 5;
     /**
      * The gravity of the view. Where should the Circle be drawn within the given bounds
-     * <p>
+     * <p/>
      * {@link #computeInsets(int, int)}
      */
     private int mGravity = Gravity.CENTER;
@@ -150,14 +151,14 @@ public class HoloCircularProgressBar extends View {
     private Paint mThumbColorPaint = new Paint();
     /**
      * The Thumb pos x.
-     * <p>
+     * <p/>
      * Care. the position is not the position of the rotated thumb. The position is only calculated
      * in {@link #onMeasure(int, int)}
      */
     private float mThumbPosX;
     /**
      * The Thumb pos y.
-     * <p>
+     * <p/>
      * Care. the position is not the position of the rotated thumb. The position is only calculated
      * in {@link #onMeasure(int, int)}
      */
@@ -245,6 +246,9 @@ public class HoloCircularProgressBar extends View {
 
     public void setStart(boolean start) {
         this.start = start;
+        if (!start) {
+            rotate = 0;
+        }
     }
 
     @Override
@@ -275,12 +279,15 @@ public class HoloCircularProgressBar extends View {
 
         // draw the background
         if (!mOverrdraw) {
-            canvas.drawArc(mCircleBounds, 270, -(360 - progressRotation), false, mBackgroundColorPaint);
+            canvas.drawArc(mCircleBounds, 270, 360, false, mBackgroundColorPaint);
         }
 
+        if (!start) return;
 
+        canvas.rotate(-90);
         // draw the progress or a full circle if overdraw is true
-        canvas.drawArc(mCircleBounds, 270, mOverrdraw ? 360 : progressRotation, false, mProgressColorPaint);
+        canvas.drawArc(mCircleBounds, 270, 360, false, mProgressColorPaint);
+        canvas.rotate(90);
 
         // draw the marker at the correct rotated position
         if (mIsMarkerEnabled) {
@@ -306,7 +313,11 @@ public class HoloCircularProgressBar extends View {
             mSquareRect.right = mThumbPosX + mThumbRadius / 3;
             mSquareRect.top = mThumbPosY - mThumbRadius / 3;
             mSquareRect.bottom = mThumbPosY + mThumbRadius / 3;
-            canvas.drawRect(mSquareRect, mThumbColorPaint);
+//            canvas.drawRect(mSquareRect, mThumbColorPaint);
+            mThumbColorPaint.setAlpha(0x80);
+            canvas.drawCircle(mThumbPosX, mThumbPosY, mThumbRadius, mThumbColorPaint);
+            mThumbColorPaint.setAlpha(0xFF);
+            canvas.drawCircle(mThumbPosX, mThumbPosY, mThumbRadius / 2, mThumbColorPaint);
             canvas.restore();
         }
     }
@@ -528,7 +539,7 @@ public class HoloCircularProgressBar extends View {
 
     /**
      * Compute insets.
-     * <p>
+     * <p/>
      * <pre>
      *  ______________________
      * |_________dx/2_________|
@@ -624,11 +635,13 @@ public class HoloCircularProgressBar extends View {
         mProgressColorPaint.setColor(mProgressColor);
         mProgressColorPaint.setStyle(Paint.Style.STROKE);
         mProgressColorPaint.setStrokeWidth(mCircleStrokeWidth);
+        mProgressColorPaint.setShader(new SweepGradient(0, 0, mProgressBackgroundColor, mProgressColor));
 
         mThumbColorPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mThumbColorPaint.setColor(mProgressColor);
         mThumbColorPaint.setStyle(Paint.Style.FILL_AND_STROKE);
         mThumbColorPaint.setStrokeWidth(mCircleStrokeWidth);
+
 
         invalidate();
     }

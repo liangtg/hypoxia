@@ -15,7 +15,7 @@
     <style name="CircularProgressBar">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">match_parent</item>
-        <item name="stroke_width">5dp</item>
+        <item name="stroke_width">2.5dp</item>
         <item name="progress" format="float">0.1</item>
         <item name="progress_color">#ffff4444</item>
         <item name="progress_background_color">#ffffffff</item>

@@ -16,12 +16,14 @@ import java.util.Random;
  * Created by liangtg on 16-7-19.
  */
 public class EcgView extends View {
+    private int position = 0;
+    private float[] simu = {0, 1, 0, 0, 1.5f, 2, 1.5f, 1, 0, 0, 0, 0, -2.5f, 10, -1, 0, 0, 1, 0, 0};
     private Paint linePaint;
     private Paint dashPaint;
     private Paint pathPaint;
     private Path dashPath = new Path();
     private boolean start = false;
-    private ArrayList<Integer> data = new ArrayList<>();
+    private ArrayList<Float> data = new ArrayList<>();
     private Random random = new Random();
 
     public EcgView(Context context) {
@@ -61,7 +63,9 @@ public class EcgView extends View {
     @Override
     public void computeScroll() {
         if (start) {
-            data.add(0, random.nextInt(getHeight()));
+            data.add(0, getHeight() / 2 - simu[position] * 10);
+            position++;
+            if (position == simu.length) position = 0;
             if (data.size() > 65) data.remove(data.size() - 1);
         }
         invalidate();
