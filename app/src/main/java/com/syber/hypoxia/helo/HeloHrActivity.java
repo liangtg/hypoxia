@@ -138,7 +138,7 @@ public class HeloHrActivity extends BaseActivity implements BleHelper.RequestLis
             if (pul > 0) {
                 viewHolder.state.setText("测量完成");
                 String start = IApplication.dateFormat.format(new Date());
-                IRequester.getInstance().addBP(bus, start, 0, 0, 0);
+                IRequester.getInstance().addBP(bus, start, 0, 0, pul);
                 HeartHistoryResponse.HistoryItem item = new HeartHistoryResponse.HistoryItem();
                 item.heartrate = pul;
                 item.time_test = start;
