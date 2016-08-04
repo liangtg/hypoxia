@@ -86,7 +86,7 @@ public class AddSPOActivity extends BaseActivity implements DatePickerDialog.OnD
         if (isFinishing()) return;
         progressDialog.dismiss();
         showToast("添加" + (event.isSuccess() ? "成功" : "失败"));
-        if (!viewHolder.edit && event.isSuccess()) finish();
+        if (event.isSuccess()) finish();
     }
 
     public void onStartTimeClicked(View view) {

@@ -2,10 +2,17 @@ package com.example;
 
 public class MyClass {
     public static void main(String[] args) {
-        double s=0;
-        for (int i=0; i<10; i++)
-            s += 0.1;
-        System.out.println(s);
-
+        int i = Integer.MAX_VALUE;
+        System.out.println("args = [" + i + "]" + Integer.toHexString(i));
+        i += 1;
+        System.out.println("args = [" + i + "]" + Integer.toHexString(i));
+        i = -1;
+        System.out.println("args = [" + i + "]" + Integer.toHexString(i));
+        i = 1 << 7;
+        System.out.println("args = [" + i + "]" + Integer.toHexString(i));
+        i -= 1;
+        System.out.println("args = [" + i + "]" + Integer.toHexString(i));
+        i = (byte) -1;
+        System.out.println("args = [" + i + "]" + Integer.toHexString(i));
     }
 }

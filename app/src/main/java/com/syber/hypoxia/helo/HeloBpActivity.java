@@ -23,9 +23,9 @@ import com.syber.hypoxia.widget.HoloCircularProgressBar;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class HeloBpActivity extends BaseActivity implements BleHelper.RequestListener {
+public class HeloBpActivity extends BaseActivity implements BTManager.RequestListener {
     private int sys, dia;
-    private BleHelper bleHelper;
+    private BTManager bleHelper;
     private ConnectHeloFragment connectHeloFragment;
     private ViewHolder viewHolder;
     private Bus bus = new Bus();
@@ -50,9 +50,9 @@ public class HeloBpActivity extends BaseActivity implements BleHelper.RequestLis
     private void startFlow() {
         sys = dia = 0;
         connectHeloFragment.show(getSupportFragmentManager(), "connect");
-        bleHelper = new BleHelper("HeloHL01", new BPFlow());
+        bleHelper = new BTManager();
         bleHelper.setRequestListener(this);
-        bleHelper.startFlow(HeloBpActivity.this);
+        bleHelper.startHeloBP(HeloBpActivity.this);
         viewHolder.state.setText("测量中");
     }
 
@@ -61,14 +61,14 @@ public class HeloBpActivity extends BaseActivity implements BleHelper.RequestLis
         if (!bleHelper.handleEnableResult(requestCode, resultCode, data)) {
             finish();
         } else {
-            bleHelper.startFlow(this);
+            bleHelper.start(this);
         }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        bleHelper.endFlow();
+        bleHelper.stop();
         bleHelper.setRequestListener(null);
         bleHelper = null;
     }
@@ -85,7 +85,7 @@ public class HeloBpActivity extends BaseActivity implements BleHelper.RequestLis
             bleHelper.setRequestConfirmed(request, BleFlow.CONFIRM_OK);
         } else if (BleFlow.REQUEST_BINDED_OTHER == request) {
             viewHolder.start.setClickable(true);
-            bleHelper.endFlow();
+            bleHelper.stop();
             connectHeloFragment.dismiss();
             new HeloBindedOtherFragment().show(getSupportFragmentManager(), "connected_other");
         } else if (BleFlow.RESULT_BP == request) {
@@ -129,14 +129,19 @@ public class HeloBpActivity extends BaseActivity implements BleHelper.RequestLis
 
         @Override
         public void onTick(long millisUntilFinished) {
+            if (isFinishing()) {
+                cancel();
+                return;
+            }
             viewHolder.countDown.setText(String.format("%d″", (millisUntilFinished + 500) / 1000));
         }
 
         @Override
         public void onFinish() {
+            if (isFinishing()) return;
             viewHolder.start.setClickable(true);
             viewHolder.start.setStart(false);
-            bleHelper.endFlow();
+            bleHelper.stop();
             viewHolder.countDown.setText("测量");
             if (sys > 0 && dia > 0) {
                 viewHolder.state.setText("测量完成");

@@ -23,7 +23,6 @@ import com.syber.base.BaseViewHolder;
 import com.syber.base.util.ByteUtil;
 import com.syber.base.util.Extra;
 import com.syber.base.view.ViewPost;
-import com.syber.hypoxia.helo.BleHelper;
 
 import java.lang.ref.WeakReference;
 import java.util.UUID;

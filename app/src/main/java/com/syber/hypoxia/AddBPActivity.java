@@ -74,6 +74,7 @@ public class AddBPActivity extends BaseActivity implements TimePickerDialog.OnTi
         if (isFinishing()) return;
         progressDialog.dismiss();
         showToast("添加" + (event.isSuccess() ? "成功" : "失败"));
+        if (event.isSuccess())finish();
     }
 
     public void onStartTimeClicked(View view) {

@@ -7,9 +7,7 @@ import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothProfile;
-import android.content.Context;
 import android.content.Intent;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -19,20 +17,15 @@ import com.syber.base.util.ByteUtil;
 import com.syber.hypoxia.HeloCMD;
 import com.syber.hypoxia.IApplication;
 
-import java.io.File;
-import java.io.PrintStream;
-import java.util.Date;
-
 /**
- * Created by liangtg on 16-7-15.
+ * Created by liangtg on 16-8-2.
  */
-public class BleHelper implements BluetoothAdapter.LeScanCallback, IBleManager {
+public class BTManager implements IBleManager {
+    public static final String DEVICE_HELO = "HeloHL01";
     public static final int OPEN_BLUETOOTH = 1366;
-    private static PrintStream printStream;
     private Handler handler = new Handler(Looper.getMainLooper());
     private String deviceName;
     private BleFlow bleFlow;
-    private Context context;
     private boolean exit = false;
     private StartScanRunnable startScanRunnable = new StartScanRunnable();
     private StopScanRunnable stopScanRunnable = new StopScanRunnable();
@@ -41,15 +34,10 @@ public class BleHelper implements BluetoothAdapter.LeScanCallback, IBleManager {
     private SparseArray<BleFlow> requestArray = new SparseArray<>();
     private RequestListener listener;
 
-    public BleHelper(String deviceName, BleFlow bleFlow) {
-        try {
-            printStream = new PrintStream(new File(Environment.getExternalStorageDirectory(), IApplication.dateFormat.format(new Date()) + ".log"));
-        } catch (Exception e) {
-            Log.e("flow", "", e);
-        }
-        this.deviceName = deviceName;
-        this.bleFlow = bleFlow;
-        initCmd();
+    private ScanCallback scanCallback = new ScanCallback();
+
+    public static void e(Object msg) {
+        Log.e("flow", "" + msg);
     }
 
     public static void initCmd() {
@@ -83,17 +71,53 @@ public class BleHelper implements BluetoothAdapter.LeScanCallback, IBleManager {
         }
     }
 
-    public static void e(Object msg) {
-        printStream.println("" + msg);
-        Log.e("flow", "" + msg);
+    @Override
+    public BluetoothGatt getBlutoothGatt() {
+        return bluetoothGatt;
+    }
+
+    @Override
+    public void requestConfirm(int request, BleFlow flow, Intent data) {
+        if (!exit && null != listener) {
+            this.requestArray.put(request, flow);
+            handler.post(new RequestRunnable(request, data));
+        }
+    }
+
+    @Override
+    public void setRequestConfirmed(int request, int result) {
+        if (exit || !gattCallback.connected || null == listener) return;
+        this.requestArray.get(request).onRequestConfirmed(request, result);
+        requestArray.remove(request);
+    }
+
+    public void startHeloBP(Activity activity) {
+        initCmd();
+        deviceName = DEVICE_HELO;
+        bleFlow = new BPFlow();
+        start(activity);
+    }
+
+    public void startHeloHR(Activity activity) {
+        initCmd();
+        deviceName = DEVICE_HELO;
+        bleFlow = new HRFlow();
+        start(activity);
+    }
+
+    public void startHeloECG(Activity activity) {
+        initCmd();
+        deviceName = DEVICE_HELO;
+        bleFlow = new ECGFlow();
+        start(activity);
     }
 
     public void setRequestListener(RequestListener listener) {
         this.listener = listener;
     }
 
-    public void startFlow(Activity activity) {
-        context = activity;
+    public void start(Activity activity) {
+        exit = false;
         if (null != bluetoothGatt) {
             bleFlow.start();
         } else if (BluetoothAdapter.getDefaultAdapter().isEnabled()) {
@@ -106,22 +130,8 @@ public class BleHelper implements BluetoothAdapter.LeScanCallback, IBleManager {
     private void startScan() {
         handler.removeCallbacks(startScanRunnable);
         handler.removeCallbacks(stopScanRunnable);
+        scanCallback.inScan = true;
         startScanRunnable.run();
-    }
-
-    public void endFlow() {
-        printStream.flush();
-        printStream.close();
-        exit = true;
-        stopScan();
-        if (null != bluetoothGatt) bluetoothGatt.disconnect();
-    }
-
-    private void stopScan() {
-        handler.removeCallbacks(startScanRunnable);
-        handler.removeCallbacks(stopScanRunnable);
-        stopScanRunnable.run();
-        handler.removeCallbacks(startScanRunnable);
     }
 
     public void enableBluetooth(Activity activity) {
@@ -132,49 +142,41 @@ public class BleHelper implements BluetoothAdapter.LeScanCallback, IBleManager {
         return OPEN_BLUETOOTH == requestCode && resultCode == Activity.RESULT_OK;
     }
 
-    @Override
-    public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
-        if (exit) return;
-        e(String.format("scan:||%s||----%s", device.getName(), device.getAddress()));
-        if (deviceName.equals(device.getName())) {
-            stopScan();
-            e("connecting...");
-            bluetoothGatt = device.connectGatt(context, false, gattCallback);
-            bleFlow.setBleManager(this);
+    public void stop() {
+        exit = true;
+        stopScan();
+        gattCallback.inConnect = false;
+        if (null != bluetoothGatt) {
+            bluetoothGatt.disconnect();
+            bluetoothGatt = null;
         }
     }
 
-    @Override
-    public BluetoothGatt getBlutoothGatt() {
-        return bluetoothGatt;
-    }
-
-    @Override
-    public void requestConfirm(int request, BleFlow flow, Intent data) {
-        if (null != listener) {
-            this.requestArray.put(request, flow);
-            handler.post(new RequestRunnable(request, data));
-        }
-    }
-
-    @Override
-    public void setRequestConfirmed(int request, int result) {
-        if (exit || null == bluetoothGatt || null == listener) return;
-        this.requestArray.get(request).onRequestConfirmed(request, result);
-        requestArray.remove(request);
+    private void stopScan() {
+        scanCallback.inScan = false;
+        handler.removeCallbacks(startScanRunnable);
+        handler.removeCallbacks(stopScanRunnable);
+        stopScanRunnable.run();
+        handler.removeCallbacks(startScanRunnable);
     }
 
     public interface RequestListener {
         void onRequestConfirm(int request, Intent data);
     }
 
-    private class StopScanRunnable implements Runnable {
+    private class ScanCallback implements BluetoothAdapter.LeScanCallback {
+        private boolean inScan = true;
+
         @Override
-        public void run() {
-            e("stop scan!");
-            BluetoothAdapter.getDefaultAdapter().stopLeScan(BleHelper.this);
-            if (!exit) {
-                handler.postDelayed(startScanRunnable, 500);
+        public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
+            if (exit || !inScan) return;
+            e(String.format("scan:||%s||----%s", device.getName(), device.getAddress()));
+            if (deviceName.equals(device.getName())) {
+                stopScan();
+                e("connecting...");
+                gattCallback.reset();
+                bluetoothGatt = device.connectGatt(IApplication.getContext(), false, gattCallback);
+                bleFlow.setBleManager(BTManager.this);
             }
         }
     }
@@ -183,28 +185,54 @@ public class BleHelper implements BluetoothAdapter.LeScanCallback, IBleManager {
         @Override
         public void run() {
             e("start le scan");
-            BluetoothAdapter.getDefaultAdapter().startLeScan(BleHelper.this);
+            BluetoothAdapter.getDefaultAdapter().startLeScan(scanCallback);
             handler.postDelayed(stopScanRunnable, 10 * 1000);
         }
     }
 
+    private class StopScanRunnable implements Runnable {
+        @Override
+        public void run() {
+            e("stop scan!");
+            BluetoothAdapter.getDefaultAdapter().stopLeScan(scanCallback);
+            handler.postDelayed(startScanRunnable, 500);
+        }
+    }
+
     private class GattCallback extends BluetoothGattCallback {
+        private boolean inConnect = true;
+        private boolean connected = false;
+
+        private void reset() {
+            inConnect = true;
+            connected = false;
+        }
+
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             e(String.format("State:%d\t%d", status, newState));
-            if (exit) return;
+            if (exit || !inConnect) return;
             if (BluetoothProfile.STATE_CONNECTED == newState && BluetoothGatt.GATT_SUCCESS == status) {
+                connected = true;
                 gatt.discoverServices();
             } else if (BluetoothProfile.STATE_DISCONNECTED == newState) {
-                bluetoothGatt = null;
-                startScan();
+                gatt.disconnect();
+                inConnect = false;
+                if (connected) {
+                    connected = false;
+                    bleFlow.reset();
+                    requestConfirm(BleFlow.REQUEST_CONFIRM_DISCONNECT, null, null);
+                } else {
+                    bluetoothGatt = null;
+                    startScan();
+                }
             }
         }
 
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             e(String.format("onServicesDiscovered:%d", status));
-            if (exit) return;
+            if (exit || !inConnect) return;
             if (BluetoothGatt.GATT_SUCCESS == status) {
                 bleFlow.start();
             } else {
@@ -215,14 +243,14 @@ public class BleHelper implements BluetoothAdapter.LeScanCallback, IBleManager {
         @Override
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             e(String.format("writed:%s\t%s\t%d", characteristic.getUuid().toString(), ByteUtil.toHex(characteristic.getValue()), status));
-            if (exit) return;
+            if (exit || !inConnect) return;
             bleFlow.handleCharacteristicWrite(gatt, characteristic, status);
         }
 
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
             e(String.format("cha changed:%s\t%s", characteristic.getUuid().toString(), ByteUtil.toHex(characteristic.getValue())));
-            if (exit) return;
+            if (exit || !inConnect) return;
             bleFlow.handleCharacteristicChanged(gatt, characteristic);
         }
     }
@@ -243,6 +271,5 @@ public class BleHelper implements BluetoothAdapter.LeScanCallback, IBleManager {
             }
         }
     }
-
 
 }

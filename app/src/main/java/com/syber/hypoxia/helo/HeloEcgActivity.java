@@ -21,10 +21,11 @@ import com.syber.hypoxia.data.BloodHistoryResponse;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class HeloEcgActivity extends BaseActivity implements BleHelper.RequestListener {
+public class HeloEcgActivity extends BaseActivity implements BTManager.RequestListener {
+    int ecgPosition = 0;
+    private int sys, dia, pul, ecg = -1;
     private ArrayList<BloodHistoryResponse.HistoryItem> data = new ArrayList<>();
-
-    private BleHelper bleHelper;
+    private BTManager bleHelper;
     private ConnectHeloFragment connectHeloFragment;
     private ViewHolder viewHolder;
     private Bus bus = new Bus();
@@ -34,7 +35,7 @@ public class HeloEcgActivity extends BaseActivity implements BleHelper.RequestLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_helo_ecg);
         initAppBar();
-        bleHelper = new BleHelper("HeloHL01", new PreBindFlow());
+        bleHelper = new BTManager();
         bleHelper.setRequestListener(this);
         connectHeloFragment = new ConnectHeloFragment();
         connectHeloFragment.show(getSupportFragmentManager(), "connect");
@@ -42,25 +43,24 @@ public class HeloEcgActivity extends BaseActivity implements BleHelper.RequestLi
         ViewPost.postOnAnimation(getWindow().getDecorView(), new Runnable() {
             @Override
             public void run() {
-                bleHelper.startFlow(HeloEcgActivity.this);
+                bleHelper.startHeloECG(HeloEcgActivity.this);
             }
         });
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (!bleHelper.handleEnableResult(requestCode, resultCode, data)) {
             finish();
         } else {
-            bleHelper.startFlow(this);
+            bleHelper.start(this);
         }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        bleHelper.endFlow();
+        bleHelper.stop();
         bleHelper.setRequestListener(null);
         bleHelper = null;
     }
@@ -78,6 +78,27 @@ public class HeloEcgActivity extends BaseActivity implements BleHelper.RequestLi
             viewHolder.ecgView.setClickable(false);
             connectHeloFragment.dismiss();
             new HeloBindedOtherFragment().show(getSupportFragmentManager(), "connected_other");
+        } else if (BleFlow.RESULT_RAW_PUL == request) {
+            int[] extra = data.getIntArrayExtra(BleFlow.KEY_PUL_ARRAY);
+            for (int i = 0; i < extra.length; i++) {
+                viewHolder.ecgView.addPoint(extra[i]);
+            }
+        } else if (BleFlow.RESULT_RAW_ECG == request) {
+            int[] extra = data.getIntArrayExtra(BleFlow.KEY_ECG_ARRAY);
+            viewHolder.ecgView.addPoint((extra[0] - 400) / 200f * 1200);
+//            if (ecgPosition == 0) {
+//                for (int i = 0; i < extra.length; i++) {
+//                }
+//            }
+            ecgPosition++;
+            ecgPosition %= 4;
+        } else if (BleFlow.RESULT_BP == request) {
+            sys = data.getIntExtra(BleFlow.KEY_SYS, 0);
+            dia = data.getIntExtra(BleFlow.KEY_DIA, 0);
+        } else if (BleFlow.RESULT_HR == request) {
+            pul = data.getIntExtra(BleFlow.KEY_PUL, 0);
+        } else if (BleFlow.RESULT_ECG == request) {
+            ecg = data.getIntExtra(BleFlow.KEY_ECG, 0);
         }
     }
 
@@ -100,7 +121,7 @@ public class HeloEcgActivity extends BaseActivity implements BleHelper.RequestLi
             int id = v.getId();
             if (R.id.ecg_view == id) {
                 connectHeloFragment.show(getSupportFragmentManager(), "connect");
-                bleHelper.startFlow(HeloEcgActivity.this);
+                bleHelper.start(HeloEcgActivity.this);
                 v.setClickable(false);
             }
         }
@@ -108,21 +129,31 @@ public class HeloEcgActivity extends BaseActivity implements BleHelper.RequestLi
 
     private class Timer extends CountDownTimer {
         public Timer() {
-            super(40 * 1000, 500);
+            super(120 * 1000, 500);
         }
 
         @Override
         public void onTick(long millisUntilFinished) {
+            if (isFinishing()) {
+                cancel();
+                return;
+            }
             viewHolder.ecgView.start(true);
         }
 
         @Override
         public void onFinish() {
+            if (isFinishing()) return;
             viewHolder.ecgView.start(false);
+            bleHelper.stop();
             BloodHistoryResponse.HistoryItem item = new BloodHistoryResponse.HistoryItem();
             String start = IApplication.dateFormat.format(new Date());
             item.pressure = new BloodHistoryResponse.Pressure();
             item.pressure.Time_Test = start;
+            item.pressure.Systolic = sys;
+            item.pressure.Diastolic = dia;
+            item.pressure.HeartRate = pul;
+            item.training = String.valueOf(ecg);
             data.add(0, item);
             viewHolder.recyclerView.getAdapter().notifyItemInserted(0);
         }
@@ -139,11 +170,11 @@ public class HeloEcgActivity extends BaseActivity implements BleHelper.RequestLi
         public void onBindViewHolder(AdapterHolder holder, int position) {
             BloodHistoryResponse.HistoryItem item = data.get(position);
             holder.date.setText(item.pressure.Time_Test);
-            holder.high.setText("正常");
+            holder.high.setText("收缩压" + item.pressure.Systolic);
             holder.low.setText("舒张压" + item.pressure.Diastolic);
-            holder.low.setVisibility(View.GONE);
-            holder.rate.setText("心率" + item.pressure.HeartRate);
-            holder.rate.setVisibility(View.GONE);
+//            holder.low.setVisibility(View.GONE);
+            holder.rate.setText("心率" + item.pressure.HeartRate + ", " + item.training);
+//            holder.rate.setVisibility(View.GONE);
             holder.abnormal.setVisibility((item.pressure.Systolic < 130 && item.pressure.Diastolic < 85) ? View.GONE : View.VISIBLE);
         }
 

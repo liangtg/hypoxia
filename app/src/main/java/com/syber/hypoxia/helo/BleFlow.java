@@ -14,6 +14,9 @@ public abstract class BleFlow {
     public static final String KEY_SYS = "sys";
     public static final String KEY_DIA = "dia";
     public static final String KEY_PUL = "pul";
+    public static final String KEY_ECG = "ecg";
+    public static final String KEY_PUL_ARRAY = "pul_array";
+    public static final String KEY_ECG_ARRAY = "ecg_array";
     public static final int CONFIRM_OK = 1;
     public static final int CONFIRM_CANCEL = 2;
 
@@ -23,6 +26,9 @@ public abstract class BleFlow {
     public static final int RESULT_BP = 4;
     public static final int RESULT_HR = 5;
     public static final int RESULT_ECG = 6;
+    public static final int RESULT_RAW_PUL = 7;
+    public static final int RESULT_RAW_ECG = 8;
+    public static final int REQUEST_CONFIRM_DISCONNECT = 9;
 
     protected BleFlow dependency;
     protected BleFlow next;
@@ -35,11 +41,18 @@ public abstract class BleFlow {
     }
 
     public void start() {
-        BleHelper.e("start:\t" + getClass().getSimpleName());
+        BTManager.e("start:\t" + getClass().getSimpleName());
         if (null != dependency && !dependency.handleEnd()) {
             dependency.start();
         } else {
             onStart();
+        }
+    }
+
+    public void reset() {
+        setHandleEnd(false);
+        if (null != dependency) {
+            dependency.reset();
         }
     }
 
@@ -79,7 +92,8 @@ public abstract class BleFlow {
     }
 
     protected void writeChara(UUID service, UUID chara, byte[] value) {
-        BleHelper.e(String.format("ready write:%s\t%s", chara, ByteUtil.toHex(value)));
+        BTManager.e(String.format("ready write:%s\t%s", chara, ByteUtil.toHex(value)));
+        if (null == manager.getBlutoothGatt()) return;
         BluetoothGattCharacteristic characteristic = manager.getBlutoothGatt().getService(service).getCharacteristic(chara);
         characteristic.setValue(value);
         manager.getBlutoothGatt().writeCharacteristic(characteristic);

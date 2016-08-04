@@ -60,10 +60,15 @@ public class EcgView extends View {
         }
     }
 
+    public void addPoint(float value) {
+        if (!start) return;
+        data.add(0, value);
+        if (data.size() > 65) data.remove(data.size() - 1);
+    }
+
     @Override
     public void computeScroll() {
         if (start) {
-            data.add(0, getHeight() / 2 - simu[position] * 10);
             position++;
             if (position == simu.length) position = 0;
             if (data.size() > 65) data.remove(data.size() - 1);
@@ -76,14 +81,17 @@ public class EcgView extends View {
         drawLines(canvas);
         if (!data.isEmpty()) {
             dashPath.reset();
-            int width = getWidth() / 65;
-            dashPath.moveTo(0, data.get(0));
+            float width = getWidth() / 65f;
+            dashPath.moveTo(0, matchData(0));
             for (int i = 1; i < data.size(); i++) {
-                dashPath.lineTo(width * i, data.get(i));
+                dashPath.lineTo(width * i, matchData(i));
             }
         }
         canvas.drawPath(dashPath, pathPaint);
+    }
 
+    private float matchData(int index) {
+        return (1200 - data.get(index)) / 1200f * getHeight();
     }
 
     private void drawLines(Canvas canvas) {
