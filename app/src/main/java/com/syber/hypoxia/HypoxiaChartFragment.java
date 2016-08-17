@@ -185,6 +185,12 @@ public class HypoxiaChartFragment extends BaseFragment implements RadioGroup.OnC
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        curProvider.refresh();
+    }
+
+    @Override
     public void onClick(View v) {
         int id = v.getId();
         if (R.id.hypoxia_detail == id) {
@@ -287,8 +293,8 @@ public class HypoxiaChartFragment extends BaseFragment implements RadioGroup.OnC
         }
 
         public void refresh() {
-            progressBar.setVisibility(View.VISIBLE);
             if (working) return;
+            progressBar.setVisibility(View.VISIBLE);
             working = true;
             barData = null;
             IRequester.getInstance().hypoxiaChartData(bus, sdf.format(startDate.getTime()), sdf.format(endDate.getTime()));

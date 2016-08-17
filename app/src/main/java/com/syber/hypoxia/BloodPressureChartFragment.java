@@ -187,6 +187,12 @@ public class BloodPressureChartFragment extends BaseFragment implements RadioGro
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        curProvider.refresh();
+    }
+
+    @Override
     public void onClick(View v) {
         int id = v.getId();
         if (R.id.add_bp == id) {

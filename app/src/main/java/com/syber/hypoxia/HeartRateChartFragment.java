@@ -196,6 +196,12 @@ public class HeartRateChartFragment extends BaseFragment implements View.OnClick
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        curProvider.refresh();
+    }
+
+    @Override
     public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
         lastHight = h.getXIndex();
         HeartChartResponse.ChartItem item = curProvider.dataResponse.chart.get(lastHight);

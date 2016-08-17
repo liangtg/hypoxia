@@ -5,7 +5,6 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 
 import com.syber.hypoxia.Helo;
 import com.syber.hypoxia.HeloCMD;
@@ -64,7 +63,7 @@ public class ECGFlow extends BleFlow {
             int p3 = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_SINT32, 8);
             int p4 = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_SINT32, 12);
             int p5 = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_SINT32, 16);
-            Log.e("ecg", String.format("ecg :%d,%d,%d,%d,%d,", p1, p2, p3, p4, p5));
+            BTManager.e(String.format("ecg :%d,%d,%d,%d,%d,", p1, p2, p3, p4, p5));
             int[] pul = new int[]{p1, p2, p3, p4, p5};
             Intent data = new Intent();
             data.putExtra(BleFlow.KEY_ECG_ARRAY, pul);
