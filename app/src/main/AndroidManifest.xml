@@ -149,6 +149,7 @@
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="测量心电"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme" />
+        <activity android:name=".HypoxiaDeviceActivity"></activity>
     </application>
 </manifest>

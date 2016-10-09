@@ -6,6 +6,8 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattDescriptor;
+import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
 import android.content.Intent;
 import android.os.Handler;
@@ -17,11 +19,14 @@ import com.syber.base.util.ByteUtil;
 import com.syber.hypoxia.HeloCMD;
 import com.syber.hypoxia.IApplication;
 
+import java.util.List;
+
 /**
  * Created by liangtg on 16-8-2.
  */
 public class BTManager implements IBleManager {
     public static final String DEVICE_HELO = "HeloHL01";
+    public static final String DEVICE_IPC_906 = "IPC-906";
     public static final int OPEN_BLUETOOTH = 1366;
     private Handler handler = new Handler(Looper.getMainLooper());
     private String deviceName;
@@ -109,6 +114,12 @@ public class BTManager implements IBleManager {
         initCmd();
         deviceName = DEVICE_HELO;
         bleFlow = new ECGFlow();
+        start(activity);
+    }
+
+    public void startHypoxiaBP(Activity activity) {
+        deviceName = DEVICE_IPC_906;
+        bleFlow = new HypoxiaBPFlow();
         start(activity);
     }
 
@@ -234,6 +245,13 @@ public class BTManager implements IBleManager {
             e(String.format("onServicesDiscovered:%d", status));
             if (exit || !inConnect) return;
             if (BluetoothGatt.GATT_SUCCESS == status) {
+                List<BluetoothGattService> services = gatt.getServices();
+                for (int i = 0; i < services.size(); i++) {
+                    e(services.get(i).getUuid());
+                    for (int j = 0; j < services.get(i).getCharacteristics().size(); j++) {
+                        e("\t" + services.get(i).getCharacteristics().get(j).getUuid());
+                    }
+                }
                 bleFlow.start();
             } else {
                 gatt.discoverServices();
@@ -252,6 +270,16 @@ public class BTManager implements IBleManager {
             e(String.format("cha changed:%s\t%s", characteristic.getUuid().toString(), ByteUtil.toHex(characteristic.getValue())));
             if (exit || !inConnect) return;
             bleFlow.handleCharacteristicChanged(gatt, characteristic);
+        }
+
+        @Override
+        public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
+            e(String.format("des write:%s\t%s\t%s",
+                    descriptor.getUuid().toString(),
+                    ByteUtil.toHex(descriptor.getValue()),
+                    Integer.toHexString(status)));
+            if (exit || !inConnect) return;
+            bleFlow.handleDescriptorWrite(gatt, descriptor, status);
         }
     }
 

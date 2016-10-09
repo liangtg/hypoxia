@@ -2,7 +2,9 @@ package com.syber.hypoxia.data;
 
 import android.content.Context;
 import android.os.Build;
+import android.provider.Settings;
 import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 
 import com.squareup.otto.Bus;
 import com.syber.base.data.DataRequester;
@@ -31,6 +33,10 @@ public class IRequester extends DataRequester {
     private IRequester() {
         TelephonyManager tm = (TelephonyManager) IApplication.getContext().getSystemService(Context.TELEPHONY_SERVICE);
         deviceId = tm.getDeviceId();
+        if (TextUtils.isEmpty(deviceId)) {
+            deviceId = Settings.Secure.getString(IApplication.getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+        }
+        if (TextUtils.isEmpty(deviceId)) deviceId = Build.SERIAL;
         userAgent = String.format("Hypoxia/%s (%s/%s; Android/%s)", BuildConfig.VERSION_NAME, Build.MODEL, Build.DEVICE, Build.VERSION.RELEASE);
 //        SERVER = "http://192.168.123.210:34376/";
     }

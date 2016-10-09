@@ -2,6 +2,7 @@ package com.syber.hypoxia.helo;
 
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattDescriptor;
 
 import com.syber.base.util.ByteUtil;
 
@@ -11,6 +12,8 @@ import java.util.UUID;
  * Created by liangtg on 16-7-15.
  */
 public abstract class BleFlow {
+    public static final UUID CCC = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
+
     public static final String KEY_SYS = "sys";
     public static final String KEY_DIA = "dia";
     public static final String KEY_PUL = "pul";
@@ -29,6 +32,7 @@ public abstract class BleFlow {
     public static final int RESULT_RAW_PUL = 7;
     public static final int RESULT_RAW_ECG = 8;
     public static final int REQUEST_CONFIRM_DISCONNECT = 9;
+    public static final int PROGRESS_BP = 10;
 
     protected BleFlow dependency;
     protected BleFlow next;
@@ -64,6 +68,17 @@ public abstract class BleFlow {
 
     protected void setHandleEnd(boolean end) {
         handleEnd = end;
+    }
+
+    protected void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
+    }
+
+    public void handleDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
+        if (null != dependency && !dependency.handleEnd()) {
+            dependency.handleDescriptorWrite(gatt, descriptor, status);
+        } else {
+            onDescriptorWrite(gatt, descriptor, status);
+        }
     }
 
     public void handleCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {

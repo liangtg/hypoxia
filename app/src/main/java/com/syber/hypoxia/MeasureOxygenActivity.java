@@ -71,6 +71,7 @@ public class MeasureOxygenActivity extends BaseActivity implements BluetoothAdap
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         handler.removeCallbacks(stopRunnable);
         if (enable) {
+            Logger.d("start scan device");
             bluetoothAdapter.startLeScan(this);
             handler.postDelayed(stopRunnable, SCAN_TIME);
         } else {
