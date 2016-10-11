@@ -5,6 +5,8 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.content.Intent;
 
+import java.util.Arrays;
+
 /**
  * Created by liangtg on 16-9-30.
  */
@@ -38,6 +40,7 @@ public class HypoxiaBPFlow extends BleFlow {
         } else if (Hypoxia.BPM.equals(characteristic.getUuid())) {
             intent.putExtra(KEY_SYS, characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT16, 1).intValue());
             intent.putExtra(KEY_DIA, characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT16, 3).intValue());
+            intent.putExtra(KEY_PUL, characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT16, 14).intValue());
             manager.requestConfirm(RESULT_BP, this, intent);
         }
     }
@@ -49,10 +52,19 @@ public class HypoxiaBPFlow extends BleFlow {
                 if (enableNotify(Hypoxia.SERVICE_BP, Hypoxia.ICP, true)) {
                     BTManager.e("enable icp true");
                     descriptor = manager.getBlutoothGatt().getService(Hypoxia.SERVICE_BP).getCharacteristic(Hypoxia.ICP).getDescriptor(BleFlow.CCC);
-                    descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                    if (Arrays.equals(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE, descriptor.getValue())) {
+                        descriptor.setValue(BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE);
+                    } else {
+                        descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                    }
                     manager.getBlutoothGatt().writeDescriptor(descriptor);
                 } else {
                     BTManager.e("enable icp fail");
+                }
+            } else if (Hypoxia.ICP.equals(descriptor.getCharacteristic().getUuid())) {
+                if (Arrays.equals(BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE, descriptor.getValue())) {
+                    descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                    manager.getBlutoothGatt().writeDescriptor(descriptor);
                 }
             }
         }

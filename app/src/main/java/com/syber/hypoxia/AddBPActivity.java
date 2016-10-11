@@ -17,6 +17,7 @@ import com.syber.base.BaseActivity;
 import com.syber.base.BaseViewHolder;
 import com.syber.base.data.EmptyResponse;
 import com.syber.hypoxia.data.IRequester;
+import com.syber.hypoxia.helo.BPFlow;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -39,6 +40,9 @@ public class AddBPActivity extends BaseActivity implements TimePickerDialog.OnTi
         setContentView(R.layout.activity_add_bp);
         startManageBus(bus, this);
         initAppBar();
+        sys = getIntent().getIntExtra(BPFlow.KEY_SYS, 0);
+        dia = getIntent().getIntExtra(BPFlow.KEY_DIA, 0);
+        pul = getIntent().getIntExtra(BPFlow.KEY_PUL, 0);
         viewHolder = new ViewHolder(findViewById(R.id.content));
     }
 
@@ -74,7 +78,7 @@ public class AddBPActivity extends BaseActivity implements TimePickerDialog.OnTi
         if (isFinishing()) return;
         progressDialog.dismiss();
         showToast("添加" + (event.isSuccess() ? "成功" : "失败"));
-        if (event.isSuccess())finish();
+        if (event.isSuccess()) finish();
     }
 
     public void onStartTimeClicked(View view) {
@@ -121,10 +125,12 @@ public class AddBPActivity extends BaseActivity implements TimePickerDialog.OnTi
             pulText = get(R.id.pul);
             startDate.setText(sdf.format(calendar.getTime()).substring(0, 10));
             startTime.setText(sdf.format(calendar.getTime()).substring(11, 16));
-            Random random = new Random();
-            sys = random.nextInt(10) + 120;
-            dia = random.nextInt(10) + 80;
-            pul = random.nextInt(20) + 70;
+            if (sys == 0) {
+                Random random = new Random();
+                sys = random.nextInt(10) + 120;
+                dia = random.nextInt(10) + 80;
+                pul = random.nextInt(20) + 70;
+            }
             sysText.setText("" + sys);
             diaText.setText("" + dia);
             pulText.setText("" + pul);

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.syber.base.widget.PercentLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_double"
+        android:gravity="center"
+        android:text="请穿戴好您的血压设备"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+        android:textColor="?android:textColorSecondary" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/ring"
+        android:backgroundTint="@color/colorPrimary"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        app:layout_aspectRatio="100%"
+        app:layout_widthPercent="50%">
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="测量血压"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+            android:textColor="@color/colorPrimary" />
+
+        <Button
+            android:id="@+id/hypoxia_bp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_double"
+            android:background="@drawable/round_button"
+            android:minHeight="10dp"
+            android:text="测血压"
+            android:textColor="?android:textColorPrimaryInverse" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+    </LinearLayout>
+</com.syber.base.widget.PercentLinearLayout>

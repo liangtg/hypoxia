@@ -120,6 +120,7 @@ public class BTManager implements IBleManager {
     public void startHypoxiaBP(Activity activity) {
         deviceName = DEVICE_IPC_906;
         bleFlow = new HypoxiaBPFlow();
+        resetState();
         start(activity);
     }
 
@@ -156,6 +157,10 @@ public class BTManager implements IBleManager {
     public void stop() {
         exit = true;
         stopScan();
+        resetState();
+    }
+
+    private void resetState() {
         gattCallback.inConnect = false;
         if (null != bluetoothGatt) {
             bluetoothGatt.disconnect();

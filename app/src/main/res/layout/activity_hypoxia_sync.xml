@@ -5,50 +5,40 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.syber.hypoxia.MeasureOxygenActivity">
+    tools:context="com.syber.hypoxia.HypoxiaSyncActivity">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/app_bar"
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:background="?android:windowBackground">
 
-    <ViewSwitcher
-        android:id="@+id/switcher"
+        <include layout="@layout/app_bar" />
+    </android.support.design.widget.AppBarLayout>
+
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <RelativeLayout
-            android:id="@+id/step_scan"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="@dimen/spacing_large"
-                android:text="正在搜索血氧仪"
-                android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
-
-            <ProgressBar
-                style="?android:progressBarStyleLarge"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true" />
-        </RelativeLayout>
+        <include
+            layout="@layout/include_hypoxia_scan"
+            android:visibility="visible" />
 
         <LinearLayout
+            android:id="@+id/step_progress"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center_horizontal"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:visibility="gone">
 
             <TextView
+                android:id="@+id/state_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_large"
-                android:text="血氧仪连接中"
-                android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
+                android:layout_margin="@dimen/spacing_double"
+                android:text="正在同步低氧训练数据1"
+                android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                android:textColor="?android:textColorSecondary" />
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -65,7 +55,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/oximeter" />
+                android:src="@drawable/target_hypoxia" />
         </LinearLayout>
-    </ViewSwitcher>
+    </FrameLayout>
 </LinearLayout>

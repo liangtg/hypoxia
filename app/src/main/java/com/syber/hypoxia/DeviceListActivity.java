@@ -59,13 +59,12 @@ public class DeviceListActivity extends BaseActivity {
 
         public ViewHolder(View view) {
             super(view);
-            wristbandCard = get(R.id.wristband_card);
             get(R.id.start_wristband).setOnClickListener(this);
             get(R.id.start_oxygen).setOnClickListener(this);
             get(R.id.wristband_setting).setOnClickListener(this);
-            get(R.id.add_device).setOnClickListener(this);
             get(R.id.start_ecg_app).setOnClickListener(this);
-            get(R.id.hypoxia_device).setOnClickListener(this);
+            get(R.id.hypoxia_bp).setOnClickListener(this);
+            get(R.id.hypoxia_sync).setOnClickListener(this);
         }
 
         @Override
@@ -76,8 +75,6 @@ public class DeviceListActivity extends BaseActivity {
             } else if (R.id.wristband_setting == id) {
             } else if (R.id.start_oxygen == id) {
                 gotoActivity(MeasureOxygenActivity.class);
-            } else if (R.id.add_device == id) {
-                gotoActivity(HeloDeviceActivity.class);
             } else if (R.id.helo_option_bp == id) {
                 dialog.dismiss();
                 gotoActivity(HeloBpActivity.class);
@@ -89,8 +86,10 @@ public class DeviceListActivity extends BaseActivity {
                 gotoActivity(HeloEcgActivity.class);
             } else if (R.id.start_ecg_app == id) {
                 startEcgApp();
-            } else if (R.id.hypoxia_device == id) {
-                gotoActivity(HypoxiaDeviceActivity.class);
+            } else if (R.id.hypoxia_bp == id) {
+                gotoActivity(HypoxiaBPActivity.class);
+            } else if (R.id.hypoxia_sync == id) {
+                gotoActivity(HypoxiaSyncActivity.class);
             }
         }
 

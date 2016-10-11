@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.syber.base.widget.PercentLinearLayout android:id="@+id/step_scan"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:visibility="visible">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_double"
+        android:text="请开启您的低氧训练仪"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+        android:textColor="?android:textColorSecondary" />
+
+    <ProgressBar
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_aspectRatio="100%"
+        app:layout_widthPercent="50%" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="低氧训练仪搜索中..."
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        android:textColor="?android:textColorSecondary" />
+</com.syber.base.widget.PercentLinearLayout>

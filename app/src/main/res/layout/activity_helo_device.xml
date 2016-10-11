@@ -24,7 +24,7 @@
         android:visibility="visible">
 
         <RelativeLayout
-            android:id="@+id/scanning"
+            android:id="@+id/step_scan"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
