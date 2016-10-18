@@ -16,6 +16,7 @@ import com.squareup.otto.Subscribe;
 import com.syber.base.BaseActivity;
 import com.syber.base.BaseViewHolder;
 import com.syber.base.data.EmptyResponse;
+import com.syber.base.view.ViewPost;
 import com.syber.hypoxia.data.IRequester;
 import com.syber.hypoxia.helo.BPFlow;
 
@@ -43,7 +44,16 @@ public class AddBPActivity extends BaseActivity implements TimePickerDialog.OnTi
         sys = getIntent().getIntExtra(BPFlow.KEY_SYS, 0);
         dia = getIntent().getIntExtra(BPFlow.KEY_DIA, 0);
         pul = getIntent().getIntExtra(BPFlow.KEY_PUL, 0);
+        boolean add = sys > 0;
         viewHolder = new ViewHolder(findViewById(R.id.content));
+        if (add) {
+            ViewPost.postOnAnimation(viewHolder.getContainer(), new Runnable() {
+                @Override
+                public void run() {
+                    attemptAdd();
+                }
+            });
+        }
     }
 
     @Override
@@ -55,22 +65,26 @@ public class AddBPActivity extends BaseActivity implements TimePickerDialog.OnTi
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (R.id.save == item.getItemId()) {
-            if (viewHolder.sysText.getText().length() > 0 && viewHolder.diaText.getText().length() > 0 && viewHolder.pulText.getText().length() > 0) {
-                sys = Integer.valueOf(viewHolder.sysText.getText().toString());
-                dia = Integer.valueOf(viewHolder.diaText.getText().toString());
-                pul = Integer.valueOf(viewHolder.pulText.getText().toString());
-                if (sys > 0 && dia > 0 && pul > 0) {
-                    progressDialog = ProgressDialog.show(this, null, "正在上传，请稍等", true, true);
-                    IRequester.getInstance().addBP(bus, sdf.format(calendar.getTime()), sys, dia, pul);
-                } else {
-                    showToast("请输入大于0的值");
-                }
-            } else {
-                showToast("请输入大于0的值");
-            }
+            attemptAdd();
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void attemptAdd() {
+        if (viewHolder.sysText.getText().length() > 0 && viewHolder.diaText.getText().length() > 0 && viewHolder.pulText.getText().length() > 0) {
+            sys = Integer.valueOf(viewHolder.sysText.getText().toString());
+            dia = Integer.valueOf(viewHolder.diaText.getText().toString());
+            pul = Integer.valueOf(viewHolder.pulText.getText().toString());
+            if (sys > 0 && dia > 0 && pul > 0) {
+                progressDialog = ProgressDialog.show(this, null, "正在上传，请稍等", true, true);
+                IRequester.getInstance().addBP(bus, sdf.format(calendar.getTime()), sys, dia, pul);
+            } else {
+                showToast("请输入大于0的值");
+            }
+        } else {
+            showToast("请输入大于0的值");
+        }
     }
 
     @Subscribe
@@ -78,7 +92,10 @@ public class AddBPActivity extends BaseActivity implements TimePickerDialog.OnTi
         if (isFinishing()) return;
         progressDialog.dismiss();
         showToast("添加" + (event.isSuccess() ? "成功" : "失败"));
-        if (event.isSuccess()) finish();
+        if (event.isSuccess()) {
+            setResult(RESULT_OK);
+            finish();
+        }
     }
 
     public void onStartTimeClicked(View view) {

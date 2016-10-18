@@ -18,6 +18,10 @@ public abstract class BleFlow {
     public static final String KEY_DIA = "dia";
     public static final String KEY_PUL = "pul";
     public static final String KEY_ECG = "ecg";
+    public static final String KEY_TIME = "time";
+    public static final String KEY_START_TIME = "start_time";
+    public static final String KEY_END_TIME = "end_time";
+    public static final String KEY_MODE = "mode";
     public static final String KEY_PUL_ARRAY = "pul_array";
     public static final String KEY_ECG_ARRAY = "ecg_array";
     public static final int CONFIRM_OK = 1;
@@ -33,11 +37,13 @@ public abstract class BleFlow {
     public static final int RESULT_RAW_ECG = 8;
     public static final int REQUEST_CONFIRM_DISCONNECT = 9;
     public static final int PROGRESS_BP = 10;
+    public static final int RESULT_HYPOXIA = 11;
 
     protected BleFlow dependency;
     protected BleFlow next;
     protected IBleManager manager;
     private boolean handleEnd = false;
+    private boolean exit = false;
 
     public void setBleManager(IBleManager manager) {
         if (null != dependency) dependency.setBleManager(manager);
@@ -49,6 +55,7 @@ public abstract class BleFlow {
         if (null != dependency && !dependency.handleEnd()) {
             dependency.start();
         } else {
+            exit = false;
             onStart();
         }
     }
@@ -68,6 +75,18 @@ public abstract class BleFlow {
 
     protected void setHandleEnd(boolean end) {
         handleEnd = end;
+    }
+
+    protected void exit() {
+        exit = true;
+        onExit();
+    }
+
+    protected boolean isExit() {
+        return exit;
+    }
+
+    protected void onExit() {
     }
 
     protected void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
@@ -106,6 +125,22 @@ public abstract class BleFlow {
                 enable);
     }
 
+    protected void enableNotifyCCC(UUID service, UUID chara, boolean enable) {
+        BluetoothGattCharacteristic characteristic = manager.getBlutoothGatt().getService(service).getCharacteristic(chara);
+        BluetoothGattDescriptor descriptor = characteristic.getDescriptor(CCC);
+        if ((BluetoothGattCharacteristic.PROPERTY_INDICATE & characteristic.getProperties()) != 0) {
+            descriptor.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
+            manager.getBlutoothGatt().writeDescriptor(descriptor);
+        } else if ((BluetoothGattCharacteristic.PROPERTY_NOTIFY & characteristic.getProperties()) != 0) {
+            if (enable) {
+                descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+            } else {
+                descriptor.setValue(BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE);
+            }
+            manager.getBlutoothGatt().writeDescriptor(descriptor);
+        }
+    }
+
     protected void writeChara(UUID service, UUID chara, byte[] value) {
         BTManager.e(String.format("ready write:%s\t%s", chara, ByteUtil.toHex(value)));
         if (null == manager.getBlutoothGatt()) return;
@@ -115,6 +150,14 @@ public abstract class BleFlow {
     }
 
     protected void onRequestConfirmed(int request, int result) {
+    }
+
+    protected int getUInt8(BluetoothGattCharacteristic characteristic, int offset) {
+        return characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, offset);
+    }
+
+    protected int getUInt16(BluetoothGattCharacteristic characteristic, int offset) {
+        return characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT16, offset);
     }
 
 }

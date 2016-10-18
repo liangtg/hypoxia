@@ -21,7 +21,7 @@
 
         <include
             layout="@layout/include_hypoxia_scan"
-            android:visibility="visible" />
+            android:visibility="gone" />
 
         <LinearLayout
             android:id="@+id/step_progress"
@@ -29,14 +29,14 @@
             android:layout_height="match_parent"
             android:gravity="center_horizontal"
             android:orientation="vertical"
-            android:visibility="gone">
+            android:visibility="visible">
 
             <TextView
                 android:id="@+id/state_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/spacing_double"
-                android:text="正在同步低氧训练数据1"
+                android:text="正在同步数据"
                 android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                 android:textColor="?android:textColorSecondary" />
 

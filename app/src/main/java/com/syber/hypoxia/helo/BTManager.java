@@ -28,6 +28,8 @@ public class BTManager implements IBleManager {
     public static final String DEVICE_HELO = "HeloHL01";
     public static final String DEVICE_IPC_906 = "IPC-906";
     public static final int OPEN_BLUETOOTH = 1366;
+    public static BTManager instance = new BTManager();
+    private static int gattId = 0;
     private Handler handler = new Handler(Looper.getMainLooper());
     private String deviceName;
     private BleFlow bleFlow;
@@ -118,9 +120,18 @@ public class BTManager implements IBleManager {
     }
 
     public void startHypoxiaBP(Activity activity) {
+        if (deviceName != DEVICE_IPC_906) resetState();
         deviceName = DEVICE_IPC_906;
         bleFlow = new HypoxiaBPFlow();
-        resetState();
+        bleFlow.setBleManager(this);
+        start(activity);
+    }
+
+    public void startHypoxiaSync(Activity activity) {
+        if (deviceName != DEVICE_IPC_906) resetState();
+        deviceName = DEVICE_IPC_906;
+        bleFlow = new HypoxiaSyncFlow();
+        bleFlow.setBleManager(this);
         start(activity);
     }
 
@@ -155,8 +166,18 @@ public class BTManager implements IBleManager {
     }
 
     public void stop() {
+        stop(false);
+    }
+
+    //FIXME 不能这样做
+    public void stop(boolean real) {
+        if (!real) return;
         exit = true;
         stopScan();
+        if (null != bleFlow) {
+            bleFlow.exit();
+            bleFlow = null;
+        }
         resetState();
     }
 
@@ -190,6 +211,7 @@ public class BTManager implements IBleManager {
             if (deviceName.equals(device.getName())) {
                 stopScan();
                 e("connecting...");
+                gattCallback = new GattCallback();
                 gattCallback.reset();
                 bluetoothGatt = device.connectGatt(IApplication.getContext(), false, gattCallback);
                 bleFlow.setBleManager(BTManager.this);
@@ -216,30 +238,48 @@ public class BTManager implements IBleManager {
     }
 
     private class GattCallback extends BluetoothGattCallback {
+        private int gid;
         private boolean inConnect = true;
         private boolean connected = false;
+
+        public GattCallback() {
+            gid = gattId++;
+        }
 
         private void reset() {
             inConnect = true;
             connected = false;
         }
 
+        private boolean isGattDisconnected() {
+            return gid < gattId - 1;
+        }
+
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
-            e(String.format("State:%d\t%d", status, newState));
+            e(String.format("%d State:%d\t%d", gid, status, newState));
+            if (isGattDisconnected()) {
+                gatt.disconnect();
+                return;
+            }
             if (exit || !inConnect) return;
             if (BluetoothProfile.STATE_CONNECTED == newState && BluetoothGatt.GATT_SUCCESS == status) {
                 connected = true;
                 gatt.discoverServices();
             } else if (BluetoothProfile.STATE_DISCONNECTED == newState) {
-                gatt.disconnect();
-                inConnect = false;
+                resetState();
                 if (connected) {
                     connected = false;
-                    bleFlow.reset();
-                    requestConfirm(BleFlow.REQUEST_CONFIRM_DISCONNECT, null, null);
+                    if (bleFlow.handleEnd()) {
+                        requestConfirm(BleFlow.REQUEST_CONFIRM_DISCONNECT, null, null);
+                    } else {
+                        inConnect = true;
+                        bleFlow.reset();
+                        startScan();
+                    }
                 } else {
-                    bluetoothGatt = null;
+                    inConnect = true;
+                    bleFlow.reset();
                     startScan();
                 }
             }
@@ -247,7 +287,11 @@ public class BTManager implements IBleManager {
 
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
-            e(String.format("onServicesDiscovered:%d", status));
+            e(String.format("%d onServicesDiscovered:%d", gid, status));
+            if (isGattDisconnected()) {
+                gatt.disconnect();
+                return;
+            }
             if (exit || !inConnect) return;
             if (BluetoothGatt.GATT_SUCCESS == status) {
                 List<BluetoothGattService> services = gatt.getServices();
@@ -265,24 +309,37 @@ public class BTManager implements IBleManager {
 
         @Override
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
-            e(String.format("writed:%s\t%s\t%d", characteristic.getUuid().toString(), ByteUtil.toHex(characteristic.getValue()), status));
+            e(String.format("%d writed:%s\t%s\t%d", gid, characteristic.getUuid().toString(), ByteUtil.toHex(characteristic.getValue()), status));
+            if (isGattDisconnected()) {
+                gatt.disconnect();
+                return;
+            }
             if (exit || !inConnect) return;
             bleFlow.handleCharacteristicWrite(gatt, characteristic, status);
         }
 
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
-            e(String.format("cha changed:%s\t%s", characteristic.getUuid().toString(), ByteUtil.toHex(characteristic.getValue())));
-            if (exit || !inConnect) return;
+            e(String.format("%d cha changed:%s\t%s", gid, characteristic.getUuid().toString(), ByteUtil.toHex(characteristic.getValue())));
+            if (isGattDisconnected()) {
+                gatt.disconnect();
+                return;
+            }
+            if (exit || !inConnect || bleFlow.handleEnd()) return;
             bleFlow.handleCharacteristicChanged(gatt, characteristic);
         }
 
         @Override
         public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
-            e(String.format("des write:%s\t%s\t%s",
+            e(String.format("%d des write:%s\t%s\t%s",
+                    gid,
                     descriptor.getUuid().toString(),
                     ByteUtil.toHex(descriptor.getValue()),
                     Integer.toHexString(status)));
+            if (isGattDisconnected()) {
+                gatt.disconnect();
+                return;
+            }
             if (exit || !inConnect) return;
             bleFlow.handleDescriptorWrite(gatt, descriptor, status);
         }

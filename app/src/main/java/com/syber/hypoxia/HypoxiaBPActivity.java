@@ -16,6 +16,7 @@ import com.syber.hypoxia.widget.HoloCircularProgressBar;
 import java.util.Arrays;
 
 public class HypoxiaBPActivity extends BaseActivity implements BTManager.RequestListener {
+    private static final int REQUEST_ADD = 0x1000;
     private BTManager bleHelper;
     private ViewHolder viewHolder;
     private boolean inProgress = false;
@@ -25,7 +26,7 @@ public class HypoxiaBPActivity extends BaseActivity implements BTManager.Request
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hypoxia_bp);
         initAppBar();
-        bleHelper = new BTManager();
+        bleHelper = BTManager.instance;
         bleHelper.setRequestListener(this);
         viewHolder = new ViewHolder(findViewById(R.id.view_holder));
         ViewPost.postOnAnimation(viewHolder.getContainer(), new Runnable() {
@@ -39,7 +40,10 @@ public class HypoxiaBPActivity extends BaseActivity implements BTManager.Request
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (bleHelper.handleEnableResult(requestCode, resultCode, data)) {
+        if (REQUEST_ADD == requestCode) {
+            if (RESULT_OK == resultCode) gotoActivity(BloodPressureActivity.class);
+            finish();
+        } else if (bleHelper.handleEnableResult(requestCode, resultCode, data)) {
             startFlow();
         } else {
             finish();
@@ -68,10 +72,10 @@ public class HypoxiaBPActivity extends BaseActivity implements BTManager.Request
             Log.e("flow", Arrays.toString(data.getByteArrayExtra(BPFlow.KEY_PUL_ARRAY)));
             Log.e("flow", String.format("结果:%d\t%d", data.getIntExtra(BPFlow.KEY_SYS, 0), data.getIntExtra(BPFlow.KEY_DIA, 0)));
             if (inProgress) {
+                inProgress = false;
                 Intent intent = new Intent(data);
                 intent.setClass(this, AddBPActivity.class);
-                startActivity(intent);
-                finish();
+                startActivityForResult(intent, REQUEST_ADD);
             }
         }
     }
