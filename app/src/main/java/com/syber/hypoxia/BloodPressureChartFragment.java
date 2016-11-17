@@ -430,7 +430,7 @@ public class BloodPressureChartFragment extends BaseFragment implements RadioGro
             barChart.resetTracking();
             if (barData.getYValCount() > 0) {
                 barChart.setData(barData);
-                barChart.highlightValue(new Highlight(0, 0), true);
+                barChart.highlightValue(new Highlight(barData.getXValCount() - 1, 0), true);
             } else {
                 barChart.setNoDataText("您还没有测量过血压");
             }

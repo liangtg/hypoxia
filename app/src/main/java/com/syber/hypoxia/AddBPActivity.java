@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,12 +29,13 @@ import java.util.Random;
 public class AddBPActivity extends BaseActivity implements TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener {
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     ProgressDialog progressDialog;
-
     Calendar calendar = Calendar.getInstance(Locale.CHINA);
     Calendar selectedDate = Calendar.getInstance(Locale.CHINA);
     ViewHolder viewHolder;
+    private Snackbar snackbar;
     private int sys, dia, pul;
     private Bus bus = new Bus();
+    private boolean autoAdd = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,9 +46,9 @@ public class AddBPActivity extends BaseActivity implements TimePickerDialog.OnTi
         sys = getIntent().getIntExtra(BPFlow.KEY_SYS, 0);
         dia = getIntent().getIntExtra(BPFlow.KEY_DIA, 0);
         pul = getIntent().getIntExtra(BPFlow.KEY_PUL, 0);
-        boolean add = sys > 0;
+        autoAdd = sys > 0;
         viewHolder = new ViewHolder(findViewById(R.id.content));
-        if (add) {
+        if (autoAdd) {
             ViewPost.postOnAnimation(viewHolder.getContainer(), new Runnable() {
                 @Override
                 public void run() {
@@ -91,11 +93,18 @@ public class AddBPActivity extends BaseActivity implements TimePickerDialog.OnTi
     public void withResponse(EmptyResponse event) {
         if (isFinishing()) return;
         progressDialog.dismiss();
-        showToast("添加" + (event.isSuccess() ? "成功" : "失败"));
+        String msg = "添加" + (event.isSuccess() ? "成功" : "失败");
+        snackbar = Snackbar.make(viewHolder.getContainer(), msg, Snackbar.LENGTH_LONG);
         if (event.isSuccess()) {
             setResult(RESULT_OK);
-            finish();
+            snackbar.setCallback(new Snackbar.Callback() {
+                @Override
+                public void onDismissed(Snackbar snackbar, int event) {
+                    finish();
+                }
+            });
         }
+        snackbar.show();
     }
 
     public void onStartTimeClicked(View view) {

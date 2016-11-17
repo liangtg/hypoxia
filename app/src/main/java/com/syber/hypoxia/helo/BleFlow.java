@@ -11,7 +11,7 @@ import java.util.UUID;
 /**
  * Created by liangtg on 16-7-15.
  */
-public abstract class BleFlow {
+public abstract class BleFlow implements IBleManager.BTFlow {
     public static final UUID CCC = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
 
     public static final String KEY_SYS = "sys";

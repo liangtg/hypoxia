@@ -9,8 +9,10 @@ import android.content.Intent;
 public interface IBleManager {
     BluetoothGatt getBlutoothGatt();
 
-    void requestConfirm(int request, BleFlow flow, Intent data);
+    void requestConfirm(int request, BTFlow flow, Intent data);
 
     void setRequestConfirmed(int request, int result);
 
+    interface BTFlow {
+    }
 }

@@ -2,6 +2,7 @@ package com.syber.hypoxia;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -12,6 +13,8 @@ import com.syber.base.BaseActivity;
 import com.syber.base.BaseViewHolder;
 import com.syber.base.data.EmptyResponse;
 import com.syber.base.view.ViewPost;
+import com.syber.hypoxia.bt.HypoxiaSPPFlow;
+import com.syber.hypoxia.bt.SPPManager;
 import com.syber.hypoxia.data.IRequester;
 import com.syber.hypoxia.helo.BPFlow;
 import com.syber.hypoxia.helo.BTManager;
@@ -19,7 +22,8 @@ import com.syber.hypoxia.helo.BleFlow;
 
 public class HypoxiaSyncActivity extends BaseActivity implements BTManager.RequestListener {
     private ViewHolder viewHolder;
-    private BTManager btManager = BTManager.instance;
+    //    private BTManager btManager = BTManager.instance;
+    private SPPManager btManager;
     private Data upload = new Data();
     private Bus bus = new Bus();
 
@@ -29,6 +33,8 @@ public class HypoxiaSyncActivity extends BaseActivity implements BTManager.Reque
         setContentView(R.layout.activity_hypoxia_sync);
         initAppBar();
         startManageBus(bus, this);
+        btManager = new SPPManager(this);
+        btManager.setFlow(new HypoxiaSPPFlow(btManager));
         viewHolder = new ViewHolder(findViewById(R.id.view_holder));
         ViewPost.postOnAnimation(viewHolder.getContainer(), new Runnable() {
             @Override
@@ -40,7 +46,8 @@ public class HypoxiaSyncActivity extends BaseActivity implements BTManager.Reque
 
     private void start() {
         btManager.setRequestListener(this);
-        btManager.startHypoxiaSync(this);
+//        btManager.startHypoxiaSync(this);
+        btManager.start();
     }
 
     @Override
@@ -93,21 +100,15 @@ public class HypoxiaSyncActivity extends BaseActivity implements BTManager.Reque
     @Subscribe
     public void withResponse(EmptyResponse event) {
         if (isFinishing()) return;
-        if (event.isSuccess()) {
-            if (upload.bpAdded) {
-                showToast("上传训练数据成功");
-                finish();
-            } else {
-                upload.bpAdded = true;
-                showToast("上传血压成功");
-                viewHolder.stateText.setText("正在上传训练数据");
-                IRequester.getInstance().addTraing(bus, upload.startTime, upload.endTime, String.valueOf(upload.mode));
-            }
+        if (upload.bpAdded) {
+            Snackbar.make(viewHolder.getContainer(),
+                    "上传训练数据" + (event.isSuccess() ? "成功" : "失败"),
+                    Snackbar.LENGTH_SHORT).setCallback(new SnackbarCallback()).show();
         } else {
-            String msg = String.format("上传%s数据失败", upload.bpAdded ? "训练" : "血压");
-            Log.d("flow", msg);
-            showToast(msg);
-            finish();
+            upload.bpAdded = true;
+            viewHolder.stateText.setText("正在上传训练数据");
+            Snackbar.make(viewHolder.getContainer(), "上传血压数据" + (event.isSuccess() ? "成功" : "失败"), Snackbar.LENGTH_SHORT).show();
+            IRequester.getInstance().addTraing(bus, upload.startTime, upload.endTime, String.valueOf(upload.mode));
         }
     }
 
@@ -137,5 +138,13 @@ public class HypoxiaSyncActivity extends BaseActivity implements BTManager.Reque
             stepProgress.setVisibility(View.VISIBLE);
         }
     }
+
+    private class SnackbarCallback extends Snackbar.Callback {
+        @Override
+        public void onDismissed(Snackbar snackbar, int event) {
+            finish();
+        }
+    }
+
 
 }

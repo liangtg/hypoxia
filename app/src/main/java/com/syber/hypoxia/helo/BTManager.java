@@ -84,9 +84,9 @@ public class BTManager implements IBleManager {
     }
 
     @Override
-    public void requestConfirm(int request, BleFlow flow, Intent data) {
+    public void requestConfirm(int request, BTFlow flow, Intent data) {
         if (!exit && null != listener) {
-            this.requestArray.put(request, flow);
+            this.requestArray.put(request, (BleFlow) flow);
             handler.post(new RequestRunnable(request, data));
         }
     }
@@ -141,12 +141,12 @@ public class BTManager implements IBleManager {
 
     public void start(Activity activity) {
         exit = false;
-        if (null != bluetoothGatt) {
-            bleFlow.start();
-        } else if (BluetoothAdapter.getDefaultAdapter().isEnabled()) {
-            startScan();
-        } else {
+        if (!BluetoothAdapter.getDefaultAdapter().isEnabled()) {
             enableBluetooth(activity);
+        } else if (null != bluetoothGatt) {
+            bleFlow.start();
+        } else {
+            startScan();
         }
     }
 
@@ -169,11 +169,10 @@ public class BTManager implements IBleManager {
         stop(false);
     }
 
-    //FIXME 不能这样做
     public void stop(boolean real) {
-        if (!real) return;
         exit = true;
         stopScan();
+        if (!real) return;
         if (null != bleFlow) {
             bleFlow.exit();
             bleFlow = null;
@@ -262,7 +261,10 @@ public class BTManager implements IBleManager {
                 gatt.disconnect();
                 return;
             }
-            if (exit || !inConnect) return;
+            if (exit || !inConnect) {
+                resetState();
+                return;
+            }
             if (BluetoothProfile.STATE_CONNECTED == newState && BluetoothGatt.GATT_SUCCESS == status) {
                 connected = true;
                 gatt.discoverServices();

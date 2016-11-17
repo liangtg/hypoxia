@@ -40,7 +40,7 @@ public class HypoxiaSyncFlow extends BleFlow {
 //            [aa 55 14 6 e a 11 a 31 e a 11 a 3a 0 dc 55 5a 0 75]
             Integer mode = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 3);
             Intent data = new Intent();
-            if (mode > 2 && mode < 7) {
+            if (mode > 1 && mode < 7) {
                 data.putExtra(KEY_START_TIME,
                         String.format("20%02d-%02d-%02d %02d:%02d:00",
                                 getUInt8(characteristic, 4),
