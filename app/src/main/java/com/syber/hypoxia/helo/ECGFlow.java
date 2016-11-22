@@ -9,6 +9,7 @@ import android.os.Looper;
 import com.syber.hypoxia.Helo;
 import com.syber.hypoxia.HeloCMD;
 import com.syber.hypoxia.HeloResponse;
+import com.syber.hypoxia.bt.FlowExtra;
 
 import java.util.Arrays;
 
@@ -55,8 +56,8 @@ public class ECGFlow extends BleFlow {
             BTManager.e(String.format("PUL :%d,%d,%d,%d,%d", p1, p2, p3, p4, p5));
             int[] pul = new int[]{p1, p2, p3, p4, p5};
             Intent data = new Intent();
-            data.putExtra(BleFlow.KEY_PUL_ARRAY, pul);
-            manager.requestConfirm(BleFlow.RESULT_RAW_PUL, this, data);
+            data.putExtra(FlowExtra.KEY_PUL_ARRAY, pul);
+            manager.requestConfirm(FlowExtra.RESULT_RAW_PUL, this, data);
         } else if (Helo.S0N4.equals(characteristic.getUuid())) {
             int p1 = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_SINT32, 0);
             int p2 = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_SINT32, 4);
@@ -66,28 +67,28 @@ public class ECGFlow extends BleFlow {
             BTManager.e(String.format("ecg :%d,%d,%d,%d,%d,", p1, p2, p3, p4, p5));
             int[] pul = new int[]{p1, p2, p3, p4, p5};
             Intent data = new Intent();
-            data.putExtra(BleFlow.KEY_ECG_ARRAY, pul);
-            manager.requestConfirm(BleFlow.RESULT_RAW_ECG, this, data);
+            data.putExtra(FlowExtra.KEY_ECG_ARRAY, pul);
+            manager.requestConfirm(FlowExtra.RESULT_RAW_ECG, this, data);
         } else if (Helo.S0N2.equals(characteristic.getUuid())) {
             HeloResponse response = new HeloResponse(characteristic.getValue());
             if (response.verify()) {
                 if (response.cmd() == HeloResponse.ECG) {
                     int r = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_SINT8, 9);
                     Intent data = new Intent();
-                    data.putExtra(BleFlow.KEY_ECG, r);
-                    manager.requestConfirm(BleFlow.RESULT_ECG, this, data);
+                    data.putExtra(FlowExtra.KEY_ECG, r);
+                    manager.requestConfirm(FlowExtra.RESULT_ECG, this, data);
                 } else if (HeloResponse.BP == response.cmd()) {
                     int sys = response.intValue(4);
                     int dia = response.intValue(5);
                     Intent intent = new Intent();
-                    intent.putExtra(KEY_SYS, sys);
-                    intent.putExtra(KEY_DIA, dia);
-                    manager.requestConfirm(RESULT_BP, this, intent);
+                    intent.putExtra(FlowExtra.KEY_SYS, sys);
+                    intent.putExtra(FlowExtra.KEY_DIA, dia);
+                    manager.requestConfirm(FlowExtra.RESULT_BP, this, intent);
                 } else if (HeloResponse.HR == response.cmd()) {
                     int pul = response.intValue(4);
                     Intent intent = new Intent();
-                    intent.putExtra(KEY_PUL, pul);
-                    manager.requestConfirm(RESULT_HR, this, intent);
+                    intent.putExtra(FlowExtra.KEY_PUL, pul);
+                    manager.requestConfirm(FlowExtra.RESULT_HR, this, intent);
                 }
             }
         }

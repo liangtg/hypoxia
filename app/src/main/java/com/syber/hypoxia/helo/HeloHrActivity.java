@@ -16,6 +16,7 @@ import com.syber.base.BaseViewHolder;
 import com.syber.base.view.ViewPost;
 import com.syber.hypoxia.IApplication;
 import com.syber.hypoxia.R;
+import com.syber.hypoxia.bt.FlowExtra;
 import com.syber.hypoxia.data.HeartHistoryResponse;
 import com.syber.hypoxia.data.IRequester;
 import com.syber.hypoxia.widget.HoloCircularProgressBar;
@@ -74,21 +75,21 @@ public class HeloHrActivity extends BaseActivity implements BTManager.RequestLis
 
     @Override
     public void onRequestConfirm(int request, Intent data) {
-        if (BleFlow.REQUEST_MATCHED == request) {
+        if (FlowExtra.REQUEST_MATCHED == request) {
             connectHeloFragment.dismiss();
-            bleHelper.setRequestConfirmed(request, BleFlow.CONFIRM_OK);
+            bleHelper.setRequestConfirmed(request, FlowExtra.CONFIRM_OK);
             viewHolder.start.setStart(true);
             new Timer().start();
-        } else if (BleFlow.REQUEST_BIND == request) {
+        } else if (FlowExtra.REQUEST_BIND == request) {
             showToast("发现设备,准备绑定");
-            bleHelper.setRequestConfirmed(request, BleFlow.CONFIRM_OK);
-        } else if (BleFlow.REQUEST_BINDED_OTHER == request) {
+            bleHelper.setRequestConfirmed(request, FlowExtra.CONFIRM_OK);
+        } else if (FlowExtra.REQUEST_BINDED_OTHER == request) {
             bleHelper.stop();
             viewHolder.start.setClickable(true);
             connectHeloFragment.dismiss();
             new HeloBindedOtherFragment().show(getSupportFragmentManager(), "connected_other");
-        } else if (BleFlow.RESULT_HR == request) {
-            pul = data.getIntExtra(BleFlow.KEY_PUL, 0);
+        } else if (FlowExtra.RESULT_HR == request) {
+            pul = data.getIntExtra(FlowExtra.KEY_PUL, 0);
         }
     }
 

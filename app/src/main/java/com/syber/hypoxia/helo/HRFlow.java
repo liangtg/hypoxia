@@ -6,6 +6,7 @@ import android.content.Intent;
 
 import com.syber.hypoxia.HeloCMD;
 import com.syber.hypoxia.HeloResponse;
+import com.syber.hypoxia.bt.FlowExtra;
 
 /**
  * Created by liangtg on 16-7-18.
@@ -34,8 +35,8 @@ public class HRFlow extends BleFlow {
             if (HeloResponse.HR == response.cmd()) {
                 int pul = response.intValue(4);
                 Intent intent = new Intent();
-                intent.putExtra(KEY_PUL, pul);
-                manager.requestConfirm(RESULT_HR, this, intent);
+                intent.putExtra(FlowExtra.KEY_PUL, pul);
+                manager.requestConfirm(FlowExtra.RESULT_HR, this, intent);
             }
         }
     }

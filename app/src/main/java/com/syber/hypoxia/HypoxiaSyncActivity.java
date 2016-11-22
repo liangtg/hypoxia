@@ -13,19 +13,22 @@ import com.syber.base.BaseActivity;
 import com.syber.base.BaseViewHolder;
 import com.syber.base.data.EmptyResponse;
 import com.syber.base.view.ViewPost;
+import com.syber.hypoxia.bt.FlowExtra;
 import com.syber.hypoxia.bt.HypoxiaSPPFlow;
 import com.syber.hypoxia.bt.SPPManager;
 import com.syber.hypoxia.data.IRequester;
-import com.syber.hypoxia.helo.BPFlow;
 import com.syber.hypoxia.helo.BTManager;
-import com.syber.hypoxia.helo.BleFlow;
+
+import java.util.ArrayList;
 
 public class HypoxiaSyncActivity extends BaseActivity implements BTManager.RequestListener {
     private ViewHolder viewHolder;
     //    private BTManager btManager = BTManager.instance;
     private SPPManager btManager;
-    private Data upload = new Data();
+    private ArrayList<Data> bpData = new ArrayList<>();
+    private ArrayList<Data> hypoxiaData = new ArrayList<>();
     private Bus bus = new Bus();
+    private int bpCount, hypoxiaCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,45 +73,53 @@ public class HypoxiaSyncActivity extends BaseActivity implements BTManager.Reque
     public void onRequestConfirm(int request, Intent data) {
         if (isFinishing()) return;
         viewHolder.inProgress();
+        viewHolder.stateText.setText("正在交换数据");
         Log.d("flow", "" + request);
-        if (request == BleFlow.RESULT_BP) {
-            upload.time = data.getStringExtra(BPFlow.KEY_TIME);
-            upload.sys = data.getIntExtra(BPFlow.KEY_SYS, 0);
-            upload.dia = data.getIntExtra(BPFlow.KEY_DIA, 0);
-            upload.pul = data.getIntExtra(BPFlow.KEY_PUL, 0);
+        if (request == FlowExtra.RESULT_BP) {
+            Data upload = new Data();
+            upload.time = data.getStringExtra(FlowExtra.KEY_TIME);
+            upload.sys = data.getIntExtra(FlowExtra.KEY_SYS, 0);
+            upload.dia = data.getIntExtra(FlowExtra.KEY_DIA, 0);
+            upload.pul = data.getIntExtra(FlowExtra.KEY_PUL, 0);
 
             String time = String.format("%s\t%d\t%d\t%d",
-                    data.getStringExtra(BPFlow.KEY_TIME),
-                    data.getIntExtra(BPFlow.KEY_SYS, 0),
-                    data.getIntExtra(BPFlow.KEY_DIA, 0),
-                    data.getIntExtra(BPFlow.KEY_PUL, 0));
-            Log.d("flow", time);
-        } else if (request == BleFlow.RESULT_HYPOXIA) {
-            upload.startTime = data.getStringExtra(BPFlow.KEY_START_TIME);
-            upload.endTime = data.getStringExtra(BPFlow.KEY_END_TIME);
-            upload.mode = data.getIntExtra(BleFlow.KEY_MODE, 0);
-            Log.d("flow",
-                    String.format("%s\t%s\t%d",
-                            data.getStringExtra(BPFlow.KEY_START_TIME),
-                            data.getStringExtra(BPFlow.KEY_END_TIME),
-                            data.getIntExtra(BPFlow.KEY_MODE, 0)));
-            viewHolder.stateText.setText("正在上传数据");
-            IRequester.getInstance().addBP(bus, upload.time, upload.sys, upload.dia, upload.pul);
+                    data.getStringExtra(FlowExtra.KEY_TIME),
+                    data.getIntExtra(FlowExtra.KEY_SYS, 0),
+                    data.getIntExtra(FlowExtra.KEY_DIA, 0),
+                    data.getIntExtra(FlowExtra.KEY_PUL, 0));
+            bpData.add(upload);
+        } else if (request == FlowExtra.RESULT_HYPOXIA) {
+            Data upload = new Data();
+            upload.startTime = data.getStringExtra(FlowExtra.KEY_START_TIME);
+            upload.endTime = data.getStringExtra(FlowExtra.KEY_END_TIME);
+            upload.mode = data.getIntExtra(FlowExtra.KEY_MODE, 0);
+            hypoxiaData.add(upload);
+        } else if (request == FlowExtra.REQUEST_END) {
+            viewHolder.stateText.setText("数据交换完成");
+            if (bpData.isEmpty() && hypoxiaData.isEmpty()) {
+                Snackbar.make(viewHolder.getContainer(), "没有发现记录", Snackbar.LENGTH_SHORT).setCallback(new SnackbarCallback()).show();
+            } else {
+                viewHolder.stateText.append(",准备上传数据...");
+                withResponse(new EmptyResponse());
+            }
         }
     }
 
     @Subscribe
     public void withResponse(EmptyResponse event) {
         if (isFinishing()) return;
-        if (upload.bpAdded) {
-            Snackbar.make(viewHolder.getContainer(),
-                    "上传训练数据" + (event.isSuccess() ? "成功" : "失败"),
-                    Snackbar.LENGTH_SHORT).setCallback(new SnackbarCallback()).show();
-        } else {
-            upload.bpAdded = true;
-            viewHolder.stateText.setText("正在上传训练数据");
-            Snackbar.make(viewHolder.getContainer(), "上传血压数据" + (event.isSuccess() ? "成功" : "失败"), Snackbar.LENGTH_SHORT).show();
+        if (!bpData.isEmpty()) {
+            Data upload = bpData.remove(0);
+            IRequester.getInstance().addBP(bus, upload.time, upload.sys, upload.dia, upload.pul);
+            if (event.isSuccess()) bpCount++;
+        } else if (!hypoxiaData.isEmpty()) {
+            Data upload = hypoxiaData.remove(0);
             IRequester.getInstance().addTraing(bus, upload.startTime, upload.endTime, String.valueOf(upload.mode));
+            if (event.isSuccess()) hypoxiaCount++;
+        } else {
+            Snackbar.make(viewHolder.getContainer(),
+                    String.format("同步血压记录%d条,训练记录%d条", bpCount, hypoxiaCount),
+                    Snackbar.LENGTH_SHORT).setCallback(new SnackbarCallback()).show();
         }
     }
 

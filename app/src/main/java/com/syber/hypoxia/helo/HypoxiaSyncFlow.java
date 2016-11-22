@@ -5,6 +5,8 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.content.Intent;
 
+import com.syber.hypoxia.bt.FlowExtra;
+
 /**
  * Created by liangtg on 16-10-11.
  */
@@ -41,30 +43,30 @@ public class HypoxiaSyncFlow extends BleFlow {
             Integer mode = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 3);
             Intent data = new Intent();
             if (mode > 1 && mode < 7) {
-                data.putExtra(KEY_START_TIME,
+                data.putExtra(FlowExtra.KEY_START_TIME,
                         String.format("20%02d-%02d-%02d %02d:%02d:00",
                                 getUInt8(characteristic, 4),
                                 getUInt8(characteristic, 5),
                                 getUInt8(characteristic, 6),
                                 getUInt8(characteristic, 7),
                                 getUInt8(characteristic, 8)));
-                data.putExtra(KEY_END_TIME,
+                data.putExtra(FlowExtra.KEY_END_TIME,
                         String.format("20%02d-%02d-%02d %02d:%02d:00",
                                 getUInt8(characteristic, 9),
                                 getUInt8(characteristic, 10),
                                 getUInt8(characteristic, 11),
                                 getUInt8(characteristic, 12),
                                 getUInt8(characteristic, 13)));
-                data.putExtra(KEY_MODE, getUInt8(characteristic, 3) - 2);
+                data.putExtra(FlowExtra.KEY_MODE, getUInt8(characteristic, 3) - 2);
                 if (end) {
                     sendACK(0);
-                    manager.requestConfirm(RESULT_HYPOXIA, this, data);
+                    manager.requestConfirm(FlowExtra.RESULT_HYPOXIA, this, data);
                     setHandleEnd(true);
                 } else {
                     writeChara(Hypoxia.SERVICE_DATA, Hypoxia.C1, CMD_SYNC_BP);
                 }
             } else {
-                data.putExtra(KEY_TIME,
+                data.putExtra(FlowExtra.KEY_TIME,
                         String.format("20%02d-%02d-%02d %02d:%02d:%02d",
                                 getUInt8(characteristic, 4),
                                 getUInt8(characteristic, 5),
@@ -72,10 +74,10 @@ public class HypoxiaSyncFlow extends BleFlow {
                                 getUInt8(characteristic, 7),
                                 getUInt8(characteristic, 8),
                                 getUInt8(characteristic, 9)));
-                data.putExtra(KEY_SYS, getUInt8(characteristic, 11));
-                data.putExtra(KEY_DIA, getUInt8(characteristic, 12));
-                data.putExtra(KEY_PUL, getUInt8(characteristic, 13));
-                manager.requestConfirm(RESULT_BP, this, data);
+                data.putExtra(FlowExtra.KEY_SYS, getUInt8(characteristic, 11));
+                data.putExtra(FlowExtra.KEY_DIA, getUInt8(characteristic, 12));
+                data.putExtra(FlowExtra.KEY_PUL, getUInt8(characteristic, 13));
+                manager.requestConfirm(FlowExtra.RESULT_BP, this, data);
                 sendACK(0);
             }
         }

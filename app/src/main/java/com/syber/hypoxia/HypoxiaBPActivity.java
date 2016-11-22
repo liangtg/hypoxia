@@ -9,7 +9,7 @@ import android.widget.TextView;
 import com.syber.base.BaseActivity;
 import com.syber.base.BaseViewHolder;
 import com.syber.base.view.ViewPost;
-import com.syber.hypoxia.helo.BPFlow;
+import com.syber.hypoxia.bt.FlowExtra;
 import com.syber.hypoxia.helo.BTManager;
 import com.syber.hypoxia.widget.HoloCircularProgressBar;
 
@@ -63,14 +63,14 @@ public class HypoxiaBPActivity extends BaseActivity implements BTManager.Request
     @Override
     public void onRequestConfirm(int request, Intent data) {
         if (isFinishing()) return;
-        if (BPFlow.PROGRESS_BP == request) {
-            Log.e("flow", Arrays.toString(data.getByteArrayExtra(BPFlow.KEY_PUL_ARRAY)));
-            Log.e("flow", "压力:" + data.getIntExtra(BPFlow.KEY_SYS, 0));
+        if (FlowExtra.PROGRESS_BP == request) {
+            Log.e("flow", Arrays.toString(data.getByteArrayExtra(FlowExtra.KEY_PUL_ARRAY)));
+            Log.e("flow", "压力:" + data.getIntExtra(FlowExtra.KEY_SYS, 0));
             inProgress = true;
-            viewHolder.inProgress(data.getIntExtra(BPFlow.KEY_SYS, 0));
-        } else if (BPFlow.RESULT_BP == request) {
-            Log.e("flow", Arrays.toString(data.getByteArrayExtra(BPFlow.KEY_PUL_ARRAY)));
-            Log.e("flow", String.format("结果:%d\t%d", data.getIntExtra(BPFlow.KEY_SYS, 0), data.getIntExtra(BPFlow.KEY_DIA, 0)));
+            viewHolder.inProgress(data.getIntExtra(FlowExtra.KEY_SYS, 0));
+        } else if (FlowExtra.RESULT_BP == request) {
+            Log.e("flow", Arrays.toString(data.getByteArrayExtra(FlowExtra.KEY_PUL_ARRAY)));
+            Log.e("flow", String.format("结果:%d\t%d", data.getIntExtra(FlowExtra.KEY_SYS, 0), data.getIntExtra(FlowExtra.KEY_DIA, 0)));
             if (inProgress) {
                 inProgress = false;
                 Intent intent = new Intent(data);

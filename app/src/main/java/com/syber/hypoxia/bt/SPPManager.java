@@ -60,7 +60,7 @@ public class SPPManager implements IBleManager {
         exit = false;
         if (!BluetoothAdapter.getDefaultAdapter().isEnabled()) {
             enableBluetooth(activity);
-        } else if (null != socket) {
+        } else if (null != socket && socket.isConnected()) {
             sppFlow.onSocketConnected(socket);
         } else {
             startScan();
@@ -81,6 +81,10 @@ public class SPPManager implements IBleManager {
         exit = true;
         activity.unregisterReceiver(receiver);
         stopScan();
+        if (null != socket) {
+            IOUtils.closeSilenty(socket);
+            socket = null;
+        }
     }
 
     public void enableBluetooth(Activity activity) {

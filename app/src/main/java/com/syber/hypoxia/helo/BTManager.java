@@ -18,6 +18,7 @@ import android.util.SparseArray;
 import com.syber.base.util.ByteUtil;
 import com.syber.hypoxia.HeloCMD;
 import com.syber.hypoxia.IApplication;
+import com.syber.hypoxia.bt.FlowExtra;
 
 import java.util.List;
 
@@ -273,7 +274,7 @@ public class BTManager implements IBleManager {
                 if (connected) {
                     connected = false;
                     if (bleFlow.handleEnd()) {
-                        requestConfirm(BleFlow.REQUEST_CONFIRM_DISCONNECT, null, null);
+                        requestConfirm(FlowExtra.REQUEST_CONFIRM_DISCONNECT, null, null);
                     } else {
                         inConnect = true;
                         bleFlow.reset();

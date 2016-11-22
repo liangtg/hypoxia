@@ -106,15 +106,21 @@ public class MainActivity extends BaseActivity {
         TextView hypoxiaTime, hypoxiaMode, sys, dia, oxygen, heartRate, lipidType, lipidValue, lipidUnit;
         private ImageView userImage;
         private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        private View hypoxia, ecg, blood, spo2, bloodLipid;
 
         public ViewHolder() {
             super(findViewById(R.id.view_holder));
-            get(R.id.hypoxia).setOnClickListener(this);
-            get(R.id.ecg).setOnClickListener(this);
-            get(R.id.blood).setOnClickListener(this);
-            get(R.id.spo2).setOnClickListener(this);
+            hypoxia = get(R.id.hypoxia);
+            hypoxia.setOnClickListener(this);
+            ecg = get(R.id.ecg);
+            ecg.setOnClickListener(this);
+            blood = get(R.id.blood);
+            blood.setOnClickListener(this);
+            spo2 = get(R.id.spo2);
+            spo2.setOnClickListener(this);
             get(R.id.manage_info).setOnClickListener(this);
-            get(R.id.blood_lipid).setOnClickListener(this);
+            bloodLipid = get(R.id.blood_lipid);
+            bloodLipid.setOnClickListener(this);
             get(R.id.doctor).setOnClickListener(this);
             get(R.id.device).setOnClickListener(this);
             userInfo = get(R.id.user_info);
@@ -147,33 +153,49 @@ public class MainActivity extends BaseActivity {
                 time -= Long.parseLong(event.training.time_start);
                 hypoxiaTime.setText(time / 1000 / 60 + "");
                 hypoxiaMode.setText(event.training.mode + "");
+                hypoxia.setVisibility(View.VISIBLE);
+            } else {
+                hypoxia.setVisibility(View.GONE);
             }
             if (null != event.spo2) {
                 oxygen.setText(event.spo2.o2p + "");
+                spo2.setVisibility(View.VISIBLE);
+            } else {
+                spo2.setVisibility(View.GONE);
             }
             if (null != event.pressure) {
                 sys.setText(event.pressure.systolic + "");
                 dia.setText(event.pressure.diastolic + "");
+                blood.setVisibility(View.VISIBLE);
+            } else {
+                blood.setVisibility(View.GONE);
             }
             if (null != event.heartrate) {
                 heartRate.setText(event.heartrate.heartrate + "");
+                ecg.setVisibility(View.VISIBLE);
+            } else {
+                ecg.setVisibility(View.GONE);
             }
+            bloodLipid.setVisibility(View.GONE);
             if (null != event.bloodfat) {
                 if (!TextUtils.isEmpty(event.bloodfat.cholvalue)) {
                     lipidType.setText("血脂");
                     lipidValue.setText(event.bloodfat.cholvalue);
                     lipidUnit.setText("mmol/L");
+                    bloodLipid.setVisibility(View.VISIBLE);
                 }
             }
             if (null != event.bloodsugar && !TextUtils.isEmpty(event.bloodsugar.sugarvalue)) {
                 lipidType.setText("血糖");
                 lipidValue.setText(event.bloodsugar.sugarvalue);
                 lipidUnit.setText("mmol/L");
+                bloodLipid.setVisibility(View.VISIBLE);
             }
             if (null != event.uricacid && !TextUtils.isEmpty(event.uricacid.uricacidvalue)) {
                 lipidType.setText("血尿酸");
                 lipidValue.setText(event.uricacid.uricacidvalue);
                 lipidUnit.setText("mmol/L");
+                bloodLipid.setVisibility(View.VISIBLE);
             }
         }
 

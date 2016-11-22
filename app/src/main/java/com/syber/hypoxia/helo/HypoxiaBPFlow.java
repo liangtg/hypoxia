@@ -5,6 +5,8 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.content.Intent;
 
+import com.syber.hypoxia.bt.FlowExtra;
+
 import java.util.Arrays;
 import java.util.Calendar;
 
@@ -49,21 +51,21 @@ public class HypoxiaBPFlow extends BleFlow {
     @Override
     protected void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
         Intent intent = new Intent();
-        intent.putExtra(KEY_PUL_ARRAY, characteristic.getValue());
+        intent.putExtra(FlowExtra.KEY_PUL_ARRAY, characteristic.getValue());
         if (Hypoxia.ICP.equals(characteristic.getUuid())) {
             haveProgress = true;
-            intent.putExtra(KEY_SYS, characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT16, 1).intValue());
-            manager.requestConfirm(PROGRESS_BP, this, intent);
+            intent.putExtra(FlowExtra.KEY_SYS, characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT16, 1).intValue());
+            manager.requestConfirm(FlowExtra.PROGRESS_BP, this, intent);
         } else if (Hypoxia.BPM.equals(characteristic.getUuid())) {
             if (haveProgress) {
                 setHandleEnd(true);
                 enableNotify(Hypoxia.SERVICE_BP, Hypoxia.ICP, false);
                 enableNotify(Hypoxia.SERVICE_BP, Hypoxia.BPM, false);
             }
-            intent.putExtra(KEY_SYS, characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT16, 1).intValue());
-            intent.putExtra(KEY_DIA, characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT16, 3).intValue());
-            intent.putExtra(KEY_PUL, characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT16, 14).intValue());
-            manager.requestConfirm(RESULT_BP, this, intent);
+            intent.putExtra(FlowExtra.KEY_SYS, characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT16, 1).intValue());
+            intent.putExtra(FlowExtra.KEY_DIA, characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT16, 3).intValue());
+            intent.putExtra(FlowExtra.KEY_PUL, characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT16, 14).intValue());
+            manager.requestConfirm(FlowExtra.RESULT_BP, this, intent);
         } else if (Hypoxia.C2.equals(characteristic.getUuid())) {
             if (characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0) == 0xAA) {
                 step++;

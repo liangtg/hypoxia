@@ -18,8 +18,8 @@ import com.syber.base.BaseActivity;
 import com.syber.base.BaseViewHolder;
 import com.syber.base.data.EmptyResponse;
 import com.syber.base.view.ViewPost;
+import com.syber.hypoxia.bt.FlowExtra;
 import com.syber.hypoxia.data.IRequester;
-import com.syber.hypoxia.helo.BPFlow;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -43,9 +43,9 @@ public class AddBPActivity extends BaseActivity implements TimePickerDialog.OnTi
         setContentView(R.layout.activity_add_bp);
         startManageBus(bus, this);
         initAppBar();
-        sys = getIntent().getIntExtra(BPFlow.KEY_SYS, 0);
-        dia = getIntent().getIntExtra(BPFlow.KEY_DIA, 0);
-        pul = getIntent().getIntExtra(BPFlow.KEY_PUL, 0);
+        sys = getIntent().getIntExtra(FlowExtra.KEY_SYS, 0);
+        dia = getIntent().getIntExtra(FlowExtra.KEY_DIA, 0);
+        pul = getIntent().getIntExtra(FlowExtra.KEY_PUL, 0);
         autoAdd = sys > 0;
         viewHolder = new ViewHolder(findViewById(R.id.content));
         if (autoAdd) {

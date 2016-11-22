@@ -14,31 +14,6 @@ import java.util.UUID;
 public abstract class BleFlow implements IBleManager.BTFlow {
     public static final UUID CCC = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
 
-    public static final String KEY_SYS = "sys";
-    public static final String KEY_DIA = "dia";
-    public static final String KEY_PUL = "pul";
-    public static final String KEY_ECG = "ecg";
-    public static final String KEY_TIME = "time";
-    public static final String KEY_START_TIME = "start_time";
-    public static final String KEY_END_TIME = "end_time";
-    public static final String KEY_MODE = "mode";
-    public static final String KEY_PUL_ARRAY = "pul_array";
-    public static final String KEY_ECG_ARRAY = "ecg_array";
-    public static final int CONFIRM_OK = 1;
-    public static final int CONFIRM_CANCEL = 2;
-
-    public static final int REQUEST_BIND = 1;
-    public static final int REQUEST_BINDED_OTHER = 2;
-    public static final int REQUEST_MATCHED = 3;
-    public static final int RESULT_BP = 4;
-    public static final int RESULT_HR = 5;
-    public static final int RESULT_ECG = 6;
-    public static final int RESULT_RAW_PUL = 7;
-    public static final int RESULT_RAW_ECG = 8;
-    public static final int REQUEST_CONFIRM_DISCONNECT = 9;
-    public static final int PROGRESS_BP = 10;
-    public static final int RESULT_HYPOXIA = 11;
-
     protected BleFlow dependency;
     protected BleFlow next;
     protected IBleManager manager;

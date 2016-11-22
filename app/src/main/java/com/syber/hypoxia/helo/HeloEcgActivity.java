@@ -16,6 +16,7 @@ import com.syber.base.BaseViewHolder;
 import com.syber.base.view.ViewPost;
 import com.syber.hypoxia.IApplication;
 import com.syber.hypoxia.R;
+import com.syber.hypoxia.bt.FlowExtra;
 import com.syber.hypoxia.data.BloodHistoryResponse;
 
 import java.util.ArrayList;
@@ -67,24 +68,24 @@ public class HeloEcgActivity extends BaseActivity implements BTManager.RequestLi
 
     @Override
     public void onRequestConfirm(int request, Intent data) {
-        if (BleFlow.REQUEST_MATCHED == request) {
+        if (FlowExtra.REQUEST_MATCHED == request) {
             connectHeloFragment.dismiss();
-            bleHelper.setRequestConfirmed(request, BleFlow.CONFIRM_OK);
+            bleHelper.setRequestConfirmed(request, FlowExtra.CONFIRM_OK);
             new Timer().start();
-        } else if (BleFlow.REQUEST_BIND == request) {
+        } else if (FlowExtra.REQUEST_BIND == request) {
             showToast("发现设备,准备绑定");
-            bleHelper.setRequestConfirmed(request, BleFlow.CONFIRM_OK);
-        } else if (BleFlow.REQUEST_BINDED_OTHER == request) {
+            bleHelper.setRequestConfirmed(request, FlowExtra.CONFIRM_OK);
+        } else if (FlowExtra.REQUEST_BINDED_OTHER == request) {
             viewHolder.ecgView.setClickable(false);
             connectHeloFragment.dismiss();
             new HeloBindedOtherFragment().show(getSupportFragmentManager(), "connected_other");
-        } else if (BleFlow.RESULT_RAW_PUL == request) {
-            int[] extra = data.getIntArrayExtra(BleFlow.KEY_PUL_ARRAY);
+        } else if (FlowExtra.RESULT_RAW_PUL == request) {
+            int[] extra = data.getIntArrayExtra(FlowExtra.KEY_PUL_ARRAY);
             for (int i = 0; i < extra.length; i++) {
                 viewHolder.ecgView.addPoint(extra[i]);
             }
-        } else if (BleFlow.RESULT_RAW_ECG == request) {
-            int[] extra = data.getIntArrayExtra(BleFlow.KEY_ECG_ARRAY);
+        } else if (FlowExtra.RESULT_RAW_ECG == request) {
+            int[] extra = data.getIntArrayExtra(FlowExtra.KEY_ECG_ARRAY);
             viewHolder.ecgView.addPoint((extra[0] - 400) / 200f * 1200);
 //            if (ecgPosition == 0) {
 //                for (int i = 0; i < extra.length; i++) {
@@ -92,13 +93,13 @@ public class HeloEcgActivity extends BaseActivity implements BTManager.RequestLi
 //            }
             ecgPosition++;
             ecgPosition %= 4;
-        } else if (BleFlow.RESULT_BP == request) {
-            sys = data.getIntExtra(BleFlow.KEY_SYS, 0);
-            dia = data.getIntExtra(BleFlow.KEY_DIA, 0);
-        } else if (BleFlow.RESULT_HR == request) {
-            pul = data.getIntExtra(BleFlow.KEY_PUL, 0);
-        } else if (BleFlow.RESULT_ECG == request) {
-            ecg = data.getIntExtra(BleFlow.KEY_ECG, 0);
+        } else if (FlowExtra.RESULT_BP == request) {
+            sys = data.getIntExtra(FlowExtra.KEY_SYS, 0);
+            dia = data.getIntExtra(FlowExtra.KEY_DIA, 0);
+        } else if (FlowExtra.RESULT_HR == request) {
+            pul = data.getIntExtra(FlowExtra.KEY_PUL, 0);
+        } else if (FlowExtra.RESULT_ECG == request) {
+            ecg = data.getIntExtra(FlowExtra.KEY_ECG, 0);
         }
     }
 

@@ -7,6 +7,7 @@ import android.content.Intent;
 import com.syber.hypoxia.Helo;
 import com.syber.hypoxia.HeloCMD;
 import com.syber.hypoxia.HeloResponse;
+import com.syber.hypoxia.bt.FlowExtra;
 
 /**
  * Created by liangtg on 16-7-18.
@@ -36,9 +37,9 @@ public class BPFlow extends BleFlow {
                 int sys = response.intValue(4);
                 int dia = response.intValue(5);
                 Intent intent = new Intent();
-                intent.putExtra(KEY_SYS, sys);
-                intent.putExtra(KEY_DIA, dia);
-                manager.requestConfirm(RESULT_BP, this, intent);
+                intent.putExtra(FlowExtra.KEY_SYS, sys);
+                intent.putExtra(FlowExtra.KEY_DIA, dia);
+                manager.requestConfirm(FlowExtra.RESULT_BP, this, intent);
             }
         }
     }

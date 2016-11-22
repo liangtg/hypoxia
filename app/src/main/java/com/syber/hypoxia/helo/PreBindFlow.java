@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import com.syber.hypoxia.Helo;
 import com.syber.hypoxia.HeloCMD;
 import com.syber.hypoxia.HeloResponse;
+import com.syber.hypoxia.bt.FlowExtra;
 
 import java.util.Arrays;
 
@@ -24,7 +25,7 @@ public class PreBindFlow extends BleFlow {
         if (BluetoothGatt.GATT_SUCCESS == status) {
             if (Arrays.equals(characteristic.getValue(), HeloCMD.RESPONSE_BIND.cmd)) {
                 setHandleEnd(true);
-                manager.requestConfirm(BleFlow.REQUEST_MATCHED, this, null);
+                manager.requestConfirm(FlowExtra.REQUEST_MATCHED, this, null);
             }
         }
     }
@@ -37,23 +38,23 @@ public class PreBindFlow extends BleFlow {
                 setHandleEnd(true);
                 enableNotify(Helo.SERVICE1, Helo.S1N1, false);
                 if (response.byteValue() == 1) {
-                    manager.requestConfirm(BleFlow.REQUEST_MATCHED, this, null);
+                    manager.requestConfirm(FlowExtra.REQUEST_MATCHED, this, null);
                 } else {
-                    manager.requestConfirm(BleFlow.REQUEST_BINDED_OTHER, this, null);
+                    manager.requestConfirm(FlowExtra.REQUEST_BINDED_OTHER, this, null);
                 }
             } else if (HeloResponse.REQUEST_BIND == response.cmd()) {
-                manager.requestConfirm(BleFlow.REQUEST_BIND, this, null);
+                manager.requestConfirm(FlowExtra.REQUEST_BIND, this, null);
             }
         }
     }
 
     @Override
     protected void onRequestConfirmed(int request, int result) {
-        if (BleFlow.REQUEST_BIND == request) {
-            if (BleFlow.CONFIRM_OK == result) {
+        if (FlowExtra.REQUEST_BIND == request) {
+            if (FlowExtra.CONFIRM_OK == result) {
                 writeChara(HeloCMD.RESPONSE_BIND.service, HeloCMD.RESPONSE_BIND.cha, HeloCMD.RESPONSE_BIND.cmd);
             }
-        } else if (BleFlow.REQUEST_MATCHED == request) {
+        } else if (FlowExtra.REQUEST_MATCHED == request) {
             setHandleEnd(true);
             if (null != next) next.start();
         }

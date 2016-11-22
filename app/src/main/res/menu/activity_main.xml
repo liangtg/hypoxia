@@ -1,12 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item
-        android:id="@+id/setting"
-        android:icon="@drawable/ic_setting"
-        android:title="设置"
-        android:visible="false"
-        app:showAsAction="always" />
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/add_training"
         android:title="添加训练数据" />
@@ -16,6 +9,10 @@
     <item
         android:id="@+id/add_spo"
         android:title="添加血氧数据" />
+    <item
+        android:id="@+id/setting"
+        android:icon="@drawable/ic_setting"
+        android:title="设置" />
     <item
         android:id="@+id/reset_pwd"
         android:title="修改密码" />
