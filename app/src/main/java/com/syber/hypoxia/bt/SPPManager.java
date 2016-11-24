@@ -191,6 +191,8 @@ public class SPPManager implements IBleManager {
                 }
             } else if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 onDeviceFounded(intent.<BluetoothDevice>getParcelableExtra(BluetoothDevice.EXTRA_DEVICE));
+            } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
+                if (discory) startScan();
             }
         }
     }
