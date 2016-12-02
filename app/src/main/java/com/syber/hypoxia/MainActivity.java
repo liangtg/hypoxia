@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.widget.PopupWindowCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -42,56 +43,97 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         startManageBus(bus, this);
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.app_bar);
-        setSupportActionBar(toolbar);
+        viewHolder = new ViewHolder();
+        setSupportActionBar(viewHolder.toolbar);
         PgyUpdateManager.register(this);
         if (!User.isSignIn()) {
             gotoActivity(SignInActivity.class);
+        } else {
+            ViewPost.postOnAnimation(viewHolder.getContainer(), new Runnable() {
+                @Override
+                public void run() {
+                    viewHolder.toolbar.showOverflowMenu();
+                    viewHolder.getContainer().postOnAnimationDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            showGuide1();
+                        }
+                    }, 50);
+                }
+            });
         }
-        viewHolder = new ViewHolder();
-        ViewPost.postOnAnimation(viewHolder.getContainer(), new Runnable() {
-            @Override
-            public void run() {
-                toolbar.showOverflowMenu();
-                viewHolder.getContainer().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        PopupWindow window = ensurePopupWindow();
-                        View view = getLayoutInflater().inflate(R.layout.indicate_menu, null);
-                        View space = view.findViewById(R.id.space);
-                        ViewGroup.LayoutParams params = space.getLayoutParams();
-                        TypedArray attrs = getTheme().obtainStyledAttributes(new int[]{R.attr.dropdownListPreferredItemHeight});
-                        float iheight = attrs.getDimension(0, 10);
-                        attrs.recycle();
-                        params.height = (int) (toolbar.getMenu().size() * iheight + iheight / 4);
-                        window.setContentView(view);
-                        window.showAtLocation(viewHolder.getContainer(), Gravity.FILL, 0, 0);
-                        view.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                guideWindow.dismiss();
-                            }
-                        });
-                    }
-                }, 100);
-            }
-        });
     }
 
     @NonNull
     private PopupWindow ensurePopupWindow() {
-        PopupWindow window = new PopupWindow(MainActivity.this);
-        window.setBackgroundDrawable(new ColorDrawable(0x00FFFFFF));
-        window.setWidth(-1);
-        window.setFocusable(true);
-        window.setHeight(-1);
-        PopupWindowCompat.setWindowLayoutType(window, WindowManager.LayoutParams.TYPE_APPLICATION_SUB_PANEL);
-        guideWindow = window;
-        return window;
+        if (null == guideWindow) {
+            guideWindow = new PopupWindow(MainActivity.this);
+            guideWindow.setBackgroundDrawable(new ColorDrawable(0x00FFFFFF));
+            guideWindow.setWidth(-1);
+            guideWindow.setFocusable(true);
+            guideWindow.setHeight(-1);
+            guideWindow.setOnDismissListener(new PopupDismissListener());
+            PopupWindowCompat.setWindowLayoutType(guideWindow, WindowManager.LayoutParams.TYPE_APPLICATION_SUB_PANEL);
+        }
+        return guideWindow;
     }
 
     private void showGuide1() {
+        PopupWindow window = ensurePopupWindow();
+        View view = getLayoutInflater().inflate(R.layout.guide1, null);
+        View space = view.findViewById(R.id.space);
+        ViewGroup.LayoutParams params = space.getLayoutParams();
+        TypedArray attrs = getTheme().obtainStyledAttributes(new int[]{R.attr.dropdownListPreferredItemHeight});
+        float iheight = attrs.getDimension(0, 10);
+        attrs.recycle();
+        params.height = (int) (viewHolder.toolbar.getMenu().size() * iheight + iheight / 4);
+        window.setContentView(view);
+        window.showAtLocation(viewHolder.getContainer(), Gravity.FILL, 0, 0);
+        view.setOnClickListener(new DismissClickListener());
+    }
 
+    private void showGuide2() {
+        PopupWindow window = ensurePopupWindow();
+        View view = getLayoutInflater().inflate(R.layout.guide2, null);
+        window.setContentView(view);
+        view.setOnClickListener(new DismissClickListener());
+        View space = view.findViewById(R.id.space);
+        int[] p = getLocationInActivity(viewHolder.level);
+        ViewGroup.LayoutParams params = space.getLayoutParams();
+        params.width = (int) (p[0] - (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                120,
+                getResources().getDisplayMetrics()) - viewHolder.level.getWidth()) / 2);
+        params.height = (int) (p[1] - (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                50,
+                getResources().getDisplayMetrics()) - viewHolder.level.getHeight()) / 2);
+        window.showAtLocation(viewHolder.getContainer(), Gravity.FILL, 0, 0);
+    }
+
+    private int[] getLocationInActivity(View target) {
+        int[] position = new int[2];
+        int[] windowPosition = new int[2];
+        target.getLocationOnScreen(position);
+        viewHolder.getContainer().getLocationOnScreen(windowPosition);
+        position[0] -= windowPosition[0];
+        position[1] -= windowPosition[1];
+        return position;
+    }
+
+    private void showGuide3() {
+        PopupWindow window = ensurePopupWindow();
+        View view = getLayoutInflater().inflate(R.layout.guide3, null);
+        window.setContentView(view);
+        View device = viewHolder.get(R.id.device);
+        int[] point = new int[2];
+        device.getLocationInWindow(point);
+        ViewGroup.LayoutParams params = view.findViewById(R.id.space).getLayoutParams();
+        params.height = point[1];
+        viewHolder.getContainer().getLocationInWindow(point);
+        params.height -= point[1] + (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                64,
+                getResources().getDisplayMetrics()) - device.getHeight()) / 2;
+        view.setOnClickListener(new DismissClickListener());
+        window.showAtLocation(viewHolder.getContainer(), Gravity.LEFT, 0, 0);
     }
 
     @Override
@@ -158,12 +200,16 @@ public class MainActivity extends BaseActivity {
     private class ViewHolder extends BaseViewHolder {
         TextView userInfo, userName;
         TextView hypoxiaTime, hypoxiaMode, sys, dia, oxygen, heartRate, lipidType, lipidValue, lipidUnit;
+        Toolbar toolbar;
+        TextView level;
         private ImageView userImage;
         private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         private View hypoxia, ecg, blood, spo2, bloodLipid;
 
         public ViewHolder() {
             super(findViewById(R.id.view_holder));
+            level = get(R.id.level);
+            toolbar = get(R.id.app_bar);
             hypoxia = get(R.id.hypoxia);
             hypoxia.setOnClickListener(this);
             ecg = get(R.id.ecg);
@@ -276,5 +322,34 @@ public class MainActivity extends BaseActivity {
         }
     }
 
+    private class PopupDismissListener implements PopupWindow.OnDismissListener, Runnable {
+        int step = 0;
+
+        @Override
+        public void onDismiss() {
+            if (step == 0) {
+                viewHolder.toolbar.dismissPopupMenus();
+            }
+            viewHolder.getContainer().postOnAnimationDelayed(this, 50);
+        }
+
+        @Override
+        public void run() {
+            if (step == 0) {
+                showGuide2();
+            } else if (step == 1) {
+                showGuide3();
+            }
+            step++;
+        }
+    }
+
+    private class DismissClickListener implements View.OnClickListener {
+
+        @Override
+        public void onClick(View v) {
+            guideWindow.dismiss();
+        }
+    }
 
 }

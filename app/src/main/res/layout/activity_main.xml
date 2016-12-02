@@ -62,6 +62,17 @@
                 android:textColor="?android:textColorPrimaryInverse" />
 
             <TextView
+                android:id="@+id/level"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@id/user_name"
+                android:layout_marginLeft="@dimen/spacing_double"
+                android:layout_toRightOf="@id/user_name"
+                android:text="健康达人"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                android:textColor="?android:textColorPrimaryInverse" />
+
+            <TextView
                 android:id="@+id/user_info"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -131,7 +142,8 @@
                 style="@style/Widget.AppCompat.Button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:foreground="?selectableItemBackground">
+                android:foreground="?selectableItemBackground"
+                android:visibility="gone">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -202,7 +214,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/spacing_normal"
-                android:foreground="?selectableItemBackground">
+                android:foreground="?selectableItemBackground"
+                android:visibility="gone">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -285,7 +298,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/spacing_normal"
-                android:foreground="?selectableItemBackground">
+                android:foreground="?selectableItemBackground"
+                android:visibility="gone">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -356,7 +370,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/spacing_normal"
-                android:foreground="?selectableItemBackground">
+                android:foreground="?selectableItemBackground"
+                android:visibility="gone">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -443,7 +458,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/spacing_normal"
-                android:foreground="?selectableItemBackground">
+                android:foreground="?selectableItemBackground"
+                android:visibility="gone">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
