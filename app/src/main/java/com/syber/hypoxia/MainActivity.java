@@ -1,12 +1,20 @@
 package com.syber.hypoxia;
 
+import android.content.res.TypedArray;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.widget.PopupWindowCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.pgyersdk.update.PgyUpdateManager;
@@ -15,6 +23,7 @@ import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 import com.syber.base.BaseActivity;
 import com.syber.base.BaseViewHolder;
+import com.syber.base.view.ViewPost;
 import com.syber.hypoxia.data.IRequester;
 import com.syber.hypoxia.data.SignInResponse;
 import com.syber.hypoxia.data.User;
@@ -23,6 +32,7 @@ import com.syber.hypoxia.data.UserSummaryResponse;
 import java.text.SimpleDateFormat;
 
 public class MainActivity extends BaseActivity {
+    private PopupWindow guideWindow;
     private ViewHolder viewHolder;
     private Bus bus = new Bus();
 
@@ -32,13 +42,56 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         startManageBus(bus, this);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.app_bar);
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(toolbar);
         PgyUpdateManager.register(this);
         if (!User.isSignIn()) {
             gotoActivity(SignInActivity.class);
         }
         viewHolder = new ViewHolder();
+        ViewPost.postOnAnimation(viewHolder.getContainer(), new Runnable() {
+            @Override
+            public void run() {
+                toolbar.showOverflowMenu();
+                viewHolder.getContainer().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        PopupWindow window = ensurePopupWindow();
+                        View view = getLayoutInflater().inflate(R.layout.indicate_menu, null);
+                        View space = view.findViewById(R.id.space);
+                        ViewGroup.LayoutParams params = space.getLayoutParams();
+                        TypedArray attrs = getTheme().obtainStyledAttributes(new int[]{R.attr.dropdownListPreferredItemHeight});
+                        float iheight = attrs.getDimension(0, 10);
+                        attrs.recycle();
+                        params.height = (int) (toolbar.getMenu().size() * iheight + iheight / 4);
+                        window.setContentView(view);
+                        window.showAtLocation(viewHolder.getContainer(), Gravity.FILL, 0, 0);
+                        view.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                guideWindow.dismiss();
+                            }
+                        });
+                    }
+                }, 100);
+            }
+        });
+    }
+
+    @NonNull
+    private PopupWindow ensurePopupWindow() {
+        PopupWindow window = new PopupWindow(MainActivity.this);
+        window.setBackgroundDrawable(new ColorDrawable(0x00FFFFFF));
+        window.setWidth(-1);
+        window.setFocusable(true);
+        window.setHeight(-1);
+        PopupWindowCompat.setWindowLayoutType(window, WindowManager.LayoutParams.TYPE_APPLICATION_SUB_PANEL);
+        guideWindow = window;
+        return window;
+    }
+
+    private void showGuide1() {
+
     }
 
     @Override
@@ -58,6 +111,7 @@ public class MainActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
 //        stopService(new Intent(this, HeloService.class));
+        if (null != guideWindow) guideWindow.dismiss();
     }
 
     @Subscribe

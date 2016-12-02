@@ -61,19 +61,33 @@ public class GraphicsTest extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if ("分形树".equals(e.getActionCommand())) {
-            drawLeaf(g2, 400, 500, 100, 210 + random.nextInt(100));
+//            drawLeaf(g2, 400, 500, 100, 210 + random.nextInt(100));
+            drawLeg(g2, 400, 250, random.nextInt(700), random.nextInt(500), 0);
         } else if ("清除".equals(e.getActionCommand())) {
             panel.getGraphics().clearRect(0, 0, 800, 800);
         }
     }
 
-    void drawLeg(Graphics g, double x1, double y1, double x2, double y2) {
+    void drawLeg(Graphics g, double x1, double y1, double x2, double y2, int index) {
+        if (index >= 2) return;
         g.setColor(new Color(0xFF0000FF, true));
         double length = Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2));
-        double cx, cy, ocos, osin;
-        ocos = (x2 - x1) / length;
-        osin = (y2 - y1) / length;
+        double cx, cy, coso, sino;
+        coso = (x2 - x1) / length;
+        sino = (y2 - y1) / length;
+        double sind = Math.sin(Math.toRadians(15));
+        double cosd = Math.cos(Math.toRadians(15));
+        double sinn = sind * coso + sino * cosd;
+        double cosn = cosd * coso - sind * sino;
+        double lenn = length / 2 / cosd;
+        double xn = lenn * cosn + x1;
+        double yn = lenn * sinn + y1;
         g.drawLine((int) x1, (int) y1, (int) x2, (int) y2);
+        g.drawLine((int) x1, (int) y1, (int) xn, (int) yn);
+        g.drawLine((int) xn, (int) yn, (int) x2, (int) y2);
+        index++;
+        drawLeg(g, x1, y1, xn, yn, index);
+        drawLeg(g, xn, yn, x2, y2, index);
     }
 
     public void drawLeaf(Graphics g, double x, double y, double L, double a) {
