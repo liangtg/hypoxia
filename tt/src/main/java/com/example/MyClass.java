@@ -1,21 +1,13 @@
 package com.example;
 
+import com.google.gson.Gson;
+
+import java.io.IOException;
+
 public class MyClass {
-    public static void main(String[] args) {
-//        int i = Integer.MAX_VALUE;
-//        System.out.println("args = [" + i + "]" + Integer.toHexString(i));
-//        i += 1;
-//        System.out.println("args = [" + i + "]" + Integer.toHexString(i));
-//        i = -1;
-//        System.out.println("args = [" + i + "]" + Integer.toHexString(i));
-//        i = 1 << 7;
-//        System.out.println("args = [" + i + "]" + Integer.toHexString(i));
-//        i -= 1;
-//        System.out.println("args = [" + i + "]" + Integer.toHexString(i));
-//        i = (byte) -1;
-//        System.out.println("args = [" + i + "]" + Integer.toHexString(i));
-        String a = "55aa06bc00c1";
-        System.out.println(toHex(a.getBytes()));
+    public static void main(String[] args) throws IOException {
+        JJ a = new Gson().fromJson("{\"a\":\"b\",}", JJ.class);
+        System.out.println(a.toString());
     }
 
 
@@ -27,6 +19,10 @@ public class MyClass {
         }
         sb.append("]");
         return sb.toString();
+    }
+
+    public static class JJ {
+        public String a;
     }
 
 }

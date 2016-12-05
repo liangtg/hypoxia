@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#00FFFFFF"
+    android:orientation="vertical"
+    android:theme="@style/ThemeOverlay.AppCompat.Dark">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <View
+            android:id="@+id/space"
+            android:layout_width="100dp"
+            android:layout_height="140dp"
+            android:background="#80000000" />
+
+        <ImageView
+            android:id="@+id/image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/space"
+            android:layout_toRightOf="@id/space"
+            android:src="@drawable/guide_title" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignBottom="@id/image"
+            android:layout_alignTop="@id/image"
+            android:layout_toLeftOf="@id/image"
+            android:background="#80000000" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignBottom="@id/space"
+            android:layout_toRightOf="@id/space"
+            android:background="#80000000" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignBottom="@id/image"
+            android:layout_alignTop="@id/image"
+            android:layout_toRightOf="@id/image"
+            android:background="#80000000" />
+
+        <ImageView
+            android:id="@+id/arrow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@id/image"
+            android:layout_below="@id/image"
+            android:background="#80000000"
+            android:src="@drawable/guide_title_arrow" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignBottom="@id/arrow"
+            android:layout_below="@id/image"
+            android:layout_toRightOf="@id/arrow"
+            android:background="#80000000" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#80000000"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/spacing_double"
+            android:gravity="center"
+            android:text="关注健康检测,坚持低氧训练\n做健康达人,让身体更健康!"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+        <TextView
+            android:id="@+id/ok"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/guide_button"
+            android:gravity="center"
+            android:text="知道了"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            android:textColor="?android:textColorPrimaryInverse" />
+    </LinearLayout>
+</LinearLayout>
