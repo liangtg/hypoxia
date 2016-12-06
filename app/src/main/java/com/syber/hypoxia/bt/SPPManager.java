@@ -31,7 +31,7 @@ public class SPPManager implements IBleManager {
     public static final int OPEN_BLUETOOTH = 1366;
     private static final UUID SPP_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     private static Executor executor = Executors.newSingleThreadExecutor();
-    private boolean exit = false;
+    private volatile boolean exit = false;
     private Handler handler = new Handler(Looper.getMainLooper());
     private BluetoothSocket socket;
     private SPPFlow sppFlow;
@@ -108,6 +108,12 @@ public class SPPManager implements IBleManager {
         }
     }
 
+    private void reportState(int state) {
+        if (!exit && null != listener) {
+            handler.post(new RequestRunnable(state, null));
+        }
+    }
+
     public void setRequestListener(BTManager.RequestListener listener) {
         this.listener = listener;
     }
@@ -148,12 +154,19 @@ public class SPPManager implements IBleManager {
             try {
                 socket = device.createRfcommSocketToServiceRecord(SPP_UUID);
                 socket.connect();
-                sppFlow.onSocketConnected(socket);
             } catch (IOException e) {
                 Logger.e(e, "connect fail");
                 if (null != socket) {
                     IOUtils.closeSilenty(socket);
                     socket = null;
+                }
+            }
+            if (!exit) {
+                if (null == socket) {
+                    reportState(FlowExtra.REPORT_STATE_CONNECT_FAILED);
+                    startScan();
+                } else {
+                    sppFlow.onSocketConnected(socket);
                 }
             }
         }

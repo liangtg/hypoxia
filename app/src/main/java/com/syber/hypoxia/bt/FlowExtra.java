@@ -30,4 +30,6 @@ public class FlowExtra {
     public static final int PROGRESS_BP = 10;
     public static final int RESULT_HYPOXIA = 11;
     public static final int REQUEST_END = 12;
+    public static final int REPORT_STATE = 1000;
+    public static final int REPORT_STATE_CONNECT_FAILED = REPORT_STATE + 1;
 }

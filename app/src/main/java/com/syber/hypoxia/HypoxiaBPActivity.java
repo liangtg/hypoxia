@@ -10,7 +10,7 @@ import com.syber.base.BaseActivity;
 import com.syber.base.BaseViewHolder;
 import com.syber.base.view.ViewPost;
 import com.syber.hypoxia.bt.FlowExtra;
-import com.syber.hypoxia.bt.HypoxiaBPFlow;
+import com.syber.hypoxia.bt.HypoxiaSPPBPFlow;
 import com.syber.hypoxia.bt.SPPManager;
 import com.syber.hypoxia.helo.BTManager;
 import com.syber.hypoxia.widget.HoloCircularProgressBar;
@@ -30,7 +30,7 @@ public class HypoxiaBPActivity extends BaseActivity implements BTManager.Request
         initAppBar();
         bleHelper = new SPPManager(this);
         bleHelper.setRequestListener(this);
-        bleHelper.setFlow(new HypoxiaBPFlow(bleHelper));
+        bleHelper.setFlow(new HypoxiaSPPBPFlow(bleHelper));
         viewHolder = new ViewHolder(findViewById(R.id.view_holder));
         ViewPost.postOnAnimation(viewHolder.getContainer(), new Runnable() {
             @Override

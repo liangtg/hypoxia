@@ -19,7 +19,7 @@ import okio.Buffer;
  * Created by liangtg on 16-12-5.
  */
 
-public class HypoxiaBPFlow implements SPPManager.SPPFlow {
+public class HypoxiaSPPBPFlow implements SPPManager.SPPFlow {
     private byte[] cmd_get_time = {0x55, (byte) 0xAA, 0x06, (byte) 0xB4, 0x00, (byte) 0xB9};
     private byte[] cmd_get_state = {0x55, (byte) 0xAA, 0x06, (byte) 0xBC, 0x00, (byte) 0xC1};
     private byte[] cmd_set_time = {0x55, (byte) 0xaa, 0x0b, (byte) 0xb2, 0x10, 0x07, 0x05, 0x10, 0x06, 0x00, (byte) 0xee};
@@ -30,7 +30,7 @@ public class HypoxiaBPFlow implements SPPManager.SPPFlow {
     private BluetoothSocket socket;
     private Executor executor = Executors.newSingleThreadExecutor();
 
-    public HypoxiaBPFlow(IBleManager btManager) {
+    public HypoxiaSPPBPFlow(IBleManager btManager) {
         this.btManager = btManager;
     }
 
