@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -46,6 +47,13 @@ public class AddBPActivity extends BaseActivity implements TimePickerDialog.OnTi
         sys = getIntent().getIntExtra(FlowExtra.KEY_SYS, 0);
         dia = getIntent().getIntExtra(FlowExtra.KEY_DIA, 0);
         pul = getIntent().getIntExtra(FlowExtra.KEY_PUL, 0);
+        String time = getIntent().getStringExtra(FlowExtra.KEY_TIME);
+        if (!TextUtils.isEmpty(time)) {
+            try {
+                calendar.setTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(time));
+            } catch (Exception e) {
+            }
+        }
         autoAdd = sys > 0;
         viewHolder = new ViewHolder(findViewById(R.id.content));
         if (autoAdd) {

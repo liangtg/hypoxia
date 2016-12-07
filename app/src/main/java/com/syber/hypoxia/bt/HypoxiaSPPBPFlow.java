@@ -1,6 +1,7 @@
 package com.syber.hypoxia.bt;
 
 import android.bluetooth.BluetoothSocket;
+import android.content.Intent;
 import android.util.Log;
 
 import com.orhanobut.logger.Logger;
@@ -29,6 +30,7 @@ public class HypoxiaSPPBPFlow implements SPPManager.SPPFlow {
     private Buffer buffer = new Buffer();
     private BluetoothSocket socket;
     private Executor executor = Executors.newSingleThreadExecutor();
+    private Object signal = new Object();
 
     public HypoxiaSPPBPFlow(IBleManager btManager) {
         this.btManager = btManager;
@@ -59,6 +61,7 @@ public class HypoxiaSPPBPFlow implements SPPManager.SPPFlow {
     @Override
     public String getDeviceName() {
         return "RCxxxx-Debug-BT";
+//        return "L.L.1";
     }
 
     @Override
@@ -70,9 +73,20 @@ public class HypoxiaSPPBPFlow implements SPPManager.SPPFlow {
 
     @Override
     public void onRequestConfirmed(int request, int result) {
+        if (FlowExtra.REPORT_STATE_INFO == request) {
+            log("notify start...");
+            synchronized (signal) {
+                signal.notifyAll();
+            }
+            log("notify ... end");
+        }
     }
 
     private class WorkThread extends Thread {
+        public WorkThread() {
+            setDaemon(true);
+        }
+
         @Override
         public void run() {
             try {
@@ -83,7 +97,13 @@ public class HypoxiaSPPBPFlow implements SPPManager.SPPFlow {
             } catch (Exception e) {
                 Log.e("flow", "run failed", e);
             }
+            try {
+                IOUtils.closeSilenty(socket.getInputStream());
+                IOUtils.closeSilenty(socket.getOutputStream());
+            } catch (IOException e) {
+            }
             IOUtils.closeSilenty(socket);
+            btManager.requestConfirm(FlowExtra.REPORT_STATE_DISCONNECT, HypoxiaSPPBPFlow.this, null);
         }
 
         private void setTime() {
@@ -113,12 +133,6 @@ public class HypoxiaSPPBPFlow implements SPPManager.SPPFlow {
             logcmd(array);
         }
 
-        private void readTimeIII() throws IOException {
-            writeAndRead(cmd_get_state, 11);
-            byte[] array = buffer.readByteArray();
-            logcmd(array);
-        }
-
         private void readTime() throws IOException {
             writeAndRead(cmd_get_time, 11);
             byte[] array = buffer.readByteArray();
@@ -128,19 +142,61 @@ public class HypoxiaSPPBPFlow implements SPPManager.SPPFlow {
         private void startProcess() throws IOException {
             write(cmd_start_process);
             buffer.readFrom(socket.getInputStream(), 6);
-            while (buffer.size() > 0) {
+            boolean read = true;
+            while (socket.isConnected()) {
+                if (!read) {
+                    write(cmd_start_process);
+                    buffer.readFrom(socket.getInputStream(), 6);
+                    read = true;
+                }
                 byte[] array = buffer.readByteArray();
                 logcmd(array);
                 if (array[3] == (byte) 0xb5) {//血压结果
+                    buffer.write(array, 4, 2);
                     read(9);
-                    logcmd(buffer.readByteArray());
+//                    byte[] result = buffer.readByteArray();
+//                    logcmd(result);
+                    String time = String.format("20%02d-%02d-%02d %02d:%02d:%02d",
+                            readUByte(buffer),
+                            readUByte(buffer),
+                            readUByte(buffer),
+                            readUByte(buffer),
+                            readUByte(buffer),
+                            readUByte(buffer));
+                    Intent data = new Intent();
+                    data.putExtra(FlowExtra.KEY_TIME, time);
+                    data.putExtra(FlowExtra.KEY_SYS, (int) buffer.readShort());
+                    data.putExtra(FlowExtra.KEY_DIA, readUByte(buffer));
+                    data.putExtra(FlowExtra.KEY_PUL, readUByte(buffer));
+                    buffer.clear();
+                    btManager.requestConfirm(FlowExtra.RESULT_BP, HypoxiaSPPBPFlow.this, data);
                     break;
                 } else if (array[3] == (byte) 0xbd) {//压力数据
+                    Intent data = new Intent();
+                    data.putExtra(FlowExtra.KEY_SYS, array[4] & 0xFF);
+                    btManager.requestConfirm(FlowExtra.PROGRESS_BP, HypoxiaSPPBPFlow.this, data);
                 } else if (array[3] == (byte) 0xbe) {//错误信息
-                    break;
+                    Intent data = new Intent();
+                    data.putExtra(FlowExtra.KEY_ERROR, array[4] & 0xFF);
+                    btManager.requestConfirm(FlowExtra.REPORT_STATE_INFO, HypoxiaSPPBPFlow.this, data);
+                    read = false;
+                    waitSignal();
                 }
-                buffer.readFrom(socket.getInputStream(), 6);
+                if (read) {
+                    buffer.readFrom(socket.getInputStream(), 6);
+                }
             }
+        }
+
+        private void waitSignal() {
+            log("wait start......");
+            synchronized (signal) {
+                try {
+                    signal.wait();
+                } catch (InterruptedException e) {
+                }
+            }
+            log("wait ....end");
         }
 
         private void logcmd(byte[] array) {
@@ -166,10 +222,10 @@ public class HypoxiaSPPBPFlow implements SPPManager.SPPFlow {
             try {
                 socket.getOutputStream().write(cmd);
                 socket.getOutputStream().flush();
+                log("send success");
             } catch (IOException e) {
                 Log.e("flow", "send failed", e);
             }
-            log("send success");
         }
     }
 

@@ -82,6 +82,11 @@ public class SPPManager implements IBleManager {
         activity.unregisterReceiver(receiver);
         stopScan();
         if (null != socket) {
+            try {
+                IOUtils.closeSilenty(socket.getInputStream());
+                IOUtils.closeSilenty(socket.getOutputStream());
+            } catch (IOException e) {
+            }
             IOUtils.closeSilenty(socket);
             socket = null;
         }
@@ -120,7 +125,7 @@ public class SPPManager implements IBleManager {
 
     @Override
     public void setRequestConfirmed(int request, int result) {
-        if (exit || null != socket || null == listener) return;
+        if (exit || null == socket) return;
         this.requestArray.get(request).onRequestConfirmed(request, result);
         requestArray.remove(request);
     }
@@ -167,6 +172,7 @@ public class SPPManager implements IBleManager {
                     startScan();
                 } else {
                     sppFlow.onSocketConnected(socket);
+                    reportState(FlowExtra.REPORT_STATE_CONNECTED);
                 }
             }
         }

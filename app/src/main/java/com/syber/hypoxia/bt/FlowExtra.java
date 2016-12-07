@@ -14,6 +14,7 @@ public class FlowExtra {
     public static final String KEY_START_TIME = "start_time";
     public static final String KEY_END_TIME = "end_time";
     public static final String KEY_MODE = "mode";
+    public static final String KEY_ERROR = "error";
     public static final String KEY_PUL_ARRAY = "pul_array";
     public static final String KEY_ECG_ARRAY = "ecg_array";
     public static final int CONFIRM_OK = 1;
@@ -31,5 +32,8 @@ public class FlowExtra {
     public static final int RESULT_HYPOXIA = 11;
     public static final int REQUEST_END = 12;
     public static final int REPORT_STATE = 1000;
-    public static final int REPORT_STATE_CONNECT_FAILED = REPORT_STATE + 1;
+    public static final int REPORT_STATE_CONNECTED = REPORT_STATE + 1;
+    public static final int REPORT_STATE_CONNECT_FAILED = REPORT_STATE + 2;
+    public static final int REPORT_STATE_INFO = REPORT_STATE + 3;
+    public static final int REPORT_STATE_DISCONNECT = REPORT_STATE + 4;
 }
