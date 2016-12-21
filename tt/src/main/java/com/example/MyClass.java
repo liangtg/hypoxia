@@ -1,28 +1,14 @@
 package com.example;
 
+
 import java.io.IOException;
 
 public class MyClass {
     public static void main(String[] args) throws IOException {
-        JJ data = new JJ();
-        AThread a1 = new AThread(data);
-        AThread a2 = new AThread(data);
-        AThread a3 = new AThread(data);
-        AThread a4 = new AThread(data);
-        System.out.println("start:" + data.add);
-        a1.start();
-        a2.start();
-        a3.start();
-        a4.start();
-        try {
-            a1.join();
-            a2.join();
-            a3.join();
-            a4.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        System.out.println("end:" + data.add);
+        System.out.println("11111");
+        System.out.println("\n".getBytes().length);
+        System.out.println(Base64.encodeToString("你好啊".getBytes(), Base64.DEFAULT));
+        System.out.println("11111");
     }
 
     public static String toHex(byte[] to) {

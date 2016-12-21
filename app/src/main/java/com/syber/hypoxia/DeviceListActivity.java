@@ -65,6 +65,7 @@ public class DeviceListActivity extends BaseActivity {
             get(R.id.start_ecg_app).setOnClickListener(this);
             get(R.id.hypoxia_bp).setOnClickListener(this);
             get(R.id.hypoxia_sync).setOnClickListener(this);
+            get(R.id.hypoxia_training).setOnClickListener(this);
         }
 
         @Override
@@ -90,6 +91,8 @@ public class DeviceListActivity extends BaseActivity {
                 gotoActivity(HypoxiaBPActivity.class);
             } else if (R.id.hypoxia_sync == id) {
                 gotoActivity(HypoxiaSyncActivity.class);
+            } else if (R.id.hypoxia_training == id) {
+                gotoActivity(HypoxiaTrainingActivity.class);
             }
         }
 

@@ -126,15 +126,30 @@
             android:id="@+id/hypoxia_icon"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
+            android:drawablePadding="@dimen/spacing_normal"
             android:drawableTop="@drawable/ic_device_hypoxia"
             android:gravity="center"
             android:minEms="6"
-            android:padding="@dimen/spacing_double"
+            android:paddingTop="@dimen/spacing_double"
             android:text="低氧训练"
             android:textColor="?android:textColorPrimaryInverse"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/hypoxia_sync"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_double"
+            android:layout_marginTop="@dimen/spacing_normal"
+            android:background="#FFD15429"
+            android:padding="@dimen/spacing_micro"
+            android:text="同步数据"
+            android:textColor="?android:textColorPrimaryInverse"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="@+id/hypoxia_icon"
+            app:layout_constraintRight_toRightOf="@+id/hypoxia_icon"
+            app:layout_constraintTop_toBottomOf="@+id/hypoxia_icon" />
 
         <ImageView
             android:id="@+id/hypoxia_divider_vertical"
@@ -146,31 +161,33 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
-            android:id="@+id/hypoxia_sync"
+            android:id="@+id/hypoxia_training"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:background="?selectableItemBackground"
             android:gravity="center"
-            android:text="同步数据>"
+            android:text="开始训练>"
             android:textColor="?android:textColorPrimaryInverse"
+            app:layout_constraintBottom_toTopOf="@+id/hypoxia_divider_horizontal"
             app:layout_constraintLeft_toRightOf="@+id/hypoxia_divider_vertical"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_chainPacked="false" />
+            app:layout_constraintVertical_weight="1" />
 
         <ImageView
             android:id="@+id/hypoxia_divider_horizontal"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:src="@android:color/white"
+            app:layout_constraintBottom_toTopOf="@+id/hypoxia_bp"
             app:layout_constraintLeft_toRightOf="@+id/hypoxia_divider_vertical"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/hypoxia_sync" />
+            app:layout_constraintTop_toBottomOf="@+id/hypoxia_training" />
 
         <Button
             android:id="@+id/hypoxia_bp"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:background="?selectableItemBackground"
             android:gravity="center"
             android:text="测量血压>"
@@ -178,7 +195,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toRightOf="@+id/hypoxia_divider_vertical"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/hypoxia_divider_horizontal" />
+            app:layout_constraintTop_toBottomOf="@+id/hypoxia_divider_horizontal"
+            app:layout_constraintVertical_weight="1" />
     </android.support.constraint.ConstraintLayout>
 
     <com.syber.base.widget.PercentLinearLayout

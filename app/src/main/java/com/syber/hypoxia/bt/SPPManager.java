@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.util.SparseArray;
 
 import com.orhanobut.logger.Logger;
@@ -82,12 +83,8 @@ public class SPPManager implements IBleManager {
         activity.unregisterReceiver(receiver);
         stopScan();
         if (null != socket) {
-            try {
-                IOUtils.closeSilenty(socket.getInputStream());
-                IOUtils.closeSilenty(socket.getOutputStream());
-            } catch (IOException e) {
-            }
-            IOUtils.closeSilenty(socket);
+//            IOUtils.closeSilenty(socket);
+            new DelayCloseThread(socket).start();
             socket = null;
         }
     }
@@ -160,7 +157,7 @@ public class SPPManager implements IBleManager {
                 socket = device.createRfcommSocketToServiceRecord(SPP_UUID);
                 socket.connect();
             } catch (IOException e) {
-                Logger.e(e, "connect fail");
+                Log.e("flow", null, e);
                 if (null != socket) {
                     IOUtils.closeSilenty(socket);
                     socket = null;
@@ -215,5 +212,23 @@ public class SPPManager implements IBleManager {
             }
         }
     }
+
+    private class DelayCloseThread extends Thread {
+        BluetoothSocket socket;
+
+        public DelayCloseThread(BluetoothSocket socket) {
+            this.socket = socket;
+        }
+
+        @Override
+        public void run() {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+            }
+            IOUtils.closeSilenty(socket);
+        }
+    }
+
 
 }

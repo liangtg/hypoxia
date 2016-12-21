@@ -18,6 +18,8 @@ import com.squareup.otto.Subscribe;
 import com.syber.base.BaseActivity;
 import com.syber.base.BaseViewHolder;
 import com.syber.base.data.EmptyResponse;
+import com.syber.base.view.ViewPost;
+import com.syber.hypoxia.bt.FlowExtra;
 import com.syber.hypoxia.data.IRequester;
 
 import java.text.SimpleDateFormat;
@@ -38,7 +40,25 @@ public class AddTraingActivity extends BaseActivity implements TimePickerDialog.
         startManageBus(bus, this);
         setContentView(R.layout.activity_add_traing);
         initAppBar();
+        boolean autoAdd = false;
+        try {
+            start.setTime(sdf.parse(getIntent().getStringExtra(FlowExtra.KEY_START_TIME)));
+            end.setTime(sdf.parse(getIntent().getStringExtra(FlowExtra.KEY_END_TIME)));
+            traingMode = getIntent().getIntExtra(FlowExtra.KEY_MODE, -1);
+            autoAdd = traingMode >= 0;
+        } catch (Exception e) {
+        }
         viewHolder = new ViewHolder(findViewById(R.id.content));
+        if (autoAdd) {
+            ViewPost.postOnAnimation(viewHolder.getContainer(), new Runnable() {
+                @Override
+                public void run() {
+                    tryAdd();
+                }
+            });
+        } else {
+            traingMode = 0;
+        }
     }
 
     @Override
@@ -50,18 +70,23 @@ public class AddTraingActivity extends BaseActivity implements TimePickerDialog.
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (R.id.save == item.getItemId()) {
-            if (viewHolder.allTime.getText().length() > 0) {
-                int minute = Integer.parseInt(viewHolder.allTime.getText().toString());
-                if (minute > 0) {
-                    end.setTimeInMillis(start.getTimeInMillis());
-                    end.add(Calendar.MINUTE, minute);
-                    progressDialog = ProgressDialog.show(this, null, "正在上传，请稍等", true, true);
-                    IRequester.getInstance().addTraing(bus, sdf.format(start.getTime()), sdf.format(end.getTime()), String.valueOf(traingMode));
-                    return true;
-                }
-            }
+            if (tryAdd()) return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private boolean tryAdd() {
+        if (viewHolder.allTime.getText().length() > 0) {
+            int minute = Integer.parseInt(viewHolder.allTime.getText().toString());
+            if (minute > 0) {
+                end.setTimeInMillis(start.getTimeInMillis());
+                end.add(Calendar.MINUTE, minute);
+                progressDialog = ProgressDialog.show(this, null, "正在上传，请稍等", true, true);
+                IRequester.getInstance().addTraing(bus, sdf.format(start.getTime()), sdf.format(end.getTime()), String.valueOf(traingMode));
+                return true;
+            }
+        }
+        return false;
     }
 
     @Subscribe

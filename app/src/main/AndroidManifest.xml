@@ -163,5 +163,11 @@
             android:label="同步数据"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
+        <activity
+            android:name=".HypoxiaTrainingActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="低氧训练"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
     </application>
 </manifest>

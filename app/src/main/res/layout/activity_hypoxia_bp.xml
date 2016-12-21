@@ -63,8 +63,7 @@
                 app:layout_constraintBottom_toTopOf="@+id/state"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/start"
-                app:layout_constraintVertical_chainPacked="true" />
+                app:layout_constraintTop_toTopOf="@+id/start" />
 
             <TextView
                 android:id="@+id/state"

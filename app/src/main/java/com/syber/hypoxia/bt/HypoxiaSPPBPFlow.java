@@ -94,13 +94,14 @@ public class HypoxiaSPPBPFlow implements SPPManager.SPPFlow {
                 readTime();
                 writeTime();
                 startProcess();
+                Thread.sleep(1000);//1秒后关闭socket,太快就连不上了
             } catch (Exception e) {
                 Log.e("flow", "run failed", e);
             }
             try {
                 IOUtils.closeSilenty(socket.getInputStream());
                 IOUtils.closeSilenty(socket.getOutputStream());
-            } catch (IOException e) {
+            } catch (Exception e) {
             }
             IOUtils.closeSilenty(socket);
             btManager.requestConfirm(FlowExtra.REPORT_STATE_DISCONNECT, HypoxiaSPPBPFlow.this, null);
@@ -154,8 +155,9 @@ public class HypoxiaSPPBPFlow implements SPPManager.SPPFlow {
                 if (array[3] == (byte) 0xb5) {//血压结果
                     buffer.write(array, 4, 2);
                     read(9);
-//                    byte[] result = buffer.readByteArray();
-//                    logcmd(result);
+                    byte[] result = buffer.readByteArray();
+                    logcmd(result);
+                    buffer.write(result);
                     String time = String.format("20%02d-%02d-%02d %02d:%02d:%02d",
                             readUByte(buffer),
                             readUByte(buffer),
@@ -165,7 +167,7 @@ public class HypoxiaSPPBPFlow implements SPPManager.SPPFlow {
                             readUByte(buffer));
                     Intent data = new Intent();
                     data.putExtra(FlowExtra.KEY_TIME, time);
-                    data.putExtra(FlowExtra.KEY_SYS, (int) buffer.readShort());
+                    data.putExtra(FlowExtra.KEY_SYS, (int) buffer.readShortLe());
                     data.putExtra(FlowExtra.KEY_DIA, readUByte(buffer));
                     data.putExtra(FlowExtra.KEY_PUL, readUByte(buffer));
                     buffer.clear();
