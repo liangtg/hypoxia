@@ -6,8 +6,6 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="colorControlHighlight">?android:textColorSecondary</item>
-        <item name="colorControlActivated">?android:textColorSecondary</item>
         <item name="android:datePickerStyle">@android:style/Widget.Holo.DatePicker</item>
         <item name="circularProgressBarStyle">@style/CircularProgressBar</item>
     </style>
