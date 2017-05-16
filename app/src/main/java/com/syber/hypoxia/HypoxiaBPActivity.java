@@ -92,7 +92,7 @@ public class HypoxiaBPActivity extends BaseActivity implements BTManager.Request
     private void showAlert(int error) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("发生错误");
-        builder.setMessage(String.format("错误代码:[%d]", error));
+        builder.setMessage(String.format("错误代码:[%d],%s", error, getError(error)));
         builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -106,6 +106,14 @@ public class HypoxiaBPActivity extends BaseActivity implements BTManager.Request
             }
         });
         builder.show();
+    }
+
+    private String getError(int code) {
+        if (code == 1) {
+            return "请保持安静";
+        } else {
+            return "请检查臂带是否带好";
+        }
     }
 
     private class ViewHolder extends BaseViewHolder {

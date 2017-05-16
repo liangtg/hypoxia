@@ -255,7 +255,7 @@ public class HoloCircularProgressBar extends View {
     public void computeScroll() {
         super.computeScroll();
         invalidate();
-        if (start) rotate++;
+        rotate++;
         if (rotate >= 360) rotate = 0;
     }
 
@@ -282,7 +282,6 @@ public class HoloCircularProgressBar extends View {
             canvas.drawArc(mCircleBounds, 270, 360, false, mBackgroundColorPaint);
         }
 
-        if (!start) return;
 
         canvas.rotate(-90);
         // draw the progress or a full circle if overdraw is true

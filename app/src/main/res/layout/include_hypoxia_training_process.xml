@@ -2,22 +2,49 @@
 <android.support.constraint.ConstraintLayout android:id="@+id/progress"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:visibility="gone">
+    android:visibility="visible">
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_left"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.25" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_right"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.75" />
 
     <TextView
         android:id="@+id/anchor1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/spacing_double"
-        android:text="请穿戴好您的血压设备"
+        android:text="训练中"
         android:textAppearance="@style/TextAppearance.AppCompat.Headline"
         android:textColor="?android:textColorSecondary"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/guide"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawableTop="@drawable/device_guide_1"
+        android:gravity="center"
+        android:text="将臂带与心脏高度保持一致\n手心向上,身体自然放松,不要说话"
+        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+        android:textColor="?android:textColorSecondary"
+        android:textStyle="bold"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/anchor1" />
 
     <com.syber.hypoxia.widget.HoloCircularProgressBar
         android:id="@+id/start"
@@ -25,10 +52,12 @@
         android:layout_height="0dp"
         android:layout_marginTop="@dimen/spacing_double"
         android:src="@drawable/count_down"
-        app:layout_constraintDimensionRatio="H,1:1"
-        app:layout_constraintLeft_toLeftOf="@+id/guideline_left"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintLeft_toRightOf="@+id/guideline_left"
         app:layout_constraintRight_toLeftOf="@+id/guideline_right"
-        app:layout_constraintTop_toBottomOf="@+id/anchor1"
+        app:layout_constraintTop_toBottomOf="@+id/guide"
+        app:layout_constraintVertical_bias="0.2"
         app:marker_visible="false"
         app:progress="1" />
 
@@ -42,7 +71,8 @@
         app:layout_constraintBottom_toTopOf="@+id/state"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/start" />
+        app:layout_constraintTop_toTopOf="@+id/start"
+        app:layout_constraintVertical_chainStyle="packed" />
 
     <TextView
         android:id="@+id/state"
@@ -55,22 +85,4 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/count_down" />
-
-    <android.support.constraint.Guideline
-        android:id="@+id/guideline_left"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.25"
-        tools:layout_editor_absoluteX="96dp"
-        tools:layout_editor_absoluteY="0dp" />
-
-    <android.support.constraint.Guideline
-        android:id="@+id/guideline_right"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.75"
-        tools:layout_editor_absoluteX="288dp"
-        tools:layout_editor_absoluteY="0dp" />
 </android.support.constraint.ConstraintLayout>

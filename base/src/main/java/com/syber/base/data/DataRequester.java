@@ -21,7 +21,7 @@ import okio.Okio;
  * Created by liangtg on 16-5-10.
  */
 public class DataRequester {
-    public static String SERVER = "http://101.200.77.216:17202/";
+    public static String SERVER = "http://hilo.syberos.com:17202/";
 //    public static String SERVER = "http://172.16.22.101:34376/";
 
     protected static MediaType FORM = MediaType.parse("application/x-www-form-urlencoded");

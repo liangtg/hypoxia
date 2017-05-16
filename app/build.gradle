@@ -8,8 +8,8 @@ android {
         applicationId "com.syber.hypoxia.client"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 16
-        versionName "0.16"
+        versionCode 18
+        versionName "1.0.0"
     }
     buildTypes {
         release {
@@ -29,5 +29,5 @@ dependencies {
     compile project(':pgyer')
     compile project(':mpchart')
     compile project(':CropLibrary')
-    compile 'com.android.support.constraint:constraint-layout:1.0.0-beta4'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
 }
