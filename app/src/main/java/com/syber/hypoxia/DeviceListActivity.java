@@ -100,7 +100,7 @@ public class DeviceListActivity extends BaseActivity {
             try {
                 Intent intent = new Intent(Intent.ACTION_MAIN);
                 intent.addCategory(Intent.CATEGORY_LAUNCHER);
-                intent.setClassName("com.hes.hpmobile", "com.hes.hpmobile.UI.Activities.SplashScreen");
+                intent.setClassName("com.hes.hpmobile", "com.hes.hcsmobile.UI.Activities.SplashScreen");
                 intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
