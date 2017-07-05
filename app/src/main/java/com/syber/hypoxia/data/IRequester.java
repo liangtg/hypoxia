@@ -114,10 +114,11 @@ public class IRequester extends DataRequester {
         return callback;
     }
 
-    public DataRequest hypoxiaData(Bus bus, int page) {
+    public DataRequest hypoxiaData(Bus bus, int page, String date) {
         GsonCallback callback = new GsonCallback(bus, HypoxiaHistoryResponse.class);
         FormBody.Builder builder = new FormBody.Builder();
         builder.add("pageno", String.valueOf(page));
+        builder.add("lasttime", date);
         builder.add("user_id", User.getUserInfoExt().user_id);
         enque(postBuilder("user/trainingdata?1", builder.build()).build(), callback);
         return callback;
@@ -135,10 +136,11 @@ public class IRequester extends DataRequester {
     }
 
 
-    public DataRequest bloodData(Bus bus, int page) {
+    public DataRequest bloodData(Bus bus, int page, String date) {
         GsonCallback callback = new GsonCallback(bus, BloodHistoryResponse.class);
         FormBody.Builder builder = new FormBody.Builder();
         builder.add("pageno", String.valueOf(page));
+        builder.add("lasttime", date);
         builder.add("user_id", User.getUserInfoExt().user_id);
         enque(postBuilder("user/pressuredata?1", builder.build()).build(), callback);
         return callback;
@@ -205,10 +207,11 @@ public class IRequester extends DataRequester {
         return callback;
     }
 
-    public DataRequest spoData(Bus bus, int page) {
+    public DataRequest spoData(Bus bus, int page, String date) {
         GsonCallback callback = new GsonCallback(bus, OxygenSaturationHistoryResponse.class);
         FormBody.Builder builder = new FormBody.Builder();
         builder.add("pageno", String.valueOf(page));
+        builder.add("lasttime", date);
         builder.add("user_id", User.getUserInfoExt().user_id);
         enque(postBuilder("user/SpO2Data?1", builder.build()).build(), callback);
         return callback;
@@ -250,10 +253,11 @@ public class IRequester extends DataRequester {
     }
 
 
-    public DataRequest heartData(Bus bus, int page) {
+    public DataRequest heartData(Bus bus, int page, String date) {
         GsonCallback callback = new GsonCallback(bus, HeartHistoryResponse.class);
         FormBody.Builder builder = new FormBody.Builder();
         builder.add("pageno", String.valueOf(page));
+        builder.add("lasttime", date);
         builder.add("user_id", User.getUserInfoExt().user_id);
         enque(postBuilder("user/heartratedata?1", builder.build()).build(), callback);
         return callback;

@@ -2,6 +2,7 @@ package com.syber.hypoxia;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,18 +15,22 @@ import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 import com.syber.base.BaseFragment;
 import com.syber.base.BaseViewHolder;
+import com.syber.base.data.PageDataProvider;
+import com.syber.base.view.ViewPost;
 import com.syber.hypoxia.data.BloodHistoryResponse;
 import com.syber.hypoxia.data.IRequester;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 
-public class BloodPressureHistoryFragment extends BaseFragment {
+public class BloodPressureHistoryFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
+    private SwipeRefreshLayout swipeRefresh;
     private RecyclerView allHistory;
     private Bus bus = new Bus();
-    private int page = 1;
     private ArrayList<BloodHistoryResponse.HistoryItem> data = new ArrayList<>();
     private HistoryAdapter historyAdapter;
+    private DataProvider dataProvider = new DataProvider();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -45,37 +50,40 @@ public class BloodPressureHistoryFragment extends BaseFragment {
         allHistory.setItemAnimator(new DefaultItemAnimator());
         historyAdapter = new HistoryAdapter();
         allHistory.setAdapter(historyAdapter);
-        IRequester.getInstance().bloodData(bus, page);
-
+        swipeRefresh = get(R.id.swipe_refresh);
+        swipeRefresh.setColorSchemeResources(R.color.colorPrimary);
+        swipeRefresh.setOnRefreshListener(this);
+        dataProvider.refresh();
+        ViewPost.postOnAnimation(view, new Runnable() {
+            @Override
+            public void run() {
+                swipeRefresh.setRefreshing(dataProvider.onceWorked());
+            }
+        });
     }
 
     @Subscribe
     public void withData(BloodHistoryResponse event) {
         if (null == getView() || getActivity().isFinishing()) return;
+        swipeRefresh.setRefreshing(false);
         if (event.isSuccess()) {
             data.addAll(event.list);
             historyAdapter.notifyDataSetChanged();
-            page++;
-            if (!event.list.isEmpty()) nextDelayRequest();
+            dataProvider.endPage(true, !event.list.isEmpty());
         } else {
-            nextDelayRequest();
+            dataProvider.endPage(false, false);
         }
-    }
-
-    private void nextDelayRequest() {
-        allHistory.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (null == getView() || getActivity().isFinishing()) return;
-                IRequester.getInstance().bloodData(bus, page);
-            }
-        }, 500);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         bus.unregister(this);
+    }
+
+    @Override
+    public void onRefresh() {
+        dataProvider.refresh();
     }
 
 
@@ -88,6 +96,7 @@ public class BloodPressureHistoryFragment extends BaseFragment {
 
         @Override
         public void onBindViewHolder(AdapterHolder holder, int position) {
+            if (position == getItemCount() - 1) dataProvider.nextPage();
             BloodHistoryResponse.HistoryItem item = data.get(position);
             holder.date.setText(item.pressure.Time_Test);
             holder.high.setText("收缩压" + item.pressure.Systolic);
@@ -115,5 +124,22 @@ public class BloodPressureHistoryFragment extends BaseFragment {
             abnormal = BaseViewHolder.get(itemView, R.id.state);
         }
     }
+
+    private class DataProvider extends PageDataProvider {
+        private String date = IApplication.dateFormat.format(new Date());
+
+        @Override
+        public void doWork(int page) {
+            IRequester.getInstance().bloodData(bus, page, date);
+        }
+
+        @Override
+        public void onResetData() {
+            date = IApplication.dateFormat.format(new Date());
+            data.clear();
+            historyAdapter.notifyDataSetChanged();
+        }
+    }
+
 
 }
