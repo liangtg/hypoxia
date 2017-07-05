@@ -2,6 +2,7 @@ package com.syber.hypoxia;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,6 +16,9 @@ import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 import com.syber.base.BaseFragment;
 import com.syber.base.BaseViewHolder;
+import com.syber.base.data.DataRequester;
+import com.syber.base.data.PageDataProvider;
+import com.syber.base.view.ViewPost;
 import com.syber.hypoxia.data.HypoxiaHistoryResponse;
 import com.syber.hypoxia.data.IRequester;
 
@@ -26,12 +30,13 @@ import java.util.Locale;
 /**
  * Created by liangtg on 16-6-6.
  */
-public class HypoxiaHistoryFragment extends BaseFragment {
+public class HypoxiaHistoryFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
     private RecyclerView allHistory;
-    private int page = 1;
+    private SwipeRefreshLayout swipeRefresh;
     private ArrayList<HypoxiaHistoryResponse.HistoryItem> data = new ArrayList<>();
     private HistoryAdapter historyAdapter;
     private Bus bus = new Bus();
+    private DataProvicer dataProvicer = new DataProvicer();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -47,36 +52,40 @@ public class HypoxiaHistoryFragment extends BaseFragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        swipeRefresh = get(R.id.swipe_refresh);
+        swipeRefresh.setColorSchemeResources(R.color.colorPrimary);
+        swipeRefresh.setOnRefreshListener(this);
         allHistory = get(R.id.all_history);
         allHistory.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
         allHistory.setItemAnimator(new DefaultItemAnimator());
         historyAdapter = new HistoryAdapter();
         allHistory.setAdapter(historyAdapter);
-        IRequester.getInstance().hypoxiaData(bus, page);
+        dataProvicer.refresh();
+        ViewPost.postOnAnimation(view, new Runnable() {
+            @Override
+            public void run() {
+                swipeRefresh.setRefreshing(!dataProvicer.onceWorked());
+            }
+        });
     }
 
     @Subscribe
     public void withData(HypoxiaHistoryResponse event) {
         if (null == getView() || getActivity().isFinishing()) return;
+        swipeRefresh.setRefreshing(false);
         if (event.isSuccess()) {
             int old = data.size();
             data.addAll(event.list);
             historyAdapter.notifyItemRangeInserted(old, event.list.size());
-            page++;
-            if (!event.list.isEmpty()) nextDelayRequest();
+            dataProvicer.endPage(true, !event.list.isEmpty());
         } else {
-            nextDelayRequest();
+            dataProvicer.endPage(false, false);
         }
     }
 
-    private void nextDelayRequest() {
-        allHistory.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (null == getView() || getActivity().isFinishing()) return;
-                IRequester.getInstance().hypoxiaData(bus, page);
-            }
-        }, 500);
+    @Override
+    public void onRefresh() {
+        dataProvicer.refresh();
     }
 
     private class HistoryAdapter extends RecyclerView.Adapter<AdapterHolder> {
@@ -90,6 +99,7 @@ public class HypoxiaHistoryFragment extends BaseFragment {
 
         @Override
         public void onBindViewHolder(AdapterHolder holder, int position) {
+            if (position == getItemCount() - 1) dataProvicer.nextPage();
             HypoxiaHistoryResponse.HistoryItem item = data.get(position);
             holder.date.setText(dateFormat.format(new Date(item.time_start)));
             holder.time.setText(String.format("%s~%s", timeFormat.format(new Date(item.time_start)), timeFormat.format(new Date(item.time_end))));
@@ -118,4 +128,23 @@ public class HypoxiaHistoryFragment extends BaseFragment {
             progressBar = BaseViewHolder.get(itemView, R.id.progress);
         }
     }
+
+    private class DataProvicer extends PageDataProvider {
+        private String date;
+        private DataRequester.DataRequest request;
+
+        @Override
+        public void doWork(int page) {
+            request = IRequester.getInstance().hypoxiaData(bus, page, date);
+        }
+
+        @Override
+        public void onResetData() {
+            date = IApplication.dateFormat.format(new Date());
+            data.clear();
+            historyAdapter.notifyDataSetChanged();
+        }
+    }
+
+
 }
