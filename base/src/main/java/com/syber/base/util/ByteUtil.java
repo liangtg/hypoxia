@@ -9,7 +9,7 @@ public class ByteUtil {
         if (null == to || to.length == 0) return "[]";
         StringBuffer sb = new StringBuffer("[" + Integer.toHexString(to[0] & 0xFF));
         for (int i = 1; i < to.length; i++) {
-            sb.append(" " + Integer.toHexString(to[i] & 0xFF));
+            sb.append(String.format(" %02x", to[i] & 0xFF));
         }
         sb.append("]");
         return sb.toString();

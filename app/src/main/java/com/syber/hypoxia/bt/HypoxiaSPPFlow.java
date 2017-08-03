@@ -56,6 +56,10 @@ public class HypoxiaSPPFlow implements SPPManager.SPPFlow {
 
     void read(int length) throws IOException {
         buffer.readFrom(socket.getInputStream(), length);
+        byte[] bytes = buffer.readByteArray();
+        logcmd(bytes);
+        buffer.clear();
+        buffer.write(bytes);
 //            byte[] array = new byte[length];
 //            for (int i = 0; i < length; i++) {
 //                array[i] = (byte) socket.getInputStream().read();
@@ -125,31 +129,26 @@ public class HypoxiaSPPFlow implements SPPManager.SPPFlow {
 
         private void readMAC() throws IOException {
             writeAndRead(cmd_get_mac, 20);
-            logcmd(buffer.readByteArray());
         }
 
         private void readState() throws IOException {
             writeAndRead(cmd_get_state, 11);
-            logcmd(buffer.readByteArray());
         }
 
         private void writeTime() throws IOException {
             setTime();
             writeAndRead(cmd_set_time, 11);
             byte[] array = buffer.readByteArray();
-            logcmd(array);
         }
 
         private void readTime() throws IOException {
             writeAndRead(cmd_get_time, 11);
             byte[] array = buffer.readByteArray();
-            logcmd(array);
         }
 
         private void syncData() throws IOException {
             writeAndRead(cmd_data_length, 9);
             byte[] array = buffer.readByteArray();
-            logcmd(array);
             int bpLength = array[4] & 0xFF;
             int hLength = array[6] & 0xFF;
             syncBP(bpLength);
@@ -161,8 +160,9 @@ public class HypoxiaSPPFlow implements SPPManager.SPPFlow {
             if (length <= 0) return;
             write(cmd_sync_bp);
             for (int i = 0; i < length; i++) {
-                read(14);
-                buffer.skip(4);
+                read(3);
+                read((buffer.getByte(2) & 0xFF) - 3);
+                buffer.skip(6);
                 Intent data = new Intent();
                 data.putExtra(FlowExtra.KEY_TIME,
                         String.format("20%02d-%02d-%02d %02d:%02d:%02d",
@@ -172,7 +172,9 @@ public class HypoxiaSPPFlow implements SPPManager.SPPFlow {
                                 readUByte(buffer),
                                 readUByte(buffer),
                                 readUByte(buffer)));
-                data.putExtra(FlowExtra.KEY_SYS, readUByte(buffer));
+                int sys = readUByte(buffer);
+                sys += readUByte(buffer) << 8;
+                data.putExtra(FlowExtra.KEY_SYS, sys);
                 data.putExtra(FlowExtra.KEY_DIA, readUByte(buffer));
                 data.putExtra(FlowExtra.KEY_PUL, readUByte(buffer));
                 buffer.clear();
@@ -184,19 +186,22 @@ public class HypoxiaSPPFlow implements SPPManager.SPPFlow {
             if (length <= 0) return;
             write(cmd_sync_hypoxia);
             for (int i = 0; i < length; i++) {
-                read(25);
+                read(3);
+                read((buffer.getByte(2) & 0xFF) - 3);
                 buffer.skip(6);
                 Intent data = new Intent();
                 data.putExtra(FlowExtra.KEY_MODE, readUByte(buffer));
                 data.putExtra(FlowExtra.KEY_START_TIME,
-                        String.format("20%02d-%02d-%02d %02d:%02d:00",
+                        String.format("20%02d-%02d-%02d %02d:%02d:%02d",
+                                readUByte(buffer),
                                 readUByte(buffer),
                                 readUByte(buffer),
                                 readUByte(buffer),
                                 readUByte(buffer),
                                 readUByte(buffer)));
                 data.putExtra(FlowExtra.KEY_END_TIME,
-                        String.format("20%02d-%02d-%02d %02d:%02d:00",
+                        String.format("20%02d-%02d-%02d %02d:%02d:%02d",
+                                readUByte(buffer),
                                 readUByte(buffer),
                                 readUByte(buffer),
                                 readUByte(buffer),
