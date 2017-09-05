@@ -2,6 +2,6 @@
 <FindBugsFilter>
     <!-- http://stackoverflow.com/questions/7568579/eclipsefindbugs-exclude-filter-files-doesnt-work -->
     <Match>
-        <Package name="~com.github.mikephil.charting.*" />
+        <Package name="~com.github.mikephil.charting_rename.*" />
     </Match>
 </FindBugsFilter>
