@@ -29,6 +29,15 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
+            <Button
+                android:id="@+id/cnoga_device"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/spacing_double"
+                android:backgroundTint="@android:color/black"
+                android:text="CNOGA"
+                android:textColor="?android:textColorPrimaryInverse" />
+
             <android.support.percent.PercentRelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

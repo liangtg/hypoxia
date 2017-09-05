@@ -169,5 +169,6 @@
             android:label="低氧训练"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
+        <activity android:name=".CnogaActivity"></activity>
     </application>
 </manifest>

@@ -256,7 +256,7 @@
             android:layout_height="match_parent"
             android:paddingBottom="@dimen/spacing_normal">
 
-            <com.github.mikephil.charting.charts.CombinedChart
+            <com.github.mikephil.charting_rename.charts.CombinedChart
                 android:id="@+id/chart"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />

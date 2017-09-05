@@ -52,11 +52,11 @@ public class MainActivity extends BaseActivity {
             ViewPost.postOnAnimation(viewHolder.getContainer(), new Runnable() {
                 @Override
                 public void run() {
-                    viewHolder.toolbar.showOverflowMenu();
+//                    viewHolder.toolbar.showOverflowMenu();
                     viewHolder.getContainer().postOnAnimationDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            showGuide1();
+//                            showGuide1();
                         }
                     }, 50);
                 }
@@ -335,6 +335,7 @@ public class MainActivity extends BaseActivity {
 
         @Override
         public void run() {
+            if (isFinishing())return;
             if (step == 0) {
                 showGuide2();
             } else if (step == 1) {

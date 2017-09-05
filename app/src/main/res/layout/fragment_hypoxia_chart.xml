@@ -258,7 +258,7 @@
                 android:textColor="?android:textColorPrimaryInverse" />
         </LinearLayout>
 
-        <com.github.mikephil.charting.charts.BarChart
+        <com.github.mikephil.charting_rename.charts.BarChart
             android:id="@+id/chart"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />

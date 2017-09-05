@@ -20,14 +20,20 @@ android {
     lintOptions {
         abortOnError false
     }
-
+    repositories {
+        flatDir {
+            dirs 'libs' //this way we can find the .aar file in libs folder
+        }
+    }
 }
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
     compile project(':base')
     compile project(':pgyer')
     compile project(':mpchart')
     compile project(':CropLibrary')
+    compile project(':cnoga_sdk')
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
 }

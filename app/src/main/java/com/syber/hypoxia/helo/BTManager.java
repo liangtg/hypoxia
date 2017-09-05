@@ -136,6 +136,13 @@ public class BTManager implements IBleManager {
         start(activity);
     }
 
+    public void startCnoga(Activity activity, BleFlow flow) {
+        deviceName = "CNOGA TensorTip";
+        bleFlow = flow;
+        bleFlow.setBleManager(this);
+        start(activity);
+    }
+
     public void setRequestListener(RequestListener listener) {
         this.listener = listener;
     }
