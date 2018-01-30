@@ -151,7 +151,7 @@ public class CnogaActivity extends BaseActivity implements BTManager.RequestList
             Iterator<Map.Entry<Integer, Object>> it = paramMap.entrySet().iterator();
             while (it.hasNext()) {
                 Map.Entry<Integer, Object> entity = it.next();
-                sb.append(String.format("key: %s\tvalue:%s", "" + entity.getKey(), "" + entity.getValue()));
+                sb.append(String.format("key: %s\tvalue:%s\n", "" + entity.getKey(), "" + entity.getValue()));
             }
             progressInfo.setText(sb.toString());
         }

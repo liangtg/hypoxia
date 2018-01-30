@@ -9,6 +9,16 @@
     android:showDividers="middle"
     tools:context="com.syber.hypoxia.CnogaActivity">
 
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/app_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"></android.support.v7.widget.Toolbar>
+    </android.support.design.widget.AppBarLayout>
+
     <TextView
         android:id="@+id/info"
         android:layout_width="match_parent"
