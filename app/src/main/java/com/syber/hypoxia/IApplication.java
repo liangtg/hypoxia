@@ -2,7 +2,10 @@ package com.syber.hypoxia;
 
 import android.content.Context;
 
+import com.orhanobut.logger.AndroidLogAdapter;
+import com.orhanobut.logger.FormatStrategy;
 import com.orhanobut.logger.Logger;
+import com.orhanobut.logger.PrettyFormatStrategy;
 import com.pgyersdk.crash.PgyCrashManager;
 import com.syber.base.BaseApplication;
 import com.syber.hypoxia.data.User;
@@ -24,7 +27,8 @@ public class IApplication extends BaseApplication {
     public void onCreate() {
         super.onCreate();
         context = this;
-        Logger.init("hypoxia").methodCount(1);
+        FormatStrategy formatStrategy = PrettyFormatStrategy.newBuilder().tag("hypoxia").methodCount(1).build();
+        Logger.addLogAdapter(new AndroidLogAdapter(formatStrategy));
         User.init();
         PgyCrashManager.register(this);
     }
