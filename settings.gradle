@@ -1,1 +1,1 @@
-include ':app', ':base', ':pgyer', ':mpchart', ':tt', ':cnoga_sdk', 'CropLibrary'
+include ':app', ':base', ':pgyer', ':mpchart', ':tt', 'CropLibrary'

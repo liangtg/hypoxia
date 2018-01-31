@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import com.cnoga.singular.mobile.sdk.passport.CnogaPassportManager;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 import com.syber.base.BaseActivity;

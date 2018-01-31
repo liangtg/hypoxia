@@ -5,11 +5,11 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
-        applicationId "com.syber.hypoxia.client"
+        applicationId "com.syber.hypoxia.yjb"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 18
-        versionName "1.0.0"
+        versionCode 19
+        versionName "1.1.0"
     }
     buildTypes {
         release {
@@ -34,6 +34,5 @@ dependencies {
     compile project(':pgyer')
     compile project(':mpchart')
     compile project(':CropLibrary')
-    compile project(':cnoga_sdk')
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
 }

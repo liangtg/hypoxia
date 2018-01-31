@@ -35,7 +35,6 @@ public class DeviceListActivity extends BaseActivity {
         builder.setView(R.layout.dialog_helo_option);
         builder.setTitle("健康手环");
         try {
-            Log.d("dialog", getResources().getResourceName(0x106011e));
             dialog = builder.show();
         } catch (Exception e) {
             Throwable t = e;
@@ -95,7 +94,7 @@ public class DeviceListActivity extends BaseActivity {
             } else if (R.id.hypoxia_training == id) {
                 gotoActivity(HypoxiaTrainingActivity.class);
             } else if (R.id.cnoga_device == id) {
-                gotoActivity(CnogaActivity.class);
+//                gotoActivity(CnogaActivity.class);
             }
         }
 

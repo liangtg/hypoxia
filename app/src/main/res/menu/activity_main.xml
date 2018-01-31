@@ -8,7 +8,8 @@
         android:title="添加血压数据" />
     <item
         android:id="@+id/add_spo"
-        android:title="添加血氧数据" />
+        android:title="添加血氧数据"
+        android:visible="false" />
     <item
         android:id="@+id/setting"
         android:icon="@drawable/ic_setting"

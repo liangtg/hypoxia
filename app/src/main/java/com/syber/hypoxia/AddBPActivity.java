@@ -160,10 +160,10 @@ public class AddBPActivity extends BaseActivity implements TimePickerDialog.OnTi
             startDate.setText(sdf.format(calendar.getTime()).substring(0, 10));
             startTime.setText(sdf.format(calendar.getTime()).substring(11, 16));
             if (sys == 0) {
-                Random random = new Random();
-                sys = random.nextInt(10) + 120;
-                dia = random.nextInt(10) + 80;
-                pul = random.nextInt(20) + 70;
+//                Random random = new Random();
+//                sys = random.nextInt(10) + 120;
+//                dia = random.nextInt(10) + 80;
+//                pul = random.nextInt(20) + 70;
             }
             sysText.setText("" + sys);
             diaText.setText("" + dia);

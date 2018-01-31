@@ -23,15 +23,21 @@
             app:popupTheme="@style/ThemeOverlay.AppCompat.Dark"
             app:title="@string/app_name"></android.support.v7.widget.Toolbar>
 
-        <RelativeLayout
+        <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="80sp">
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/spacing_double">
 
             <FrameLayout
                 android:id="@+id/anchor1"
-                android:layout_width="72sp"
-                android:layout_height="72sp"
-                android:layout_margin="4sp">
+                android:layout_width="76sp"
+                android:layout_height="76sp"
+                android:layout_marginBottom="@dimen/spacing_double"
+                android:layout_marginLeft="@dimen/spacing_large"
+                android:layout_marginTop="@dimen/spacing_normal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
                     android:id="@+id/user_image"
@@ -49,17 +55,21 @@
                 android:id="@+id/anchor2"
                 android:layout_width="0dp"
                 android:layout_height="@dimen/spacing_normal"
-                android:layout_centerVertical="true" />
+                android:layout_centerVertical="true"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/user_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_above="@id/anchor2"
-                android:layout_toRightOf="@id/anchor1"
-                android:text="张小明"
+                android:layout_marginLeft="@dimen/spacing_double"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                android:textColor="?android:textColorPrimaryInverse" />
+                android:textColor="?android:textColorPrimaryInverse"
+                app:layout_constraintBottom_toTopOf="@+id/anchor2"
+                app:layout_constraintLeft_toRightOf="@+id/anchor1"
+                tools:text="张小明" />
 
             <TextView
                 android:id="@+id/level"
@@ -68,7 +78,7 @@
                 android:layout_alignTop="@id/user_name"
                 android:layout_marginLeft="@dimen/spacing_double"
                 android:layout_toRightOf="@id/user_name"
-                android:text="健康达人"
+                android:text=""
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                 android:textColor="?android:textColorPrimaryInverse" />
 
@@ -78,56 +88,58 @@
                 android:layout_height="wrap_content"
                 android:layout_alignLeft="@id/user_name"
                 android:layout_below="@id/anchor2"
-                android:text="男 26岁 身高176CM 体重 52KG"
+                android:text=""
                 android:textColor="?android:textColorPrimaryInverse" />
-        </RelativeLayout>
 
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:scaleType="fitXY"
-            android:src="?dividerHorizontal" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:divider="?dividerVertical"
-            android:dividerPadding="@dimen/spacing_normal"
-            android:orientation="horizontal"
-            android:showDividers="middle">
-
-            <Button
-                android:id="@+id/manage_info"
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="?selectableItemBackground"
-                android:text="信息管理"
-                android:textColor="?android:textColorPrimaryInverse" />
+                android:orientation="horizontal"
+                android:showDividers="middle"
+                app:layout_constraintLeft_toRightOf="@+id/anchor1"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/anchor2">
 
-            <Button
-                android:id="@+id/doctor"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="?selectableItemBackground"
-                android:text="医生建议"
-                android:textColor="?android:textColorPrimaryInverse" />
+                <TextView
+                    android:id="@+id/info1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="?selectableItemBackground"
+                    android:clickable="false"
+                    android:gravity="center"
+                    android:textColor="?android:textColorPrimaryInverse"
+                    tools:text="信息管理" />
 
-            <Button
-                android:id="@+id/device"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="?selectableItemBackground"
-                android:text="我的设备"
-                android:textColor="?android:textColorPrimaryInverse" />
-        </LinearLayout>
+                <TextView
+                    android:id="@+id/info2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="?selectableItemBackground"
+                    android:clickable="false"
+                    android:gravity="center"
+                    android:textColor="?android:textColorPrimaryInverse"
+                    tools:text="医生建议" />
+
+                <TextView
+                    android:id="@+id/info3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="?selectableItemBackground"
+                    android:clickable="false"
+                    android:gravity="center"
+                    android:textColor="?android:textColorPrimaryInverse"
+                    tools:text="我的设备" />
+            </LinearLayout>
+        </android.support.constraint.ConstraintLayout>
     </LinearLayout>
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:fillViewport="true">
 
         <LinearLayout
@@ -533,4 +545,55 @@
             </android.support.v7.widget.CardView>
         </LinearLayout>
     </ScrollView>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:scaleType="fitXY"
+        android:src="?dividerHorizontal" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:divider="?dividerVertical"
+        android:dividerPadding="@dimen/spacing_normal"
+        android:orientation="horizontal"
+        android:showDividers="middle">
+
+        <Button
+            android:id="@+id/action1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="?selectableItemBackground"
+            android:drawablePadding="@dimen/spacing_micro"
+            android:drawableTop="@drawable/action1"
+            android:padding="@dimen/spacing_normal"
+            android:text="开始训练"
+            android:textColor="@color/colorPrimary" />
+
+        <Button
+            android:id="@+id/action2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="?selectableItemBackground"
+            android:drawablePadding="@dimen/spacing_micro"
+            android:drawableTop="@drawable/action2"
+            android:padding="@dimen/spacing_normal"
+            android:text="测量血压"
+            android:textColor="@color/colorPrimary" />
+
+        <Button
+            android:id="@+id/action3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="?selectableItemBackground"
+            android:drawablePadding="@dimen/spacing_micro"
+            android:drawableTop="@drawable/action3"
+            android:padding="@dimen/spacing_normal"
+            android:text="同步数据"
+            android:textColor="@color/colorPrimary" />
+    </LinearLayout>
 </LinearLayout>
